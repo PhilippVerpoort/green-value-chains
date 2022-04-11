@@ -1,0 +1,173 @@
+cost_data:
+  capex:
+    electrolyser:
+      name: Electrolyser CAPEX (per LHV)
+      unit: EUR/kW
+      value:
+        2025: 800.0
+        2050: 300.0
+      techs: h2
+      source: IEA data
+    drshaft:
+      name: Direct reduction shaft CAPEX (per t of raw steel)
+      unit: EUR/t
+      value: 230.0
+      techs: ng,h2
+      source: Vogl et al. (2018)
+    eaf:
+      name: Electric-arc furnace CAPEX (per t of raw steel)
+      unit: EUR/t
+      value: 184.0
+      techs: ng,h2
+      source: Vogl et al. (2018)
+
+
+  fixed_opex:
+    labour:
+      name: Labour cost (per t of raw steel)
+      unit: EUR/t
+      value: 35.0
+      source: Agora-Stahlrechner
+
+    fixed_onm:
+      name: Operation and maintenance cost (share of CAPEX)
+      unit: percent
+      value: 3
+      source: Vogl. et al (2018) / Agora-Stahlrechner
+
+
+  feedstock_demand:
+    lime:
+      name: Lime demand (per t of raw steel)
+      unit: t/t
+      value: 0.050
+      source: Vogl. et al (2018)
+
+    graphite:
+      name: Graphite electrode demand (per t of raw steel)
+      unit: t/t
+      value: 0.002
+      source: Vogl. et al (2018) / Remus et al. (2013)
+
+    alloies:
+      name: Alloies demand (per t of raw steel)
+      unit: t/t
+      value: 0.011
+      source: Vogl. et al (2018) / Remus et al. (2013)
+
+
+  feedstock_prices:
+    lime:
+      name: Lime price
+      unit: EUR/t
+      value: 100.0
+      source: Vogl. et al (2018)
+
+    graphite:
+      name: Graphite price
+      unit: EUR/t
+      value: 4000.0
+      source: Vogl. et al (2018)
+
+    alloies:
+      name: Alloy price
+      unit: EUR/t
+      value: 1777.0
+      source: Vogl. et al (2018)
+
+
+  iron_demand:
+    ore:
+      name: Iron ore demand (per t of raw steel; assuming 100% CDRI)
+      unit: t/t
+      value: 1.504
+      source: Vogl. et al
+
+    scrap:
+      name: Scrap demand (per t of raw steel; assuming 100% scrap)
+      unit: t/t
+      value: 1.072
+      source: Vogl. et al
+
+
+  iron_prices:
+    ore:
+      name: Iron ore price
+      unit: EUR/t
+      value: 130.0
+      techs: ng,h2
+      source: Vogl. et al
+
+    scrap:
+      name: Scrap price
+      unit: EUR/t
+      value: 180.0
+      source: Vogl. et al
+
+
+  energy_demand:
+    h2:
+      name: Electricity demand for hydrogen production (per t of raw steel)
+      unit: Nm3/t
+      value: 566.61
+      techs: h2
+      source: Vogl. et al (2018); 51.0 kg_H2 * 33.33kWh_LHV/kg / (1000 kWh/MWh) / (0.72 kWH_LHV / kWH_el)
+
+    ng:
+      name: Natural gas demand for direct reduction (per t of raw steel)
+      unit: MWh/t
+      value: 2.94
+      techs: ng
+      source: Agora Stahlrechner
+
+    elec_dr:
+      name: Electricity demand of direct reduction (per t of raw steel; excluding H2)
+      unit: MWh/t
+      value: 0.329
+      source: 0.040 (general) + 0.289 (heat); Vogl. et al (2018)
+
+    elec_eaf_scrap:
+      name: Electricity demand of EAF for pure scrap (per t of raw steel)
+      unit: MWh/t
+      value: 0.667
+      source: Vogl. et al (2018)
+
+    elec_eaf_cdri:
+      name: Electricity demand of EAF for pure DRI (per t of raw steel)
+      unit: MWh/t
+      value: 0.753
+      source: Vogl. et al (2018)
+
+    elec_eaf_cdri_heat:
+      name: Electricity demand for additional heating in EAF for cold DRI (per t of raw steel)
+      unit: MWh/t
+      value: 0.159
+      source: Vogl. et al (2018)
+
+
+  transport:
+    h2:
+      name: H2 transport cost
+      unit: EUR/MWh
+      value:
+        2025: 30.0
+        2050: 20.0
+      source: Acatech
+
+    ore:
+      name: Iron ore transport cost
+      unit: EUR/t
+      value: 14.0
+      source: ???
+
+    hbi:
+      name: DRI transport cost
+      unit: EUR/t
+      value: 20.0
+      source: ???
+
+    steel:
+      name: Steel transport cost
+      unit: EUR/t
+      value: 30.0
+      source: ???
