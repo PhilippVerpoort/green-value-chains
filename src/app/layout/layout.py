@@ -1,12 +1,12 @@
 from dash import dcc, html
 
-from config_load_app import app_cfg
 from src.app.layout.modals.advanced_modal import getModalUpdateAdvancedTable
 from src.app.layout.modals.plot_settings_modal import getModalPlotConfig
 from src.app.layout.elements.figures import getFigures
 from src.app.layout.elements.simple import getElementSimpleControlsCard
 from src.app.layout.elements.summary import getElementSummaryCard
 from src.config_load import plots_cfg
+from src.config_load_app import app_cfg
 
 
 def getLayout(logo_url: str):
