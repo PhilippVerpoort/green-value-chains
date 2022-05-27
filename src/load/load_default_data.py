@@ -10,6 +10,7 @@ units = loadYamlFile('data/units.yml')
 
 fname = getFilePathInput('./data/technology_data_v07_pcv_2022-05-20.xlsx')
 default_techdata = pd.read_excel(fname, sheet_name='technology_data')
-default_assumptions = pd.read_excel(fname, sheet_name='default_assumptions')
+default_prices = pd.read_excel(fname, sheet_name='price_assumptions')
+process_data = pd.read_excel(fname, sheet_name='processes')
 
 process_routes = loadYamlFile('data/process_routes.yml')

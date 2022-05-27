@@ -1,11 +1,18 @@
 Steel:
   EL_H2DR_EAF:
-    ELEC: h2
-    DR: dri
-    EAF: steel
+    ELEC:
+      mode: default
+    DR:
+      mode: H2_DR
+    EAF:
+      mode: primary
   H2DR_EAF:
-    DR: dri
-    EAF: steel
+    DR:
+      mode: H2_DR
+    EAF:
+      mode: primary
   NGDR_EAF:
-    DR: dri
-    EAF: steel
+    DR:
+      mode: NG_DR
+    EAF:
+      mode: primary

@@ -1,6 +1,6 @@
 import sys
 
-from src.load.load_default_data import default_assumptions
+from src.load.load_default_data import default_prices
 from src.load.load_config_plot import plots_cfg
 from src.data.data import getFullData
 from src.plotting.export_file import exportFigsToFiles
@@ -15,7 +15,7 @@ else:
 
 
 # Get plotting data
-outputData = getFullData(default_assumptions)
+outputData = getFullData(default_prices)
 
 
 # Run plotting routines to generate figures

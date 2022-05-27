@@ -1,18 +1,11 @@
 import pandas as pd
 
-
-# which of the process steps is moved to the exporting country in scenarios 1, 2, 3, and 4.
-case_processes = {
-    1: [],
-    2: ['electrolysis'],
-    3: ['electrolysis', 'dr'],
-    4: ['electrolysis', 'dr', 'eaf'],
-}
+from src.load.load_default_data import process_data
 
 
 def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: dict):
     # technology data
-    techData = tech_data_full.filter(['process', 'type', 'component', 'feedstock_type', 'val', 'val_year', 'route_only'])
+    techData = tech_data_full.filter(['process', 'type', 'component', 'subcomponent', 'val', 'val_year', 'mode'])
 
 
     # prepare cost data
@@ -20,8 +13,8 @@ def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: di
 
 
     # obtain prices from spreadsheet
-    prices = assumptions.query(f"id.str.startswith('p_')").filter(['id', 'val', 'val_year']).rename(columns={'id': 'feedstock_type'})
-    prices['feedstock_type'] = prices['feedstock_type'].str.replace('p_', '')
+    prices = assumptions.query(f"id.str.startswith('price ')").filter(['id', 'val', 'val_year']).rename(columns={'id': 'component'})
+    prices['component'] = prices['component'].str.replace('price ', '')
 
 
     # list of entries to return
@@ -35,12 +28,15 @@ def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: di
 
         # create list of entries for all processes in this route
         es_rout = []
-        for process, output in processes.items():
+        for process in processes:
+            output = process_data.query(f"id=='{process}'").output.iloc[0]
+            mode = processes[process]['mode'] if 'mode' in processes[process] else None
+
             # list of entries in this process
             es_pro = []
 
             # query for cost data relevant to this process and the chosen route
-            queryStr = f"process=='{process}' & (route_only.isnull() | route_only.str.contains('{route}'))"
+            queryStr = f"process=='{process}' & (mode.isnull() | mode.str.contains('{mode}'))" if mode else f"process=='{process}'"
             thisCostData = {key: value.query(queryStr) for key, value in costData.items()}
 
             # add all data that does not need further treatment (capital & fixed cost + energy & feedstock cost with fixed prices)
@@ -50,7 +46,7 @@ def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: di
 
             # add data for energy and feedstock cost with prices read from route_prices
             tmp = thisCostData['demand'].query(queryStr) \
-                                        .merge(route_prices, on=['feedstock_type', 'val_year']) \
+                                        .merge(route_prices, on=['component', 'val_year']) \
                                         .assign(val=lambda x: x.val_x * x.val_y) \
                                         .drop(columns=['val_x', 'val_y'])
 
@@ -59,15 +55,16 @@ def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: di
             es_pro.append(tmp.drop(columns='upstream'))
 
             # rescale cost components of upstream processes by demand of output commodity
-            feedstocks_upstream = route_prices.query('upstream==True')['feedstock_type'].unique()
-            upstream_demands = thisCostData['demand'].query(f"feedstock_type in @feedstocks_upstream")
+            feedstocks_upstream = route_prices.query('upstream==True')['component'].unique()
+            downstream_demands = thisCostData['demand'].query(f"component in @feedstocks_upstream")
 
-            for process_upstream, output_upstream in processes.items():
-                upstream_demands.loc[upstream_demands['feedstock_type']==output_upstream,'process'] = process_upstream
-            upstream_demands = upstream_demands.filter(['process', 'val', 'val_year'])
+            for process_upstream in processes:
+                output_upstream = process_data.query(f"id=='{process_upstream}'").output.iloc[0]
+                downstream_demands.loc[downstream_demands['component']==output_upstream, 'process'] = process_upstream
+            downstream_demands = downstream_demands.filter(['process', 'val', 'val_year'])
 
             es_rout = [
-                e.merge(upstream_demands, on=['process', 'val_year']) \
+                e.merge(downstream_demands, on=['process', 'val_year']) \
                  .assign(val=lambda x: x.val_x * x.val_y) \
                  .drop(columns=['val_x', 'val_y'])
                 for e in es_rout
@@ -79,8 +76,8 @@ def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: di
             # add total cost of produced commodity to prices for downstream processes
             output_cost = pd.concat(es_pro).filter(['val', 'val_year']).groupby(['val_year']).sum().reset_index()
             route_prices = pd.concat([
-                route_prices.query(f"feedstock_type!='{output}'"),
-                output_cost.assign(feedstock_type=output, upstream=True),
+                route_prices.query(f"component!='{output}'"),
+                output_cost.assign(component=output, upstream=True),
             ])
 
         # add list of entries from this route to all entries returned
