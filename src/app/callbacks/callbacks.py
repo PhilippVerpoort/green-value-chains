@@ -6,10 +6,10 @@ from flask import send_file
 
 from src.app.app import dash_app
 from src.app.callbacks.update import updateScenarioInputSimple
-from src.config_load_app import figNames, figs_cfg, allSubFigNames
+from src.load.config_load_app import figNames, figs_cfg, allSubFigNames
 from src.data.data import getFullData
-from src.config_load import input_data, plots, default_assumptions
-from src.filepaths import getFilePathAssets
+from src.load.config_load import input_data, plots, default_assumptions
+from src.load.filepaths import getFilePathAssets
 from src.plotting.styling.webapp import addWebappSpecificStyling
 from src.plotting.plot_all import plotAllFigs
 

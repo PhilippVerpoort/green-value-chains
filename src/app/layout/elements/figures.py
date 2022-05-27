@@ -1,7 +1,7 @@
 from dash import html, dcc
 
-from src.config_load import plots
-from src.config_load_app import figs_cfg
+from src.load.config_load import plots
+from src.load.config_load_app import figs_cfg
 
 
 def getFigures():

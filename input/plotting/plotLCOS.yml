@@ -5,7 +5,7 @@ ymax: 1000.0
 labels:
   direct: Total direct production cost
   capital: Capital cost
-  fopex: Fixed operation<br>and maintenance cost
+  fonmco: Fixed operation<br>and maintenance cost
   feedstock: Feedstock cost<br>(non-energy, non-iron)
   iron: Iron feedstock
   energy: Energy cost
@@ -15,9 +15,11 @@ labels:
 colours:
   direct: '#8a4c39'
   capital: '#f36f21'
-  fopex: '#00813e'
+  fonmco: '#00813e'
   energy: '#e6af2e'
   feedstock: '#3745a3'
   iron: '#cccccc'
   carbon: '#db2a1a'
   transport: '#7c1f8a'
+
+full_breakdown: True

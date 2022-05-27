@@ -1,7 +1,7 @@
 import dash
 import dash_bootstrap_components as dbc
 
-from src.config_load_app import app_cfg
+from src.load.config_load_app import app_cfg
 
 
 # define Dash app

@@ -1,17 +1,15 @@
 from typing import Union
 import importlib
 
-import pandas as pd
 import yaml
 
-from src.config_load import plots, plots_cfg_global
+from src.load.load_config_plot import plots, plots_cfg_global
 
 
-def plotAllFigs(fullParams: pd.DataFrame, costData: pd.DataFrame,
-                plots_cfg: dict, plot_list: Union[list, None] = None, global_cfg = 'print'):
+def plotAllFigs(outputData: dict, plots_cfg: dict, plot_list: Union[list, None] = None, global_cfg = 'print'):
 
     allPlotArgs = {
-        'plotLCOS': (costData,),
+        'plotLCOS': (outputData['costData'],),
     }
 
     figs = {}

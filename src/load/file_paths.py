@@ -1,10 +1,10 @@
 import pathlib
 
 
-BASE_PATH = pathlib.Path(__file__).parent.parent.resolve()
-ASSETS_PATH = BASE_PATH.joinpath("assets").resolve()
-INPUT_PATH = BASE_PATH.joinpath("input").resolve()
-OUTPUT_PATH = BASE_PATH.joinpath("output").resolve()
+BASE_PATH = pathlib.Path(__file__).parent.parent.parent.resolve()
+ASSETS_PATH = BASE_PATH.joinpath('assets').resolve()
+INPUT_PATH = BASE_PATH.joinpath('input').resolve()
+OUTPUT_PATH = BASE_PATH.joinpath('output').resolve()
 
 def getFilePath(dname, fname):
     return BASE_PATH.joinpath(dname).joinpath(fname).resolve()

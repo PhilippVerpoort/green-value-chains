@@ -1,0 +1,11 @@
+Steel:
+  EL_H2DR_EAF:
+    ELEC: h2
+    DR: dri
+    EAF: steel
+  H2DR_EAF:
+    DR: dri
+    EAF: steel
+  NGDR_EAF:
+    DR: dri
+    EAF: steel

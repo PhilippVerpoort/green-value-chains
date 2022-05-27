@@ -1,6 +1,6 @@
 from typing import Union
 
-from src.config_load import default_assumptions as assumpts
+from src.load.config_load import default_assumptions as assumpts
 from src.data.params.full_params import convertValue
 
 simpleParams = ['elec_price_importer',

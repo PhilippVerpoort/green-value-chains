@@ -27,3 +27,23 @@ def __countNumbSubplots(figure: go.Figure):
                  for col in range(len(figure._grid_ref[row]))
                  if figure._grid_ref[row][col] is not None) \
                  if figure._grid_ref is not None else 1
+
+
+def defaultStyling(fig: go.Figure):
+    # update legend styling
+    fig.update_layout(
+        legend=dict(
+            bgcolor='rgba(255,255,255,1.0)',
+            bordercolor='black',
+            borderwidth=2,
+        ),
+    )
+
+
+    # update figure background colour and font colour and type
+    fig.update_layout(
+        paper_bgcolor='rgba(255, 255, 255, 1.0)',
+        plot_bgcolor='rgba(255, 255, 255, 0.0)',
+        font_color='black',
+        font_family='Helvetica',
+    )

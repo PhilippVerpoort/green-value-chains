@@ -1,18 +1,31 @@
 import pandas as pd
 
+from src.data.calc.calc_cost import calcCost
 from src.data.calc.calc_cost_bf import calcCostComponentsBF
 from src.data.calc.calc_cost_h2 import calcCostComponentsH2
 from src.data.calc.calc_cost_ng import calcCostComponentsNG
-from src.data.params.full_params import getFullParamsAll
-from src.config_load import units, ref_data, cp_data
+from src.data.params.full_params import getFullTechData
+from src.load.load_default_data import options, process_routes
 
 
 # obtain all required data for a scenario
-def getFullData(input_data: dict, assumptions: dict):
-    options, cost_data = (input_data['options'], input_data['cost_data'])
+def getFullData(assumptions: pd.DataFrame):
+    process_group = 'Steel'
+    routes = ['EL_H2DR_EAF', 'H2DR_EAF', 'NGDR_EAF']
+
 
     # convert basic inputs to complete dataframes
-    fullParams = getFullParamsAll(cost_data, units, options['times'])
+    techDataFull = getFullTechData(options['times'], process_group)
+
+
+    # calculate cost from tech data
+    costData = calcCost(techDataFull, assumptions, {r: process_routes[process_group][r] for r in routes})
+
+
+    return {
+        'techDataFull': techDataFull,
+        'costData': costData,
+    }
 
     # calculate cost
     costDataBF = calcCostComponentsBF(ref_data, options['times'])
@@ -26,8 +39,6 @@ def getFullData(input_data: dict, assumptions: dict):
     #print(costData.query(f"type=='carbon' & year==2025"))
     #print(costData.query(f"type=='energy' & name=='h2' & case==1 & year==2025"))
     #print(costData.query(f"type=='capital' & name=='electrolyser' & case==1 & year==2025"))
-
-    return fullParams, costData
 
 
 def __applyCarbonPrice(costData: pd.DataFrame, carbon_price: pd.DataFrame):

@@ -1,6 +1,7 @@
 import sys
 
-from src.config_load import input_data, plots_cfg, default_assumptions
+from src.load.load_default_data import default_assumptions
+from src.load.load_config_plot import plots_cfg
 from src.data.data import getFullData
 from src.plotting.export_file import exportFigsToFiles
 from src.plotting.plot_all import plotAllFigs
@@ -14,11 +15,11 @@ else:
 
 
 # Get plotting data
-fullCostData, costData = getFullData(input_data, default_assumptions)
+outputData = getFullData(default_assumptions)
 
 
 # Run plotting routines to generate figures
-figs = plotAllFigs(fullCostData, costData, plots_cfg, plot_list=plot_list)
+figs = plotAllFigs(outputData, plots_cfg, plot_list=plot_list)
 
 
 # Export figures to files

@@ -1,5 +1,5 @@
-from src.config_load import figure_print
-from src.filepaths import getFilePathOutput
+from src.load.load_config_plot import figure_print
+from src.load.file_paths import getFilePathOutput
 from src.plotting.styling.print import getImageSize, addPrintSpecificStyling
 
 
