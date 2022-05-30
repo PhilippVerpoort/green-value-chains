@@ -27,6 +27,15 @@ for route in process_routes_load.values():
             raise Exception('Formatting error of processes in route.')
     route['processes'] = tmp
 
+    if route['import_cases'] and isinstance(route['import_cases'], str):
+        tmp = {}
+        for c in route['import_cases'].split(','):
+            words = c.strip().split(':')
+            tmp[words[0].strip()] = words[1].strip().split('+')
+        route['import_cases'] = tmp
+    else:
+        route['import_cases'] = False
+
 process_routes = {}
 for process_group, route_id in process_routes_load:
     value = process_routes_load[(process_group, route_id)]
