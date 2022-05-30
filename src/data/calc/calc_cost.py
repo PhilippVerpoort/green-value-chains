@@ -22,15 +22,15 @@ def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: di
 
 
     # loop over routes
-    for route, processes in routes.items():
+    for route_id, route_details in routes.items():
         route_prices = prices.copy()
         route_prices['upstream'] = False
 
         # create list of entries for all processes in this route
         es_rout = []
-        for process in processes:
-            output = process_data.query(f"id=='{process}'").output.iloc[0]
-            mode = processes[process]['mode'] if 'mode' in processes[process] else None
+        for process in route_details['processes']:
+            output = process_data[process]['output']
+            mode = route_details['processes'][process]['mode'] if 'mode' in route_details['processes'][process] else None
 
             # list of entries in this process
             es_pro = []
@@ -58,8 +58,8 @@ def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: di
             feedstocks_upstream = route_prices.query('upstream==True')['component'].unique()
             downstream_demands = thisCostData['demand'].query(f"component in @feedstocks_upstream")
 
-            for process_upstream in processes:
-                output_upstream = process_data.query(f"id=='{process_upstream}'").output.iloc[0]
+            for process_upstream in route_details['processes']:
+                output_upstream = process_data[process_upstream]['output']
                 downstream_demands.loc[downstream_demands['component']==output_upstream, 'process'] = process_upstream
             downstream_demands = downstream_demands.filter(['process', 'val', 'val_year'])
 
@@ -81,7 +81,7 @@ def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: di
             ])
 
         # add list of entries from this route to all entries returned
-        es_ret.extend([e.assign(route=route) for e in es_rout])
+        es_ret.extend([e.assign(route=route_id) for e in es_rout])
 
 
     r = pd.concat(es_ret, ignore_index=True)
