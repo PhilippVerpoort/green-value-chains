@@ -8,7 +8,7 @@ from src.load.yaml_load import loadYamlFile
 default_options = loadYamlFile('data/options.yml')
 units = loadYamlFile('data/units.yml')
 
-fname = getFilePathInput('./data/technology_data_v07_pcv_2022-05-20.xlsx')
+fname = getFilePathInput('./data/data.xlsx')
 default_techdata = pd.read_excel(fname, sheet_name='technology_data')
 default_prices = pd.read_excel(fname, sheet_name='price_assumptions')
 process_data = pd.read_excel(fname, sheet_name='processes').set_index('id').to_dict('index')
