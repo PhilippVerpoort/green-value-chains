@@ -1,5 +1,5 @@
 from dash import html
-from src.load.config_load_app import app_cfg
+from src.load.load_config_app import app_cfg
 
 
 # description card

@@ -1,7 +1,8 @@
 from dash import dcc, html, dash_table
 import dash_bootstrap_components as dbc
 
-from src.app.callbacks.simple_params import getSimpleParamsTable
+from src.app.callbacks.simple_params import convertPricesDF2T
+from src.load.load_default_data import default_prices, default_options
 
 
 def getElementSimpleControlsCard():
@@ -11,41 +12,57 @@ def getElementSimpleControlsCard():
             html.Div(
                 [
                     dbc.Label(
-                        'Global Warming Potential (GWP) reference time scale:',
-                        html_for='simple-gwp',
-                    ),
-                    dcc.RadioItems(
-                        id='simple-gwp',
-                        options=[dict(value='gwp100', label='GWP100'), dict(value='gwp20', label='GWP20')],
-                        value='gwp100',
-                    ),
-                ],
-                className='card-element',
-                style={
-                  'display': 'none',
-                },
-            ),
-            html.Div(
-                [
-                    dbc.Label(
                         'Most important parameters and assumptions:',
                         html_for='simple-important-params',
                     ),
                     dash_table.DataTable(
                         id='simple-important-params',
                         columns=[
-                            {'id': 'name', 'name': 'Name', 'editable': False},
-                            {'id': 'desc', 'name': 'Parameter', 'editable': False,},
+                            {'id': 'id', 'name': 'ID', 'editable': False},
+                            {'id': 'label', 'name': 'Parameter', 'editable': False,},
                             {'id': 'unit', 'name': 'Unit', 'editable': False,},
-                            {'id': 'val_2025', 'name': 'Value 2025', 'type': 'numeric'},
-                            {'id': 'val_2050', 'name': 'Value 2050', 'type': 'numeric'},
+                            *({'id': f"val_{year}", 'name': f"Value {year}", 'type': 'numeric'} for year in default_options['times']),
                         ],
-                        data=getSimpleParamsTable(),
+                        data=convertPricesDF2T(default_prices),
                         editable=True,
                         style_cell_conditional=[{
-                            'if': {'column_id': 'name'},
+                            'if': {'column_id': 'id'},
                             'display': 'none',
                         }],
+                    ),
+                ],
+                className='card-element',
+            ),
+            html.Div(
+                [
+                    dbc.Label(
+                        'Include water electrolysis:',
+                        html_for='simple-electrolysis',
+                    ),
+                    dcc.RadioItems(
+                        id='simple-electrolysis',
+                        options=[
+                            dict(value=True, label='Yes'),
+                            dict(value=False, label='No')
+                        ],
+                        value=default_options['include_electrolysis'],
+                    ),
+                ],
+                className='card-element',
+            ),
+            html.Div(
+                [
+                    dbc.Label(
+                        'Global Warming Potential (GWP) reference time scale:',
+                        html_for='simple-gwp',
+                    ),
+                    dcc.RadioItems(
+                        id='simple-gwp',
+                        options=[
+                            dict(value='gwp100', label='GWP100'),
+                            dict(value='gwp20', label='GWP20'),
+                        ],
+                        value=default_options['gwp'],
                     ),
                 ],
                 className='card-element',

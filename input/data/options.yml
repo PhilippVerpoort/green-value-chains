@@ -1,3 +1,7 @@
 times:
   - 2025
   - 2050
+
+include_electrolysis: True
+gwp: gwp100
+process_group: Steel

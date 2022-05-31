@@ -1,38 +1,25 @@
-from typing import Union
+import pandas as pd
 
-from src.load.config_load import default_assumptions as assumpts
-from src.data.params.full_params import convertValue
-
-simpleParams = ['elec_price_importer',
-                'elec_price_exporter',
-                'ng_price']
+from src.load.load_default_data import default_options
 
 
-def getSimpleParamsTable():
-    r = []
+def convertPricesDF2T(prices: pd.DataFrame):
+    prices_reformatted = prices.drop(columns=['val', 'val_year']).drop_duplicates(subset=['id'])
 
-    subtypes = {
-        'cost_green_elec': ['RE'],
-    }
+    for year in default_options['times']:
+        m = prices.query(f"val_year=={year}").filter(['id', 'val']).rename(columns={'val': f"val_{year}"})
+        prices_reformatted = prices_reformatted.merge(m, how='outer')
 
-    for parName in simpleParams:
-        r.append({
-            'name': parName,
-            'desc': assumpts[parName]['short'] if 'short' in assumpts[parName] else assumpts[parName]['desc'],
-            'unit': assumpts[parName]['unit'],
-            'val_2025': assumpts[parName][2025],
-            'val_2050': assumpts[parName][2050],
-        })
-
-    return r
+    return prices_reformatted.to_dict('records')
 
 
-def __getParamValue(value: Union[dict, float], year: int, subtypes: list = []):
-    if subtypes:
-        return __getParamValue(value[subtypes[0]], year, subtypes[1:])
+def convertPricesT2DF(prices: dict):
+    prices_reformatted = pd.DataFrame.from_records(prices)
 
-    if isinstance(value, dict):
-        return convertValue(value[year])[0]
-    else:
-        return convertValue(value)[0]
+    ret = []
+    for year in default_options['times']:
+        ret.append(
+            prices_reformatted.filter(['id', 'label', 'unit', f"val_{year}"]).rename(columns={f"val_{year}": 'val'}).assign(val_year=year)
+        )
 
+    return pd.concat(ret)

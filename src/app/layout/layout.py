@@ -5,8 +5,8 @@ from src.app.layout.modals.plot_settings_modal import getModalPlotConfig
 from src.app.layout.elements.figures import getFigures
 from src.app.layout.elements.simple import getElementSimpleControlsCard
 from src.app.layout.elements.summary import getElementSummaryCard
-from src.load.config_load import plots_cfg
-from src.load.config_load_app import app_cfg
+from src.load.load_config_plot import plots_cfg
+from src.load.load_config_app import app_cfg
 
 
 def getLayout(logo_url: str):

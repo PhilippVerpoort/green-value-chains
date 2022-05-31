@@ -1,15 +1,14 @@
-import copy
-
 import dash
 from dash.dependencies import Input, Output, State
 from flask import send_file
 
 from src.app.app import dash_app
 from src.app.callbacks.update import updateScenarioInputSimple
-from src.load.config_load_app import figNames, figs_cfg, allSubFigNames
+from src.load.load_config_app import figNames, figs_cfg, allSubFigNames
 from src.data.data import getFullData
-from src.load.config_load import input_data, plots, default_assumptions
-from src.load.filepaths import getFilePathAssets
+from src.load.load_default_data import default_prices, default_options
+from src.load.load_config_plot import plots
+from src.load.file_paths import getFilePathAssets
 from src.plotting.styling.webapp import addWebappSpecificStyling
 from src.plotting.plot_all import plotAllFigs
 
@@ -19,22 +18,22 @@ from src.plotting.plot_all import plotAllFigs
     [*(Output(subFigName, 'figure') for subFigName in allSubFigNames),],
     [Input('simple-update', 'n_clicks'),
      State('plots-cfg', 'data'),
-     State('simple-gwp', 'value'),
-     State('simple-important-params', 'data'),])
-def callbackUpdate(n1, plots_cfg: dict, simple_gwp: str, simple_important_params: list):
+     State('simple-important-params', 'data'),
+     State('simple-electrolysis', 'value'),
+     State('simple-gwp', 'value'),])
+def callbackUpdate(n1, plots_cfg: dict, simple_important_params: list, simple_electrolysis: bool, simple_gwp: str):
     ctx = dash.callback_context
     if not ctx.triggered:
-        assumpts = copy.deepcopy(default_assumptions)
-        fullCostData, costData = getFullData(input_data, assumpts)
+        outputData = getFullData(default_prices, default_options)
     else:
         btnPressed = ctx.triggered[0]['prop_id'].split('.')[0]
         if btnPressed == 'simple-update':
-            assumpts = updateScenarioInputSimple(simple_gwp, simple_important_params)
-            fullCostData, costData = getFullData(input_data, assumpts)
+            prices, options = updateScenarioInputSimple(simple_important_params, simple_electrolysis, simple_gwp)
+            outputData = getFullData(prices, options)
         else:
             raise Exception('Unknown button pressed!')
 
-    figs = plotAllFigs(fullCostData, costData, plots_cfg, global_cfg='webapp')
+    figs = plotAllFigs(outputData, plots_cfg, global_cfg='webapp')
 
     addWebappSpecificStyling(figs)
 
