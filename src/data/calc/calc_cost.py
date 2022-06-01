@@ -33,6 +33,9 @@ def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: di
 
 
     r = pd.concat(es_ret, ignore_index=True)
+
+    r['component'] = r['component'].str.replace(' exporter', '')
+
     return r[['route', 'process', 'type', 'component', 'val', 'val_year']]
 
 

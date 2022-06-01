@@ -22,4 +22,34 @@ colours:
   carbon: '#db2a1a'
   transport: '#7c1f8a'
 
-full_breakdown: True
+route_names:
+  NGDR_EAF: NG
+  EL_H2DR_EAF_1: Case 1
+  EL_H2DR_EAF_2: Case 2
+  EL_H2DR_EAF_3: Case 3
+  EL_H2DR_EAF_4: Case 4
+  H2DR_EAF_1: Case 1
+  H2DR_EAF_2: Case 2
+  H2DR_EAF_3: Case 3
+  H2DR_EAF_4: Case 4
+
+process_names:
+  ELEC: Electrolysis
+  DR: Direct reduction
+  EAF: Electric-arc furnace
+
+component_labels:
+  alloies: Alloys
+  dri: DRI
+  electricity: Electricity
+  graphite: Graphite
+  hydrogen: Hyrogen
+  labour: Labour
+  lime: Lime
+  natural gas: Natural gas
+  onm: Operation and Maintenance
+  ore: Iron ore
+  scrap: Steel scrap
+  steel: Steel
+
+full_breakdown: component # process, component, or none
