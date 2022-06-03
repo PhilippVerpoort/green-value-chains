@@ -71,13 +71,18 @@ def __prepareCostData(techData: pd.DataFrame):
                                                .assign(val=lambda x: x.val_x * x.val_y)\
                                                .drop(columns=['val_x', 'val_y'])
 
+    # transport cost
+    costTransport = techData.query("type=='transport'")
+
+    costTransport = costTransport.merge(energyFeedstockDemand.filter(['process', 'component', 'val', 'val_year']), on=['process', 'component', 'val_year'], how='left') \
+                                 .fillna({'val_y': 1.0}) \
+                                 .assign(val=lambda x: x.val_x * x.val_y) \
+                                 .drop(columns=['val_x', 'val_y'])
+
     # remaining energy and feedstock demand
     mergeDummy = energyFeedstockPrices.filter(['process', 'component', 'val_year']).assign(remove=True)
     energyFeedstockDemand = energyFeedstockDemand.merge(mergeDummy, on=['process', 'component', 'val_year'], how='outer')
     energyFeedstockDemand = energyFeedstockDemand[pd.isnull(energyFeedstockDemand['remove'])].drop(columns=['remove'])
-
-    # transport cost
-    costTransport = techData.query("type=='transport'")
 
     return {
         'capital': costCapital,
