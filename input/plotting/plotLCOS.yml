@@ -1,6 +1,6 @@
 yaxislabel: Levelised Cost of Steel (EUR/t)
 
-ymax: 1000.0
+ymax: 600.0
 
 labels:
   direct: Total direct production cost

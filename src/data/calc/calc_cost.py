@@ -66,8 +66,8 @@ def __prepareCostData(techData: pd.DataFrame):
     energyFeedstockDemand.loc[energyFeedstockDemand['type'] == 'energy_demand', 'type'] = 'energy'
 
 
-    costEnergyFeedstock = energyFeedstockPrices.drop(columns='type')\
-                                               .merge(energyFeedstockDemand.filter(['process', 'type', 'component', 'val', 'val_year']), on=['process', 'component', 'val_year'])\
+    costEnergyFeedstock = energyFeedstockPrices.drop(columns=['type', 'mode'])\
+                                               .merge(energyFeedstockDemand.filter(['process', 'type', 'component', 'val', 'val_year', 'mode']), on=['process', 'component', 'val_year'])\
                                                .assign(val=lambda x: x.val_x * x.val_y)\
                                                .drop(columns=['val_x', 'val_y'])
 
@@ -89,13 +89,13 @@ def __prepareCostData(techData: pd.DataFrame):
 
 
 def __calcRouteCost(costData: dict, defaultPrices: pd.DataFrame, processes: dict, imports: list):
-    es_rout = []
+    es_rout = {}
 
     routePrices = defaultPrices.copy()
-    routePrices['upstream'] = False
     routePricesExportSpec = [c.rstrip(' exporter') for c in routePrices.query("component.str.contains('exporter')").component.unique()]
 
     processes_abroad = __getProcessesAbroad(costData, processes, imports)
+    all_outputs = [process_data[p]['output'] for p in processes]
 
     for process in processes:
         output = process_data[process]['output']
@@ -113,54 +113,39 @@ def __calcRouteCost(costData: dict, defaultPrices: pd.DataFrame, processes: dict
         es_pro.append(thisCostData['fixed'])
         es_pro.append(thisCostData['energy_feedstock'])
 
-        # make processes on the exporter side use exporters' prices
+        # make processes on the exporter side use exporters prices
         if process in processes_abroad:
-            cond = thisCostData['demand']['component'].isin(routePricesExportSpec) & (thisCostData['demand']['process']==process)
+            cond = thisCostData['demand']['component'].isin(routePricesExportSpec) & ~thisCostData['demand']['component'].isin(all_outputs) & (thisCostData['demand']['process']==process)
             pd.options.mode.chained_assignment = None
             thisCostData['demand'].loc[cond, 'component'] = thisCostData['demand'].loc[cond, 'component'].replace('$', ' exporter', regex=True)
             pd.options.mode.chained_assignment = 'warn'
 
-        # add data for energy and feedstock cost with prices read from route_prices
-        tmp = thisCostData['demand'].query(queryStr) \
-                                    .merge(routePrices, on=['component', 'val_year']) \
-                                    .assign(val=lambda x: x.val_x * x.val_y) \
-                                    .drop(columns=['val_x', 'val_y'])
+        # add data for energy and feedstock cost with prices read from route_prices that are not upstream outputs
+        es_pro.append(
+            thisCostData['demand'].query('component not in @all_outputs') \
+                                  .merge(routePrices, on=['component', 'val_year']) \
+                                  .assign(val=lambda x: x.val_x * x.val_y) \
+                                  .drop(columns=['val_x', 'val_y'])
+        )
 
-        # add type 'upstream' if price comes from cost of an upstream process
-        tmp.loc[tmp['upstream'], 'type'] = 'upstream'
-        es_pro.append(tmp.drop(columns='upstream'))
+        # rescale cost components of upstream processes by demand of output commodity and append
+        for output_upstream in es_rout:
+            d = thisCostData['demand'].query(f"component=='{output_upstream}'").filter(['val', 'val_year'])
+            for e in es_rout[output_upstream]:
+                es_pro.append(
+                    e.merge(d, on=['val_year']) \
+                     .assign(val=lambda x: x.val_x * x.val_y) \
+                     .drop(columns=['val_x', 'val_y'])
+                )
 
         # transport cost
         if imports:
             es_pro.append(thisCostData['transport'].query(f"component in @imports"))
 
-        # rescale cost components of upstream processes by demand of output commodity
-        feedstocks_upstream = routePrices.query('upstream==True')['component'].unique()
-        downstream_demands = thisCostData['demand'].query(f"component in @feedstocks_upstream")
+        # add entries from this process to all entries in this route and assign output from last process
+        es_rout[output] = es_pro
 
-        for process_upstream in processes:
-            output_upstream = process_data[process_upstream]['output']
-            downstream_demands.loc[downstream_demands['component']==output_upstream, 'process'] = process_upstream
-        downstream_demands = downstream_demands.filter(['process', 'val', 'val_year'])
-
-        es_rout = [
-            e.merge(downstream_demands, on=['process', 'val_year']) \
-             .assign(val=lambda x: x.val_x * x.val_y) \
-             .drop(columns=['val_x', 'val_y'])
-            for e in es_rout
-        ]
-
-        # add entries from this process to all entries in this route
-        es_rout.extend(es_pro)
-
-        # add total cost of produced commodity to prices for downstream processes
-        output_cost = pd.concat(es_pro).filter(['val', 'val_year']).groupby(['val_year']).sum().reset_index()
-        routePrices = pd.concat([
-            routePrices.query(f"component!='{output}'"),
-            output_cost.assign(component=output, upstream=True),
-        ])
-
-    return es_rout
+    return es_rout[output]
 
 
 def __getProcessesAbroad(costData: dict, processes: dict, imports: list):
