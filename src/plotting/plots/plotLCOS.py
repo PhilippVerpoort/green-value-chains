@@ -34,25 +34,35 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     dummyData = pd.DataFrame.from_records([{'route': config['route_names'][r], 'type': 'dummy', 'val': 0.0, 'val_year': y}
                                            for r in sorted(list(routes), key=lambda x: list(config['route_names']).index(x)) for y in years])
 
-    # costDataNew.loc[costDataNew['type'] == 'capital', 'hoverlabel'] = \
-    #     [config['process_names'][p] for p in costDataNew.loc[costDataNew['type'] == 'capital', 'process']]
-    # costDataNew.loc[costDataNew['type'] == 'energy', 'hoverlabel'] = \
-    #     [config['process_names'][p] for p in costDataNew.loc[costDataNew['type'] == 'capital', 'process']]
-
     # determine breakdown level of bars and associated hover labels
-    if config['full_breakdown'] == 'process':
-        group_cols = ['type', 'val_year', 'route', 'process']
-        costDataNew = costDataNew.groupby(group_cols).sum().reset_index()
+    if config['aggregate_by'] in ['none', 'subcomponent']:
+        if config['aggregate_by'] == 'subcomponent':
+            group_cols = ['type', 'val_year', 'route', 'process', 'component']
+            costDataNew = costDataNew.fillna({'component': 'empty'}) \
+                                     .groupby(group_cols).sum() \
+                                     .sort_values('process', key=lambda col: [list(config['process_names']).index(p) for p in col]) \
+                                     .reset_index()
         costDataNew['hover_label'] = [config['process_names'][p] for p in costDataNew['process']]
-    elif config['full_breakdown'] == 'component':
+        costDataNew.loc[costDataNew['component']!='empty', 'hover_label'] = [f"{row['component'].capitalize()} ({row['hover_label']})" for index, row in costDataNew.loc[costDataNew['component']!='empty',:].iterrows()]
+    elif config['aggregate_by'] == 'component':
+        group_cols = ['type', 'val_year', 'route', 'process']
+        costDataNew = costDataNew.groupby(group_cols).sum() \
+                                 .sort_values('process', key=lambda col: [list(config['process_names']).index(p) for p in col]) \
+                                 .reset_index()
+        costDataNew['hover_label'] = [config['process_names'][p] for p in costDataNew['process']]
+    elif config['aggregate_by'] == 'process':
         group_cols = ['type', 'val_year', 'route', 'component']
-        costDataNew = costDataNew.fillna({'component': 'empty'}).groupby(group_cols).sum().reset_index()
+
+        costDataNew = costDataNew.fillna({'component': 'empty'}) \
+                                 .groupby(group_cols).sum() \
+                                 .sort_values('component', key=lambda col: [list(config['component_labels']).index(c) if c!='empty' else -1 for c in col]) \
+                                 .reset_index()
         costDataNew['hover_label'] = [config['component_labels'][c] if c!='empty' else None for c in costDataNew['component']]
-    elif config['full_breakdown'] == 'none':
+    elif config['aggregate_by'] == 'all':
         group_cols = ['type', 'val_year', 'route']
         costDataNew = costDataNew.groupby(group_cols).sum().reset_index()
     else:
-        raise Exception('Value of config parameter full_breakdown is invalid.')
+        raise Exception('Value of aggregate_by in the plot config is invalid.')
 
     return pd.concat([costDataNew, dummyData])
 
