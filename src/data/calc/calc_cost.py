@@ -45,6 +45,7 @@ def __prepareCostData(techData: pd.DataFrame):
     n = 18
     FCR = i * (1 + i) ** n / ((1 + i) ** n - 1)
     IF = 1.8  # integration factor
+    print(FCR * IF)
 
     # capital cost
     costCapital = techData.query("type=='capex'").assign(val=lambda x: FCR * IF * x.val, type='capital')
@@ -93,14 +94,23 @@ def __prepareCostData(techData: pd.DataFrame):
     }
 
 
-def __calcRouteCost(costData: dict, defaultPrices: pd.DataFrame, processes: dict, imports: list):
+def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, imports: list):
     es_rout = {}
 
-    routePrices = defaultPrices.copy()
-    routePricesExportSpec = [c.rstrip(' exporter') for c in routePrices.query("component.str.contains('exporter')").component.unique()]
 
-    processes_abroad = __getProcessesAbroad(costData, processes, imports)
-    all_outputs = [process_data[p]['output'] for p in processes]
+    # all intermediate process outputs
+    allOutputs = [process_data[p]['output'] for p in processes]
+
+
+    # condition for using import or export prices
+    routePricesExportSpec = [c.rstrip(' exporter') for c in prices.component.unique() if 'exporter' in c]
+    processAbroad = __getProcessesAbroad(costData, processes, imports)
+
+    condImport = ((costData['demand']['process'].isin(processAbroad) |
+                   costData['demand']['component'].isin(imports if imports else [])) &
+                   costData['demand']['component'].isin(routePricesExportSpec) &
+                  ~costData['demand']['component'].isin(allOutputs))
+
 
     for process in processes:
         output = process_data[process]['output']
@@ -118,17 +128,15 @@ def __calcRouteCost(costData: dict, defaultPrices: pd.DataFrame, processes: dict
         es_pro.append(thisCostData['fixed'])
         es_pro.append(thisCostData['energy_feedstock'])
 
-        # make processes on the exporter side use exporters prices
-        if process in processes_abroad:
-            cond = thisCostData['demand']['component'].isin(routePricesExportSpec) & ~thisCostData['demand']['component'].isin(all_outputs) & (thisCostData['demand']['process']==process)
-            pd.options.mode.chained_assignment = None
-            thisCostData['demand'].loc[cond, 'component'] = thisCostData['demand'].loc[cond, 'component'].replace('$', ' exporter', regex=True)
-            pd.options.mode.chained_assignment = 'warn'
+        # use exporters price where condition from above is met
+        pd.options.mode.chained_assignment = None
+        thisCostData['demand'].loc[condImport, 'component'] = thisCostData['demand'].loc[condImport, 'component'].replace('$', ' exporter', regex=True)
+        pd.options.mode.chained_assignment = 'warn'
 
         # add data for energy and feedstock cost with prices read from route_prices that are not upstream outputs
         es_pro.append(
-            thisCostData['demand'].query('component not in @all_outputs') \
-                                  .merge(routePrices, on=['component', 'val_year']) \
+            thisCostData['demand'].query('component not in @allOutputs') \
+                                  .merge(prices, on=['component', 'val_year']) \
                                   .assign(val=lambda x: x.val_x * x.val_y) \
                                   .drop(columns=['val_x', 'val_y'])
         )

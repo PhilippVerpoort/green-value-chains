@@ -7,7 +7,7 @@ labels:
   capital: Capital cost
   fonmco: Fixed operation<br>and maintenance cost
   feedstock: Feedstock cost<br>(non-energy, non-iron)
-  iron: Iron feedstock
+  iron: Iron feedstock cost
   energy: Energy cost
   transport: Transport cost
   carbon: Carbon cost from carbon pricing
