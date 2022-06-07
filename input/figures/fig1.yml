@@ -2,4 +2,5 @@ name: Figure 1
 title: Levelised cost of steel
 desc: For years 2025 and 2050 including two fossil references (BF-BOF and NG-DR) along with recent steel price-variations.
 width: 100%
+height: 800px
 display: [/, /advanced]
