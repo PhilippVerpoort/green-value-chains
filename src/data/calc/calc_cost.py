@@ -45,7 +45,6 @@ def __prepareCostData(techData: pd.DataFrame):
     n = 18
     FCR = i * (1 + i) ** n / ((1 + i) ** n - 1)
     IF = 1.8  # integration factor
-    print(FCR * IF)
 
     # capital cost
     costCapital = techData.query("type=='capex'").assign(val=lambda x: FCR * IF * x.val, type='capital')
