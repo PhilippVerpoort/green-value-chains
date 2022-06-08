@@ -25,10 +25,28 @@ def getElementSimpleControlsCard():
                         ],
                         data=convertPricesDF2T(default_prices),
                         editable=True,
-                        style_cell_conditional=[{
-                            'if': {'column_id': 'id'},
-                            'display': 'none',
-                        }],
+                        style_cell={'whiteSpace': 'pre-line'},
+                        style_cell_conditional=[
+                            {
+                                'if': {'column_id': 'id'},
+                                'display': 'none',
+                            },
+                            {
+                                'if': {'column_id': 'label'},
+                                'width': '45%',
+                            },
+                            {
+                                'if': {'column_id': 'unit'},
+                                'width': '15%',
+                            },
+                            *(
+                                {
+                                    'if': {'column_id': f"val_{year}"},
+                                    'width': f"{0.2/len(default_options['times']):.2%}%",
+                                }
+                                for year in default_options['times']
+                            ),
+                        ],
                     ),
                 ],
                 className='card-element',
