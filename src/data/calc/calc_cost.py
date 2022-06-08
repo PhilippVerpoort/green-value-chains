@@ -72,12 +72,13 @@ def __prepareCostData(techData: pd.DataFrame):
                                                .drop(columns=['val_x', 'val_y'])
 
     # transport cost
-    costTransport = techData.query("type=='transport'")
+    costTransport = techData.query("type=='transport'")\
+                            .drop(columns=['process', 'mode'])\
+                            .merge(energyFeedstockDemand.filter(['process', 'component', 'val', 'val_year', 'mode']), on=['component', 'val_year'], how='left')\
+                            .fillna({'val_y': 1.0})\
+                            .assign(val=lambda x: x.val_x * x.val_y)\
+                            .drop(columns=['val_x', 'val_y'])
 
-    costTransport = costTransport.merge(energyFeedstockDemand.filter(['process', 'component', 'val', 'val_year']), on=['process', 'component', 'val_year'], how='left') \
-                                 .fillna({'val_y': 1.0}) \
-                                 .assign(val=lambda x: x.val_x * x.val_y) \
-                                 .drop(columns=['val_x', 'val_y'])
 
     # remaining energy and feedstock demand
     mergeDummy = energyFeedstockPrices.filter(['process', 'component', 'val_year']).assign(remove=True)
@@ -99,6 +100,7 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
 
     # all intermediate process outputs
     allOutputs = [process_data[p]['output'] for p in processes]
+    outputsToProcesses = {process_data[p]['output']: p for p in processes}
 
 
     # condition for using import or export prices
@@ -109,6 +111,14 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
                    costData['demand']['component'].isin(imports if imports else [])) &
                    costData['demand']['component'].isin(routePricesExportSpec) &
                   ~costData['demand']['component'].isin(allOutputs))
+
+    # associate correct process with intermediate goods
+    costDataTransport = costData['transport'].query(f"component in @imports")
+    cond = costDataTransport['component'].isin(allOutputs)
+    pd.options.mode.chained_assignment = None
+    costDataTransport.loc[cond, 'process'] = costDataTransport.loc[cond, 'component'].replace(outputsToProcesses)
+    costDataTransport.loc[cond, 'mode'] = None
+    pd.options.mode.chained_assignment = 'warn'
 
 
     for process in processes:
@@ -121,11 +131,13 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
         # query for cost data relevant to this process and the chosen route
         queryStr = f"process=='{process}' & (mode.isnull() | mode.str.contains('{mode}'))" if mode else f"process=='{process}'"
         thisCostData = {key: value.query(queryStr) for key, value in costData.items()}
+        thisCostData['transport'] = costDataTransport.query(queryStr)
 
         # add all data that does not need further treatment (capital & fixed cost + energy & feedstock cost with fixed prices)
         es_pro.append(thisCostData['capital'])
         es_pro.append(thisCostData['fixed'])
         es_pro.append(thisCostData['energy_feedstock'])
+        es_pro.append(thisCostData['transport'])
 
         # use exporters price where condition from above is met
         pd.options.mode.chained_assignment = None
@@ -149,10 +161,6 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
                      .assign(val=lambda x: x.val_x * x.val_y) \
                      .drop(columns=['val_x', 'val_y'])
                 )
-
-        # transport cost
-        if imports:
-            es_pro.append(thisCostData['transport'].query(f"component in @imports"))
 
         # add entries from this process to all entries in this route and assign output from last process
         es_rout[output] = es_pro
