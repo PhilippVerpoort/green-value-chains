@@ -23,6 +23,7 @@ colours:
   transport: '#7c1f8a'
 
 route_names:
+  BF_BOF: BF-BOF
   NGDR_EAF: NG
   EL_H2DR_EAF_1: Case 1
   EL_H2DR_EAF_2: Case 2
@@ -34,6 +35,8 @@ route_names:
   H2DR_EAF_4: Case 4
 
 process_names:
+  BF: Blast furnace
+  BOF: Basic-oxygen furance
   ELEC: Electrolysis
   DR: Direct reduction
   EAF: Electric-arc furnace

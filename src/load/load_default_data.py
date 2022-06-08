@@ -20,7 +20,7 @@ for route in process_routes_load.values():
     for p in route['processes'].split(','):
         words = p.strip().split('-')
         if len(words) == 1:
-            tmp[p] = {}
+            tmp[p.strip()] = {}
         elif len(words) == 2:
             tmp[words[0]] = {'mode': words[1]}
         else:

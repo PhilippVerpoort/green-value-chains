@@ -66,8 +66,8 @@ def __prepareCostData(techData: pd.DataFrame):
     energyFeedstockDemand.loc[energyFeedstockDemand['type'] == 'energy_demand', 'type'] = 'energy'
 
 
-    costEnergyFeedstock = energyFeedstockPrices.drop(columns=['type', 'mode'])\
-                                               .merge(energyFeedstockDemand.filter(['process', 'type', 'component', 'val', 'val_year', 'mode']), on=['process', 'component', 'val_year'])\
+    costEnergyFeedstock = energyFeedstockPrices.drop(columns=['process', 'type', 'mode'])\
+                                               .merge(energyFeedstockDemand.filter(['process', 'type', 'component', 'val', 'val_year', 'mode']), on=['component', 'val_year'])\
                                                .assign(val=lambda x: x.val_x * x.val_y)\
                                                .drop(columns=['val_x', 'val_y'])
 
