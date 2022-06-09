@@ -10,6 +10,7 @@ def plotAllFigs(outputData: dict, plots_cfg: dict, plot_list: Union[list, None] 
 
     allPlotArgs = {
         'plotLCOS': (outputData['costData'],),
+        'plotValueCreation': (outputData['costData'],),
     }
 
     figs = {}

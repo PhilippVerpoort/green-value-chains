@@ -51,7 +51,7 @@ def callbackUpdate(n1, plots_cfg: dict, simple_important_params: list, simple_el
     [State('plot-config-modal-textfield', 'value'),
      State('plots-cfg', 'data'),],
 )
-def callbackSettingsModal(n1: int, n_ok: int, n_cancel: int,
+def callbackSettingsModal(n1: int, n2: int, n_ok: int, n_cancel: int,
                           settings_modal_textfield: str, plots_cfg: dict):
     ctx = dash.callback_context
     if not ctx.triggered:
