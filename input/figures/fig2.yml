@@ -1,6 +1,5 @@
 name: Figure 2
 title: Value creation of processes
-desc: The relative share of energy cost in the value creation in each process step.
+desc: The relative share of energy cost in the value creation in each process step for Case 2 from above.
 width: 100%
-#height: 800px
 display: [/, /advanced]
