@@ -12,6 +12,9 @@ def getFullTechData(times: list, process_group: str):
     # convert to standard units
     techdata = __convertUnits(techdata)
 
+    # aggregate data from separate
+    techdata = __aggregate(techdata)
+
     # impute entries for missing years
     techdata = __imputeYears(techdata, times)
 
@@ -20,6 +23,12 @@ def getFullTechData(times: list, process_group: str):
 
 def __convertUnits(techdata: pd.DataFrame):
     return techdata
+
+
+def __aggregate(techdata: pd.DataFrame):
+    return techdata.drop(columns=['source', 'comment'])\
+                   .groupby(['process_group', 'process', 'type', 'component', 'subcomponent', 'mode', 'val_year'], as_index=False, dropna=False)\
+                   .agg({'unit': 'first', 'val': lambda x: sum(x)/len(x), 'val_uncertainty': 'first'})
 
 
 def __imputeYears(techdata: pd.DataFrame, times: list):
