@@ -7,7 +7,7 @@ from src.load.load_default_data import default_techdata
 # Calculate parameters including uncertainty at different times, using linear interpolation if needed.
 def getFullTechData(times: list, process_group: str):
     # filter for params relevant for application
-    techdata = default_techdata.query(f"process_group=='{process_group}'")
+    techdata = default_techdata.query(f"process_group.str.contains('{process_group}')")
 
     # convert to standard units
     techdata = __convertUnits(techdata)
@@ -28,7 +28,7 @@ def __convertUnits(techdata: pd.DataFrame):
 def __aggregate(techdata: pd.DataFrame):
     return techdata.drop(columns=['source', 'comment'])\
                    .groupby(['process_group', 'process', 'type', 'component', 'subcomponent', 'mode', 'val_year'], as_index=False, dropna=False)\
-                   .agg({'unit': 'first', 'val': lambda x: sum(x)/len(x), 'val_uncertainty': 'first'})
+                   .agg({'unit': 'first', 'val': lambda x: sum(x)/len(x) if len(x)>0 else 0.0, 'val_uncertainty': 'first'})
 
 
 def __imputeYears(techdata: pd.DataFrame, times: list):

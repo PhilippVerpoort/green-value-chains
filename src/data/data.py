@@ -15,7 +15,11 @@ def getFullData(prices: pd.DataFrame, options: dict):
 
 
     # determine routes based on options
-    routes = ['BF_BOF', 'EL_H2DR_EAF', 'NGDR_EAF'] if options['include_electrolysis'] else ['BF_BOF', 'H2DR_EAF', 'NGDR_EAF']
+    if process_group == 'Steel':
+        routes = ['BF_BOF', 'ELEC_H2DR_EAF', 'NGDR_EAF'] if options['include_electrolysis'] else ['BF_BOF', 'H2DR_EAF', 'NGDR_EAF']
+    elif process_group == 'Fertiliser':
+        routes = ['SMR_HB_UREA', 'ELEC_HB_UREA']
+
     routes_details = {r: process_routes[process_group][r] for r in routes}
 
 

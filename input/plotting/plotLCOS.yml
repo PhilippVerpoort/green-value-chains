@@ -25,14 +25,20 @@ colours:
 route_names:
   BF_BOF: BF-BOF
   NGDR_EAF: NG
-  EL_H2DR_EAF_1: Case 1
-  EL_H2DR_EAF_2: Case 2
-  EL_H2DR_EAF_3: Case 3
-  EL_H2DR_EAF_4: Case 4
+  ELEC_H2DR_EAF_1: Case 1
+  ELEC_H2DR_EAF_2: Case 2
+  ELEC_H2DR_EAF_3: Case 3
+  ELEC_H2DR_EAF_4: Case 4
   H2DR_EAF_1: Case 1
   H2DR_EAF_2: Case 2
   H2DR_EAF_3: Case 3
   H2DR_EAF_4: Case 4
+
+  SMR_HB_UREA: SMR
+  ELEC_HB_UREA_1: Case 1
+  ELEC_HB_UREA_2: Case 2
+  ELEC_HB_UREA_3: Case 3
+  ELEC_HB_UREA_4: Case 4
 
 process_names:
   BF: Blast furnace
@@ -40,6 +46,10 @@ process_names:
   ELEC: Electrolysis
   DR: Direct reduction
   EAF: Electric-arc furnace
+
+  SMR_HB: Integrated SMR-Haber-Bosch process
+  HB: Haber-Bosch process
+  UREA: Urea production
 
 component_labels:
   alloies: Alloys
