@@ -13,12 +13,8 @@ def getFullData(prices: pd.DataFrame, options: dict):
 
     # determine routes based on options
     costDataList = []
-    for process_group in ['Steel', 'Fertiliser']:
-        if process_group == 'Steel':
-            routes = ['BF_BOF', 'ELEC_H2DR_EAF', 'NGDR_EAF'] if options['include_electrolysis'] else ['BF_BOF', 'H2DR_EAF', 'NGDR_EAF']
-        elif process_group == 'Fertiliser':
-            routes = ['SMR_HB_UREA', 'ELEC_HB_DAC_UREA']
-
+    for process_group in process_routes:
+        routes = __getRoutes(process_group, options['include_electrolysis'], options['dac_or_ccu'])
         routes_details = {r: process_routes[process_group][r] for r in routes}
 
         # calculate cost from tech data
@@ -30,3 +26,17 @@ def getFullData(prices: pd.DataFrame, options: dict):
         'techDataFull': techDataFull,
         'costData': pd.concat(costDataList),
     }
+
+
+# define which routes to work with based on options (include electrolysis, DAC vs CCU, etc.)
+def __getRoutes(process_group: dict, include_electrolysis: bool, dac_or_ccu: str):
+    prefix = 'ELEC_'
+    routes = [r for r in process_routes[process_group]]
+    route_electrolysis = [r.lstrip(prefix) for r in routes if r.startswith(prefix)]
+    inc = prefix if include_electrolysis else ''
+    routes = [r for r in routes if r.lstrip(prefix) not in route_electrolysis] + [(inc + r) for r in route_electrolysis]
+
+    filter = 'DAC' if dac_or_ccu=='CCU' else 'CCU'
+    routes = [r for r in routes if filter not in r]
+
+    return routes
