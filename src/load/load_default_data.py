@@ -39,6 +39,7 @@ for route in process_routes_load.values():
 process_routes = {}
 for process_group, route_id in process_routes_load:
     value = process_routes_load[(process_group, route_id)]
+    value['process_group'] = process_group
     if process_group not in process_routes:
         process_routes[process_group] = {route_id: value}
     else:

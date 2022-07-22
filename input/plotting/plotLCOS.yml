@@ -33,6 +33,10 @@ route_names:
   H2DR_EAF_2: Case 2
   H2DR_EAF_3: Case 3
   H2DR_EAF_4: Case 4
+  ELEC_HB_DAC_UREA_1: Case 1
+  ELEC_HB_DAC_UREA_2: Case 2
+  ELEC_HB_DAC_UREA_3: Case 3
+  ELEC_HB_DAC_UREA_4: Case 4
 
   SMR_HB_UREA: SMR
   ELEC_HB_UREA_1: Case 1
@@ -66,3 +70,5 @@ component_labels:
   steel: Steel
 
 aggregate_by: subcomponent # all, process, component, subcomponent, or none
+
+show_year: 2050

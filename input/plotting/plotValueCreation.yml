@@ -32,3 +32,5 @@ process_names:
   ELEC: Electrolysis
   DR: Direct reduction
   EAF: Electric-arc furnace
+
+show_year: 2025

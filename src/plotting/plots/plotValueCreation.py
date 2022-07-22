@@ -23,13 +23,12 @@ def plotValueCreation(costData: pd.DataFrame, config: dict):
 
 # make adjustments to data (route names, component labels)
 def __adjustData(costData: pd.DataFrame, config: dict):
-    showRoute = 'EL_H2DR_EAF_2' if 'EL_H2DR_EAF_2' in costData['route'].unique() else 'H2DR_EAF_2'
-    showYear = 2025
+    showRoute = 'ELEC_H2DR_EAF_2' if 'ELEC_H2DR_EAF_2' in costData['route'].unique() else 'H2DR_EAF_2'
 
     years = costData['val_year'].unique()
     baseRoute = re.sub('_\\d', '', showRoute)
 
-    costDataNew = costData.query(f"route=='{showRoute}' & val_year=={showYear}").drop(columns=['component', 'route', 'val_year'])
+    costDataNew = costData.query(f"route=='{showRoute}' & val_year=={config['show_year']}").drop(columns=['component', 'route', 'val_year'])
     processes = process_routes['Steel'][baseRoute]['processes']
     processes_keys = list(processes.keys())
 

@@ -8,16 +8,16 @@ def getFigures():
     figs = []
     for plotName in plots:
         if isinstance(plots[plotName], list):
-            figs.extend([__getFigTemplate(fig, [fig], plotName) for fig in plots[plotName]])
+            figs.extend([__getFigTemplate(fig, [fig], plotName, bool(i)) for i, fig in enumerate(plots[plotName])])
         elif isinstance(plots[plotName], dict):
-            figs.extend([__getFigTemplate(fig, plots[plotName][fig], plotName) for fig in plots[plotName]])
+            figs.extend([__getFigTemplate(fig, plots[plotName][fig], plotName, bool(i)) for i, fig in enumerate(plots[plotName])])
         else:
             raise Exception('Unknown figure type.')
 
     return figs
 
 
-def __getFigTemplate(figName: str, subFigNames: list, plotName: str):
+def __getFigTemplate(figName: str, subFigNames: list, plotName: str, showConfigButton: bool):
     figCfg = figs_cfg[figName]
     width = figCfg['width'] if 'width' in figCfg else '100%'
     height = figCfg['height'] if 'height' in figCfg else '450px'
@@ -57,7 +57,7 @@ def __getFigTemplate(figName: str, subFigNames: list, plotName: str):
                 ],
                 id=f"{plotName}-settings-div",
                 style={'display': 'none'},
-            ),
+            ) if showConfigButton else None,
         ],
         style={} if display else {'display': 'none'},
     )

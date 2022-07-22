@@ -5,12 +5,9 @@ from src.load.load_default_data import default_techdata
 
 
 # Calculate parameters including uncertainty at different times, using linear interpolation if needed.
-def getFullTechData(times: list, process_group: str):
-    # filter for params relevant for application
-    techdata = default_techdata.query(f"process_group.str.contains('{process_group}')")
-
+def getFullTechData(times: list):
     # convert to standard units
-    techdata = __convertUnits(techdata)
+    techdata = __convertUnits(default_techdata)
 
     # aggregate data from separate
     techdata = __aggregate(techdata)

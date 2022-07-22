@@ -1,4 +1,8 @@
 plotLCOS:
-  - fig1
+  fig1:
+    - fig1
+  figS1:
+    - figS1a
+    - figS1b
 plotValueCreation:
   - fig2
