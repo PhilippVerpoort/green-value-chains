@@ -1,6 +1,6 @@
 yaxislabel: Levelised Cost of Steel (EUR/t)
 
-ymax: 600.0
+ymax: 700.0
 
 labels:
   direct: Total direct production cost
@@ -21,39 +21,6 @@ colours:
   iron: '#cccccc'
   carbon: '#db2a1a'
   transport: '#7c1f8a'
-
-route_names:
-  BF_BOF: BF-BOF
-  NGDR_EAF: NG
-  ELEC_H2DR_EAF_1: Case 1
-  ELEC_H2DR_EAF_2: Case 2
-  ELEC_H2DR_EAF_3: Case 3
-  ELEC_H2DR_EAF_4: Case 4
-  H2DR_EAF_1: Case 1
-  H2DR_EAF_2: Case 2
-  H2DR_EAF_3: Case 3
-  H2DR_EAF_4: Case 4
-  ELEC_HB_DAC_UREA_1: Case 1
-  ELEC_HB_DAC_UREA_2: Case 2
-  ELEC_HB_DAC_UREA_3: Case 3
-  ELEC_HB_DAC_UREA_4: Case 4
-
-  SMR_HB_UREA: SMR
-  ELEC_HB_UREA_1: Case 1
-  ELEC_HB_UREA_2: Case 2
-  ELEC_HB_UREA_3: Case 3
-  ELEC_HB_UREA_4: Case 4
-
-process_names:
-  BF: Blast furnace
-  BOF: Basic-oxygen furance
-  ELEC: Electrolysis
-  DR: Direct reduction
-  EAF: Electric-arc furnace
-
-  SMR_HB: Integrated SMR-Haber-Bosch process
-  HB: Haber-Bosch process
-  UREA: Urea production
 
 component_labels:
   alloies: Alloys

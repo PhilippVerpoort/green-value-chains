@@ -42,10 +42,15 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     # rename iron feedstock entries
     costDataNew.loc[(costDataNew['type'] == 'feedstock') & costDataNew['component'].isin(['ore', 'scrap']), 'type'] = 'iron'
 
-    # load route names from plot config
-    costDataNew.replace(config['route_names'], inplace=True)
-    dummyData = pd.DataFrame.from_records([{'process_group': pg, 'route': config['route_names'][r], 'type': 'dummy', 'val': 0.0, 'val_year': y}
-                                           for r in sorted(list(routes), key=lambda x: list(config['route_names']).index(x)) for y in years for pg in costData['process_group'].unique() if r in process_routes[pg]])
+    # define route names and ordering
+    route_names_woimp = {route_id: route_vals['name'] for routes in process_routes.values() for route_id, route_vals in sorted(routes.items()) if route_id in costDataNew['route'].unique()}
+    route_names_wiimp = {route_id: f"Case {route_id.split('_')[-1]}" for route_id in costDataNew['route'].unique() if route_id not in route_names_woimp}
+    route_names = {**route_names_woimp, **route_names_wiimp}
+
+    # replace route names and add dummy data to force correct ordering
+    costDataNew.replace({'route': route_names}, inplace=True)
+    dummyData = pd.DataFrame.from_records([{'process_group': pg, 'route': route_names[r], 'type': 'dummy', 'val': 0.0, 'val_year': y}
+                                           for r in route_names for y in years for pg in costData['process_group'].unique() if r in process_routes[pg]])
 
     # determine breakdown level of bars and associated hover labels
     if config['aggregate_by'] in ['none', 'subcomponent']:
