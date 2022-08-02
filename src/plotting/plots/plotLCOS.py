@@ -1,3 +1,4 @@
+import re
 from string import ascii_lowercase
 
 import pandas as pd
@@ -50,7 +51,7 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     # replace route names and add dummy data to force correct ordering
     costDataNew.replace({'route': route_names}, inplace=True)
     dummyData = pd.DataFrame.from_records([{'process_group': pg, 'route': route_names[r], 'type': 'dummy', 'val': 0.0, 'val_year': y}
-                                           for r in route_names for y in years for pg in costData['process_group'].unique() if r in process_routes[pg]])
+                                           for r in route_names for y in years for pg in costData['process_group'].unique() if re.sub(r'_\d+$', '', r) in process_routes[pg]])
 
     # determine breakdown level of bars and associated hover labels
     if config['aggregate_by'] in ['none', 'subcomponent']:
