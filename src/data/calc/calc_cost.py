@@ -5,7 +5,9 @@ from src.load.load_default_data import process_data
 
 def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: dict):
     # technology data
-    techData = tech_data_full.filter(['process', 'type', 'component', 'subcomponent', 'val', 'val_year', 'mode'])
+    all_processes = list(set([p for route in routes.values() for p in route['processes']]))
+    techData = tech_data_full.filter(['process', 'type', 'component', 'subcomponent', 'val', 'val_year', 'mode'])\
+                             .query(f"process in @all_processes or process.isnull()")
 
 
     # prepare cost data
@@ -113,12 +115,10 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
                   ~costData['demand']['component'].isin(allOutputs))
 
     # associate correct process with intermediate goods
-    costDataTransport = costData['transport'].query(f"component in @imports")
+    costDataTransport = costData['transport'].query(f"component in @imports").reset_index()
     cond = costDataTransport['component'].isin(allOutputs)
-    pd.options.mode.chained_assignment = None
     costDataTransport.loc[cond, 'process'] = costDataTransport.loc[cond, 'component'].replace(outputsToProcesses)
     costDataTransport.loc[cond, 'mode'] = None
-    pd.options.mode.chained_assignment = 'warn'
 
 
     for process in processes:

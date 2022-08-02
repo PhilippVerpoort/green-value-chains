@@ -24,14 +24,14 @@ def __convertUnits(techdata: pd.DataFrame):
 
 def __aggregate(techdata: pd.DataFrame):
     return techdata.drop(columns=['source', 'comment'])\
-                   .groupby(['process_group', 'process', 'type', 'component', 'subcomponent', 'mode', 'val_year'], as_index=False, dropna=False)\
+                   .groupby(['process', 'type', 'component', 'subcomponent', 'mode', 'val_year'], as_index=False, dropna=False)\
                    .agg({'unit': 'first', 'val': lambda x: sum(x)/len(x) if len(x)>0 else 0.0, 'val_uncertainty': 'first'})
 
 
 def __imputeYears(techdata: pd.DataFrame, times: list):
     # before imputing check consistency of data
     # for every process and variable type there is either exactly one entry with no year or an entry for every year
-    techdataGrouped = techdata.groupby(['process_group', 'process', 'type', 'component'])
+    techdataGrouped = techdata.groupby(['process', 'type', 'component'])
     for key, item in techdataGrouped:
         years = techdataGrouped.get_group(key)['val_year'].unique()
         if not (
