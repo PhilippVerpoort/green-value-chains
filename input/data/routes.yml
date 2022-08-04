@@ -1,0 +1,106 @@
+Steel:
+  BF_BOF:
+    import_cases:
+      '1':
+      - ore
+    name: BF-BOF
+    process_group: Steel
+    processes:
+      BF: {}
+      BOF:
+        mode: primary
+  ELEC_H2DR_EAF:
+    import_cases:
+      '1':
+      - ore
+      '2':
+      - ore
+      - hydrogen
+      '3':
+      - dri
+      '4':
+      - steel
+    name: H2-DR
+    process_group: Steel
+    processes:
+      ELEC: {}
+      DR:
+        mode: H2
+      EAF:
+        mode: primary
+  H2DR_EAF:
+    import_cases:
+      '1':
+      - ore
+      '2':
+      - ore
+      - hydrogen
+      '3':
+      - dri
+      '4':
+      - steel
+    name: H2-DR
+    process_group: Steel
+    processes:
+      DR:
+        mode: H2
+      EAF:
+        mode: primary
+  NGDR_EAF:
+    import_cases:
+      '1':
+      - ore
+    name: NG-DR
+    process_group: Steel
+    processes:
+      ELEC: {}
+      DR:
+        mode: NG
+      EAF:
+        mode: primary
+
+
+Fertiliser:
+  ELEC_HB_CCU_UREA:
+    import_cases:
+      '1':
+      - none
+      '2':
+      - hydrogen
+      '3':
+      - ammonia
+      '4':
+      - urea
+    name: ELEC
+    process_group: Fertiliser
+    processes:
+      CCU: {}
+      ELEC: {}
+      HB: {}
+      UREA: {}
+  ELEC_HB_DAC_UREA:
+    import_cases:
+      '1':
+      - none
+      '2':
+      - hydrogen
+      '3':
+      - ammonia
+      '4':
+      - urea
+    name: ELEC
+    process_group: Fertiliser
+    processes:
+      DAC: {}
+      ELEC: {}
+      HB: {}
+      UREA: {}
+  SMR_HB_UREA:
+    import_cases:
+      '1':
+      - none
+    name: SMR
+    process_group: Fertiliser
+    processes:
+      SMR_HB: {}
+      UREA: {}

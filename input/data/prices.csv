@@ -1,0 +1,17 @@
+id,label,unit,val,val_year,comment
+price electricity,Elec. Price (Importer),EUR/MWh,60,2025,
+price electricity exporter,Elec. Price (Exporter),EUR/MWh,30,2025,
+price natural gas,Natural-gas price,EUR/MWh,40,2025,
+price hydrogen,H2 price (Importer),EUR/MWh,100,2025,
+price hydrogen exporter,H2 price (Exporter),EUR/MWh,60,2025,
+price ghg,Carbon price,EUR/t,100,2025,
+price electricity,Elec. Price (Importer),EUR/MWh,50,2050,
+price electricity exporter,Elec. Price (Exporter),EUR/MWh,15,2050,
+price natural gas,Natural-gas price,EUR/MWh,30,2050,
+price hydrogen,H2 price (Importer),EUR/MWh,60,2050,
+price hydrogen exporter,H2 price (Exporter),EUR/MWh,40,2050,
+price ghg,Carbon price,EUR/t,300,2050,
+price co2,Carbon price,EUR/t,300,2025,CO2 feedstock price
+price co2,Carbon price,EUR/t,100,2050,CO2 feedstock price
+price n2,Nitrogen price,EUR/t,200,2025,Nitrogen price with air separation unit
+price n2,Nitrogen price,EUR/t,100,2050,Nitrogen price with air separation unit; 1.95-2.7 GJ/t heat demand for separation and compression
