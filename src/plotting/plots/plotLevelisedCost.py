@@ -8,7 +8,7 @@ from src.load.load_default_data import all_processes, all_routes
 from src.plotting.styling.styling import defaultStyling
 
 
-def plotLCOS(costData: pd.DataFrame, config: dict):
+def plotLevelisedCost(costData: pd.DataFrame, config: dict):
     # make adjustments to data
     costDataAggregated = __adjustData(costData, config)
 

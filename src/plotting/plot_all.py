@@ -9,7 +9,7 @@ from src.load.load_config_plot import plots, plots_cfg_global
 def plotAllFigs(outputData: dict, plots_cfg: dict, plot_list: Union[list, None] = None, global_cfg = 'print'):
 
     allPlotArgs = {
-        'plotLCOS': (outputData['costData'],),
+        'plotLevelisedCost': (outputData['costData'],),
         'plotValueCreation': (outputData['costData'],),
     }
 
