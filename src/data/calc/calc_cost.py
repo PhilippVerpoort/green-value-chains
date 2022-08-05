@@ -3,7 +3,7 @@ import pandas as pd
 from src.load.load_default_data import process_data
 
 
-def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: dict):
+def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: dict, process_group: str):
     # technology data
     all_processes = list(set([p for route in routes.values() for p in route['processes']]))
     techData = tech_data_full.filter(['process', 'type', 'component', 'subcomponent', 'val', 'val_year', 'mode'])\
@@ -28,13 +28,13 @@ def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: di
         if route_details['import_cases'] and len(route_details['import_cases']) > 1:
             for case_name, case_imports in route_details['import_cases'].items():
                 es_rout = __calcRouteCost(costData, defaultPrices, route_details['processes'], case_imports)
-                es_ret.extend([e.assign(process_group=route_details['process_group'], route=f"{route_id}_{case_name}") for e in es_rout])
+                es_ret.extend([e.assign(route=f"{route_id}_{case_name}") for e in es_rout])
         else:
             es_rout = __calcRouteCost(costData, defaultPrices, route_details['processes'], next(c for c in route_details['import_cases'].values()) if route_details['import_cases'] else None)
-            es_ret.extend([e.assign(process_group=route_details['process_group'], route=route_id) for e in es_rout])
+            es_ret.extend([e.assign(route=route_id) for e in es_rout])
 
 
-    r = pd.concat(es_ret, ignore_index=True)
+    r = pd.concat(es_ret, ignore_index=True).assign(process_group=process_group)
 
     r['component'] = r['component'].str.replace(' exporter', '')
 

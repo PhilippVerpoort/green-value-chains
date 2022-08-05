@@ -16,9 +16,8 @@ def plotLCOS(costData: pd.DataFrame, config: dict):
     fig1 = __produceFigure(costDataAggregated, config)
 
     # produce SI figs
-    process_groups = ['Steel', 'Fertiliser']
     subfigs = []
-    for process_group in process_groups:
+    for process_group in list(process_routes.keys()):
         subfigs.append(__produceFigure(costDataAggregated, config, process_group=process_group))
 
     # styling figure

@@ -4,7 +4,6 @@ Steel:
       '1':
       - ore
     name: BF-BOF
-    process_group: Steel
     processes:
       BF: {}
       BOF:
@@ -21,7 +20,6 @@ Steel:
       '4':
       - steel
     name: H2-DR
-    process_group: Steel
     processes:
       ELEC: {}
       DR:
@@ -40,7 +38,6 @@ Steel:
       '4':
       - steel
     name: H2-DR
-    process_group: Steel
     processes:
       DR:
         mode: H2
@@ -51,7 +48,6 @@ Steel:
       '1':
       - ore
     name: NG-DR
-    process_group: Steel
     processes:
       ELEC: {}
       DR:
@@ -60,7 +56,7 @@ Steel:
         mode: primary
 
 
-Fertiliser:
+Urea:
   ELEC_HB_CCU_UREA:
     import_cases:
       '1':
@@ -72,7 +68,6 @@ Fertiliser:
       '4':
       - urea
     name: ELEC
-    process_group: Fertiliser
     processes:
       CCU: {}
       ELEC: {}
@@ -89,7 +84,6 @@ Fertiliser:
       '4':
       - urea
     name: ELEC
-    process_group: Fertiliser
     processes:
       DAC: {}
       ELEC: {}
@@ -100,7 +94,6 @@ Fertiliser:
       '1':
       - none
     name: SMR
-    process_group: Fertiliser
     processes:
       SMR_HB: {}
       UREA: {}

@@ -18,7 +18,7 @@ def getFullData(prices: pd.DataFrame, options: dict):
         routes_details = {r: process_routes[process_group][r] for r in routes}
 
         # calculate cost from tech data
-        costDataList.append(calcCost(techDataFull, prices, routes_details))
+        costDataList.append(calcCost(techDataFull, prices, routes_details, process_group))
 
 
     return {
