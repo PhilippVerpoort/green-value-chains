@@ -21,35 +21,67 @@ def plotValueCreation(costData: pd.DataFrame, config: dict):
     return {'fig2': fig}
 
 
-# make adjustments to data (route names, component labels)
+# make adjustments to data before plotting
 def __adjustData(costData: pd.DataFrame, config: dict):
-    showRoute = 'ELEC_H2DR_EAF_2' if 'ELEC_H2DR_EAF_2' in costData['route'].unique() else 'H2DR_EAF_2'
-
-    years = costData['val_year'].unique()
-    baseRoute = re.sub('_\\d', '', showRoute)
-
-    costDataNew = costData.query(f"route=='{showRoute}' & val_year=={config['show_year']}").drop(columns=['component', 'route', 'val_year'])
-    processes = all_routes['Steel'][baseRoute]['processes']
-    processes_keys = list(processes.keys())
-
+    # replace non-energy types with generic label
     if config['simplify_types']:
-        mapping = {t: 'non-energy' for t in costDataNew['type'] if t!='energy'}
-        costDataNew.replace({'type': mapping}, inplace=True)
+        mapping = {t: 'non-energy' for t in costData['type'] if t!='energy'}
+        costDataNew = costData.replace({'type': mapping})
+    else:
+        costDataNew = costData
 
-    for i, p in enumerate(processes_keys[:-1]):
-        upstreamCostData = costDataNew.query(f"process=='{p}'").assign(type='upstream')
-        costDataNew = pd.concat([costDataNew, upstreamCostData.assign(process=processes_keys[i+1])], ignore_index=True)
 
-    costDataNew = costDataNew.groupby(['process', 'type'])\
-                             .agg({'process': 'first', 'type': 'first', 'val': 'sum'})\
-                             .reset_index(drop=True)
+    # determine the route to plot for each commodity
+    plottedRoutes = {
+        c: next(key for key in costDataNew.query(f"commodity=='{c}'").route.unique()
+        if key.endswith(str(config['import_route'][c])))
+        for c in all_routes
+    }
 
-    dummyData = pd.DataFrame.from_records([{'process': p, 'process_label': all_processes[p]['label'], 'type': 'dummy', 'val': 0.0, 'val_year': y}
-                                           for p in processes for y in years])
 
-    costDataNew['process_label'] = [all_processes[p]['label'] for p in costDataNew['process']]
+    # modify data for each commodity
+    ret = []
+    for commodity, showRoute in plottedRoutes.items():
+        # query relevant commodity data for given route
+        costDataNewComm = costDataNew.query(f"route=='{showRoute}' & val_year=={config['show_year']}")\
+                                     .drop(columns=['component', 'route', 'val_year'])
 
-    return pd.concat([costDataNew, dummyData])
+        # get processes in the route
+        processes = all_routes[commodity][re.sub('_\\d', '', showRoute)]['processes']
+        processes_keys = list(processes.keys())
+
+        # add upstream data for plotting
+        for i, p in enumerate(processes_keys[:-1]):
+            upstreamCostData = costDataNewComm.query(f"process=='{p}'").assign(type='upstream')
+            costDataNewComm = pd.concat([costDataNewComm, upstreamCostData.assign(process=processes_keys[i+1])], ignore_index=True)
+
+        # aggregate data over processes and types
+        costDataNewComm = costDataNewComm.groupby(['commodity', 'process', 'type'])\
+                                 .agg({'commodity': 'first', 'process': 'first', 'type': 'first', 'val': 'sum'})\
+                                 .reset_index(drop=True)
+
+        # add process labels
+        costDataNewComm['process_label'] = [all_processes[p]['label'] for p in costDataNewComm['process']]
+
+        # append data
+        ret.append(costDataNewComm)
+
+        # append dummy data for ordering entries correctly
+        dummyData = pd.DataFrame.from_records([
+            {
+                'commodity': commodity,
+                'process': p,
+                'process_label': all_processes[p]['label'],
+                'type': 'dummy',
+                'val': 0.0,
+            }
+            for p in processes_keys
+        ])
+
+        ret.append(dummyData)
+
+
+    return pd.concat(ret)
 
 
 def __produceFigure(costData: pd.DataFrame, config: dict):
@@ -59,7 +91,7 @@ def __produceFigure(costData: pd.DataFrame, config: dict):
     # add dummy entries such that the order is correct
     dummyData = costData.query(f"type=='dummy'")
     fig.add_trace(go.Bar(
-        x=dummyData.process_label,
+        x=[dummyData.commodity, dummyData.process_label],
         y=dummyData.val,
         showlegend=False,
     ))
@@ -70,12 +102,18 @@ def __produceFigure(costData: pd.DataFrame, config: dict):
         plotData = costData.query(f"type=='{type}'")
 
         fig.add_trace(go.Bar(
-            x=plotData.process_label,
+            x=[plotData.commodity, plotData.process_label],
             y=plotData.val,
             marker_color=display['colour'],
             name=display['label'],
             hovertemplate=f"<b>{display['label']}</b><br>Cost: %{{y}} EUR/t<extra></extra>",
         ))
+
+    # add vertical line
+    for i, c in enumerate(costData.commodity.unique()[:-1]):
+        nProcesses = costData.query(f"commodity=='{c}'").process.nunique()
+        fig.add_vline(nProcesses*(i+1)-0.5, line_width=0.5, line_color='black')
+        fig.add_vline(nProcesses*(i+1)-0.5, line_width=0.5, line_color='black')
 
     # set axes labels
     fig.update_layout(
