@@ -88,6 +88,7 @@ def __produceFigure(costData: pd.DataFrame, config: dict):
     # create figure
     fig = go.Figure()
 
+
     # add dummy entries such that the order is correct
     dummyData = costData.query(f"type=='dummy'")
     fig.add_trace(go.Bar(
@@ -96,14 +97,34 @@ def __produceFigure(costData: pd.DataFrame, config: dict):
         showlegend=False,
     ))
 
-    # add traces for all cost types
-    hasLegend = []
-    for c in costData.commodity.unique():
-        for p in costData.query(f"commodity=='{c}'").process.unique():
-            base = 0.0
 
-            for type, display in [(t,d) for t,d in config['types'].items() if t!='dummy']:
-                plotData = costData.query(f"type=='{type}' and commodity=='{c}' and process=='{p}'")
+    # add traces for all cost types
+    showTypes = [(t, d) for t, d in config['types'].items() if t != 'dummy']
+    hasLegend = []
+    index = 0
+    total = len([p for c in costData.commodity.unique() for p in dummyData.query(f"commodity=='{c}'").process.unique()])
+    for c in costData.commodity.unique():
+        plotDataComm = costData.query(f"commodity=='{c}' and type!='dummy'")
+
+        for p in dummyData.query(f"commodity=='{c}'").process.unique():
+            plotDataProc = plotDataComm.query(f"process=='{p}'")
+
+            # add pie charts
+            plotDataPie = plotDataProc.query(f"type!='upstream'")
+            fig.add_trace(go.Pie(
+                labels=plotDataPie.replace({'type': {t: d['label'] for t,d in showTypes}}).type,
+                values=plotDataPie.val,
+                marker_colors=plotDataPie.replace({'type': {t: d['colour'] for t,d in showTypes}}).type,
+                hovertemplate='<b>%{label}</b><extra></extra>',
+                showlegend=False,
+                domain=dict(x=[1.0/total*index, 1.0/total*(index+1)], y=[0.0, 0.23]),
+            ))
+            index += 1
+
+            # add bar charts
+            base = 0.0
+            for type, display in showTypes:
+                plotData = plotDataProc.query(f"type=='{type}'")
                 addHeight = plotData.val.sum()
 
                 if type == 'upstream' and p in config['skip_upstream']:
@@ -126,19 +147,22 @@ def __produceFigure(costData: pd.DataFrame, config: dict):
                 if type not in hasLegend:
                     hasLegend.append(type)
 
+
     # add vertical line
     for i, c in enumerate(costData.commodity.unique()[:-1]):
         nProcesses = costData.query(f"commodity=='{c}'").process.nunique()
         fig.add_vline(nProcesses*(i+1)-0.5, line_width=0.5, line_color='black')
         fig.add_vline(nProcesses*(i+1)-0.5, line_width=0.5, line_color='black')
 
+
     # set axes labels
     fig.update_layout(
         barmode='stack',
         xaxis=dict(title=''),
-        yaxis=dict(title=config['yaxislabel'], range=[0.0, config['ymax']]),
-        legend_title=''
+        yaxis=dict(title=config['yaxislabel'], range=[0.0, config['ymax']], domain=[0.4, 1.0]),
+        legend_title='',
     )
+
 
     return fig
 
