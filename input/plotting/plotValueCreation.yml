@@ -9,3 +9,6 @@ show_year: 2050
 import_route:
   Steel: 1
   Urea: 1
+
+skip_upstream:
+  - DAC

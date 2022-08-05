@@ -97,17 +97,34 @@ def __produceFigure(costData: pd.DataFrame, config: dict):
     ))
 
     # add traces for all cost types
-    for type, display in config['types'].items():
-        if type == 'dummy': continue
-        plotData = costData.query(f"type=='{type}'")
+    hasLegend = []
+    for c in costData.commodity.unique():
+        for p in costData.query(f"commodity=='{c}'").process.unique():
+            base = 0.0
 
-        fig.add_trace(go.Bar(
-            x=[plotData.commodity, plotData.process_label],
-            y=plotData.val,
-            marker_color=display['colour'],
-            name=display['label'],
-            hovertemplate=f"<b>{display['label']}</b><br>Cost: %{{y}} EUR/t<extra></extra>",
-        ))
+            for type, display in [(t,d) for t,d in config['types'].items() if t!='dummy']:
+                plotData = costData.query(f"type=='{type}' and commodity=='{c}' and process=='{p}'")
+                addHeight = plotData.val.sum()
+
+                if type == 'upstream' and p in config['skip_upstream']:
+                    base += addHeight
+                    continue
+
+                fig.add_trace(go.Bar(
+                    x=[plotData.commodity, plotData.process_label],
+                    y=plotData.val,
+                    base=base,
+                    marker_color=display['colour'],
+                    name=display['label'],
+                    hovertemplate=f"<b>{display['label']}</b><br>Cost: %{{y}} EUR/t<extra></extra>",
+                    showlegend=type not in hasLegend,
+                    legendgroup=type,
+                ))
+
+                base += addHeight
+
+                if type not in hasLegend:
+                    hasLegend.append(type)
 
     # add vertical line
     for i, c in enumerate(costData.commodity.unique()[:-1]):
