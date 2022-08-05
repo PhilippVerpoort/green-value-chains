@@ -3,7 +3,7 @@ import pandas as pd
 from src.load.load_default_data import process_data
 
 
-def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: dict, process_group: str):
+def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: dict, commodity: str):
     # technology data
     all_processes = list(set([p for route in routes.values() for p in route['processes']]))
     techData = tech_data_full.filter(['process', 'type', 'component', 'subcomponent', 'val', 'val_year', 'mode'])\
@@ -34,11 +34,11 @@ def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: di
             es_ret.extend([e.assign(route=route_id) for e in es_rout])
 
 
-    r = pd.concat(es_ret, ignore_index=True).assign(process_group=process_group)
+    r = pd.concat(es_ret, ignore_index=True).assign(commodity=commodity)
 
     r['component'] = r['component'].str.replace(' exporter', '')
 
-    return r[['process_group', 'route', 'process', 'type', 'component', 'val', 'val_year']]
+    return r[['commodity', 'route', 'process', 'type', 'component', 'val', 'val_year']]
 
 
 def __prepareCostData(techData: pd.DataFrame):

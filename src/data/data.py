@@ -13,12 +13,12 @@ def getFullData(prices: pd.DataFrame, options: dict):
 
     # determine routes based on options
     costDataList = []
-    for process_group in process_routes:
-        routes = __getRoutes(process_group, options['include_electrolysis'], options['dac_or_ccu'])
-        routes_details = {r: process_routes[process_group][r] for r in routes}
+    for commodity in process_routes:
+        routes = __getRoutes(commodity, options['include_electrolysis'], options['dac_or_ccu'])
+        routes_details = {r: process_routes[commodity][r] for r in routes}
 
         # calculate cost from tech data
-        costDataList.append(calcCost(techDataFull, prices, routes_details, process_group))
+        costDataList.append(calcCost(techDataFull, prices, routes_details, commodity))
 
 
     return {
@@ -28,9 +28,9 @@ def getFullData(prices: pd.DataFrame, options: dict):
 
 
 # define which routes to work with based on options (include electrolysis, DAC vs CCU, etc.)
-def __getRoutes(process_group: dict, include_electrolysis: bool, dac_or_ccu: str):
+def __getRoutes(commodity: dict, include_electrolysis: bool, dac_or_ccu: str):
     prefix = 'ELEC_'
-    routes = [r for r in process_routes[process_group]]
+    routes = [r for r in process_routes[commodity]]
     route_electrolysis = [r.lstrip(prefix) for r in routes if r.startswith(prefix)]
     inc = prefix if include_electrolysis else ''
     routes = [r for r in routes if r.lstrip(prefix) not in route_electrolysis] + [(inc + r) for r in route_electrolysis]

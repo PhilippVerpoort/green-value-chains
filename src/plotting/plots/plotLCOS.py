@@ -17,8 +17,8 @@ def plotLCOS(costData: pd.DataFrame, config: dict):
 
     # produce SI figs
     subfigs = []
-    for process_group in list(process_routes.keys()):
-        subfigs.append(__produceFigure(costDataAggregated, config, process_group=process_group))
+    for commodity in list(process_routes.keys()):
+        subfigs.append(__produceFigure(costDataAggregated, config, commodity=commodity))
 
     # styling figure
     for f in [fig1, *subfigs]:
@@ -49,13 +49,13 @@ def __adjustData(costData: pd.DataFrame, config: dict):
 
     # replace route names and add dummy data to force correct ordering
     costDataNew.replace({'route': route_names}, inplace=True)
-    dummyData = pd.DataFrame.from_records([{'process_group': pg, 'route': route_names[r], 'type': 'dummy', 'val': 0.0, 'val_year': y}
-                                           for r in route_names for y in years for pg in costData['process_group'].unique() if re.sub(r'_\d+$', '', r) in process_routes[pg]])
+    dummyData = pd.DataFrame.from_records([{'commodity': pg, 'route': route_names[r], 'type': 'dummy', 'val': 0.0, 'val_year': y}
+                                           for r in route_names for y in years for pg in costData['commodity'].unique() if re.sub(r'_\d+$', '', r) in process_routes[pg]])
 
     # determine breakdown level of bars and associated hover labels
     if config['aggregate_by'] in ['none', 'subcomponent']:
         if config['aggregate_by'] == 'subcomponent':
-            group_cols = ['type', 'val_year', 'process_group', 'route', 'process', 'component']
+            group_cols = ['type', 'val_year', 'commodity', 'route', 'process', 'component']
             costDataNew = costDataNew.fillna({'component': 'empty'}) \
                                      .groupby(group_cols).sum() \
                                      .sort_values('process', key=lambda col: [list(process_data.keys()).index(p) for p in col]) \
@@ -63,13 +63,13 @@ def __adjustData(costData: pd.DataFrame, config: dict):
         costDataNew['hover_label'] = [process_data[p]['label'] for p in costDataNew['process']]
         costDataNew.loc[costDataNew['component']!='empty', 'hover_label'] = [f"{row['component'].capitalize()} ({row['hover_label']})" for index, row in costDataNew.loc[costDataNew['component']!='empty',:].iterrows()]
     elif config['aggregate_by'] == 'component':
-        group_cols = ['type', 'val_year', 'process_group', 'route', 'process']
+        group_cols = ['type', 'val_year', 'commodity', 'route', 'process']
         costDataNew = costDataNew.groupby(group_cols).sum() \
                                  .sort_values('process', key=lambda col: [list(process_data.keys()).index(p) for p in col]) \
                                  .reset_index()
         costDataNew['hover_label'] = [process_data[p]['label'] for p in costDataNew['process']]
     elif config['aggregate_by'] == 'process':
-        group_cols = ['type', 'val_year', 'process_group', 'route', 'component']
+        group_cols = ['type', 'val_year', 'commodity', 'route', 'component']
 
         costDataNew = costDataNew.fillna({'component': 'empty'}) \
                                  .groupby(group_cols).sum() \
@@ -77,7 +77,7 @@ def __adjustData(costData: pd.DataFrame, config: dict):
                                  .reset_index()
         costDataNew['hover_label'] = [config['component_labels'][c] if c!='empty' else None for c in costDataNew['component']]
     elif config['aggregate_by'] == 'all':
-        group_cols = ['type', 'val_year', 'process_group', 'route']
+        group_cols = ['type', 'val_year', 'commodity', 'route']
         costDataNew = costDataNew.groupby(group_cols).sum().reset_index()
     else:
         raise Exception('Value of aggregate_by in the plot config is invalid.')
@@ -85,9 +85,9 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     return pd.concat([costDataNew, dummyData])
 
 
-def __produceFigure(costData: pd.DataFrame, config: dict, process_group: str = ''):
-    if process_group:
-        costData = costData.query(f"process_group=='{process_group}'")
+def __produceFigure(costData: pd.DataFrame, config: dict, commodity: str = ''):
+    if commodity:
+        costData = costData.query(f"commodity=='{commodity}'")
     else:
         costData = costData.query(f"val_year=={config['show_year']} & route.str.startswith('Case')")
 
@@ -97,7 +97,7 @@ def __produceFigure(costData: pd.DataFrame, config: dict, process_group: str = '
     # add dummy entries such that the order is correct
     dummyData = costData.query(f"type=='dummy'")
     fig.add_trace(go.Bar(
-        x=[dummyData.val_year, dummyData.route] if process_group else [dummyData.process_group, dummyData.route],
+        x=[dummyData.val_year, dummyData.route] if commodity else [dummyData.commodity, dummyData.route],
         y=dummyData.val,
         showlegend=False,
     ))
@@ -109,7 +109,7 @@ def __produceFigure(costData: pd.DataFrame, config: dict, process_group: str = '
         hoverLabel = 'hover_label' in plotData.columns and any(plotData.hover_label.unique())
 
         fig.add_trace(go.Bar(
-            x=[plotData.val_year, plotData.route] if process_group else [plotData.process_group, plotData.route],
+            x=[plotData.val_year, plotData.route] if commodity else [plotData.commodity, plotData.route],
             y=plotData.val,
             marker_color=config['colours'][stack],
             name=config['labels'][stack],
@@ -118,7 +118,7 @@ def __produceFigure(costData: pd.DataFrame, config: dict, process_group: str = '
         ))
 
     # add vertical line
-    nGroups = costData['process_group'].nunique() if process_group else costData['val_year'].nunique()
+    nGroups = costData['commodity'].nunique() if commodity else costData['val_year'].nunique()
     nRoutes = costData['route'].nunique()
     for i in range(nGroups-1):
         fig.add_vline(nRoutes*(i+1)-0.5, line_width=0.5, line_color='black')

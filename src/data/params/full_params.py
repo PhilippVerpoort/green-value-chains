@@ -38,7 +38,7 @@ def __imputeYears(techdata: pd.DataFrame, times: list):
             (len(years) == 1 and all(np.isnan(years)))
          or (not any(np.isnan(years)) and all(t in years for t in times))
         ):
-            raise Exception(f"Variable with conflicting or missing year entries: process_group {key[0]}, process {key[1]}, type {key[2]}, component {key[3]}")
+            raise Exception(f"Variable with conflicting or missing year entries: commodity {key[0]}, process {key[1]}, type {key[2]}, component {key[3]}")
 
     # create empty return list for concat
     r = []
