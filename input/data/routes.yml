@@ -69,8 +69,8 @@ Urea:
       - urea
     name: ELEC
     processes:
-      CCU: {}
       ELEC: {}
+      CCU: {}
       HB: {}
       UREA: {}
   ELEC_HB_DAC_UREA:
@@ -85,8 +85,8 @@ Urea:
       - urea
     name: ELEC
     processes:
-      DAC: {}
       ELEC: {}
+      DAC: {}
       HB: {}
       UREA: {}
   SMR_HB_UREA:
