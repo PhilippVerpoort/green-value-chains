@@ -3,7 +3,7 @@ import re
 import pandas as pd
 import plotly.graph_objects as go
 
-from src.load.load_default_data import process_routes
+from src.load.load_default_data import all_routes
 from src.plotting.styling.styling import defaultStyling
 
 
@@ -29,7 +29,7 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     baseRoute = re.sub('_\\d', '', showRoute)
 
     costDataNew = costData.query(f"route=='{showRoute}' & val_year=={config['show_year']}").drop(columns=['component', 'route', 'val_year'])
-    processes = process_routes['Steel'][baseRoute]['processes']
+    processes = all_routes['Steel'][baseRoute]['processes']
     processes_keys = list(processes.keys())
 
     mapping = {t: 'non-energy' for t in costDataNew['type'] if t!='energy'}

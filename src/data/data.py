@@ -2,7 +2,7 @@ import pandas as pd
 
 from src.data.calc.calc_cost import calcCost
 from src.data.params.full_params import getFullTechData
-from src.load.load_default_data import process_routes
+from src.load.load_default_data import all_routes
 
 
 # obtain all required data for a scenario
@@ -13,12 +13,14 @@ def getFullData(prices: pd.DataFrame, options: dict):
 
     # determine routes based on options
     costDataList = []
-    for commodity in process_routes:
-        routes = __getRoutes(commodity, options['include_electrolysis'], options['dac_or_ccu'])
-        routes_details = {r: process_routes[commodity][r] for r in routes}
+    for commodity in all_routes:
+        selectedRoutes = {
+            r: all_routes[commodity][r]
+            for r in __selectRoutes(commodity, options['include_electrolysis'], options['dac_or_ccu'])
+        }
 
         # calculate cost from tech data
-        costDataList.append(calcCost(techDataFull, prices, routes_details, commodity))
+        costDataList.append(calcCost(techDataFull, prices, selectedRoutes, commodity))
 
 
     return {
@@ -28,14 +30,14 @@ def getFullData(prices: pd.DataFrame, options: dict):
 
 
 # define which routes to work with based on options (include electrolysis, DAC vs CCU, etc.)
-def __getRoutes(commodity: dict, include_electrolysis: bool, dac_or_ccu: str):
+def __selectRoutes(commodity: dict, include_electrolysis: bool, dac_or_ccu: str):
     prefix = 'ELEC_'
-    routes = [r for r in process_routes[commodity]]
-    route_electrolysis = [r.lstrip(prefix) for r in routes if r.startswith(prefix)]
+    ret = [r for r in all_routes[commodity]]
+    route_electrolysis = [r.lstrip(prefix) for r in ret if r.startswith(prefix)]
     inc = prefix if include_electrolysis else ''
-    routes = [r for r in routes if r.lstrip(prefix) not in route_electrolysis] + [(inc + r) for r in route_electrolysis]
+    ret = [r for r in ret if r.lstrip(prefix) not in route_electrolysis] + [(inc + r) for r in route_electrolysis]
 
     filter = 'DAC' if dac_or_ccu=='CCU' else 'CCU'
-    routes = [r for r in routes if filter not in r]
+    ret = [r for r in ret if filter not in r]
 
-    return routes
+    return ret

@@ -1,11 +1,11 @@
 import pandas as pd
 
-from src.load.load_default_data import process_data
+from src.load.load_default_data import all_processes
 
 
-def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: dict, commodity: str):
+def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, selectedRoutes: dict, commodity: str):
     # technology data
-    all_processes = list(set([p for route in routes.values() for p in route['processes']]))
+    all_processes = list(set([p for route in selectedRoutes.values() for p in route['processes']]))
     techData = tech_data_full.filter(['process', 'type', 'component', 'subcomponent', 'val', 'val_year', 'mode'])\
                              .query(f"process in @all_processes or process.isnull()")
 
@@ -24,7 +24,7 @@ def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, routes: di
 
 
     # loop over routes
-    for route_id, route_details in routes.items():
+    for route_id, route_details in selectedRoutes.items():
         if route_details['import_cases'] and len(route_details['import_cases']) > 1:
             for case_name, case_imports in route_details['import_cases'].items():
                 es_rout = __calcRouteCost(costData, defaultPrices, route_details['processes'], case_imports)
@@ -101,8 +101,8 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
 
 
     # all intermediate process outputs
-    allOutputs = [process_data[p]['output'] for p in processes]
-    outputsToProcesses = {process_data[p]['output']: p for p in processes}
+    allOutputs = [all_processes[p]['output'] for p in processes]
+    outputsToProcesses = {all_processes[p]['output']: p for p in processes}
 
 
     # condition for using import or export prices
@@ -122,7 +122,7 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
 
 
     for process in processes:
-        output = process_data[process]['output']
+        output = all_processes[process]['output']
         mode = processes[process]['mode'] if 'mode' in processes[process] else None
 
         # list of entries in this process
@@ -171,11 +171,11 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
 
 def __getProcessesAbroad(costData: dict, processes: dict, imports: list):
     processes_abroad_len = 0
-    processes_abroad = [p for p in processes if process_data[p]['output'] in imports] if imports else []
+    processes_abroad = [p for p in processes if all_processes[p]['output'] in imports] if imports else []
     while len(processes_abroad) > processes_abroad_len:
         processes_abroad_len = len(processes_abroad)
         for p in processes:
-            if p not in processes_abroad and process_data[p]['output'] in costData['demand'].query(f"process in @processes_abroad")['component'].unique():
+            if p not in processes_abroad and all_processes[p]['output'] in costData['demand'].query(f"process in @processes_abroad")['component'].unique():
                 processes_abroad.append(p)
 
     return processes_abroad
