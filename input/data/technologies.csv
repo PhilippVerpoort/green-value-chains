@@ -14,14 +14,14 @@ DAC,energy_demand,electricity,,,MWh/t,2,,,,Test value
 UREA,energy_demand,electricity,,,MWh/t,0.173,,,https://iopscience.iop.org/article/10.1088/1755-1315/472/1/012034/pdf,Quelle prüfen; hat keine Wärme GJ/t
 HB,feedstock_demand,nitrogen,,,t/t,0.85,,,UBA (2019),
 HB,feedstock_demand,hydrogen,,,MWh/t,5.93,,,Boulamanti and Moya (2017),Wert geprüft; UBA
-UREA,feedstock_demand,co2,,,t/t,0.76,,,"James A. Kent (Hrsg.): Riegel’s Handbook of Industrial Chemistry. Van Nostrand Reinhold, 1974",
-UREA,feedstock_demand,ammonia,,,t/t,0.58,,,"James A. Kent (Hrsg.): Riegel’s Handbook of Industrial Chemistry. Van Nostrand Reinhold, 1974",
+UREA,feedstock_demand,co2,,,t/t,0.76,,,"James A. Kent (Hrsg.): Riegel’s Handbook of Industrial Chemistry. Van Nostrand Reinhold, 1974",Prozess-Output: Wasser (0.34 t/t); CO2 und Ammonia werden teilweise im Kreis geführt (überstöchiometrischer Bedarf)
+UREA,feedstock_demand,ammonia,,,t/t,0.58,,,"James A. Kent (Hrsg.): Riegel’s Handbook of Industrial Chemistry. Van Nostrand Reinhold, 1974",Prozess-Output: Wasser (0.34 t/t); CO2 und Ammonia werden teilweise im Kreis geführt (überstöchiometrischer Bedarf)
 SMR_HB,fixed_opex,,,,EUR/t,33.5,,,"VCI, 2019, Own calculation with 5% O&M cost",
 HB,fixed_opex,,,,EUR/t,72.8,,,"VCI, IEA (2018), Boulamanti and Moya (2017)",without hydrogen
 UREA,fixed_opex,,,,EUR/t,11.6,,,Own calculation with 5% O&M cost,
-,transport,ammonia,,,EUR/t,350,,,https://www.heise.de/select/tr/2021/5/2115413182032992195; https://www.frontier-economics.com/media/4979/frontier-ptx-business-cases-studie_teil-1-hauptstudie.pdf,Calculated with 0.7 ct/kWh * 5 kWh/kg = 350€/t; find better data
-,transport,ammonia,,,EUR/t,350,,,https://www.heise.de/select/tr/2021/5/2115413182032992195; https://www.frontier-economics.com/media/4979/frontier-ptx-business-cases-studie_teil-1-hauptstudie.pdf,Calculated with 0.7 ct/kWh * 5 kWh/kg = 350€/t; find better data
-,transport,urea,,,EUR/t,350,,,https://www.heise.de/select/tr/2021/5/2115413182032992195; https://www.frontier-economics.com/media/4979/frontier-ptx-business-cases-studie_teil-1-hauptstudie.pdf,Calculated with 0.7 ct/kWh * 5 kWh/kg = 350€/t; find better data
+,transport,ammonia,,,EUR/t,350,,2025,https://www.heise.de/select/tr/2021/5/2115413182032992195; https://www.frontier-economics.com/media/4979/frontier-ptx-business-cases-studie_teil-1-hauptstudie.pdf,Calculated with 0.7 ct/kWh * 5 kWh/kg = 350€/t; find better data; Check future costs of transport
+,transport,ammonia,,,EUR/t,350,,2050,https://www.heise.de/select/tr/2021/5/2115413182032992195; https://www.frontier-economics.com/media/4979/frontier-ptx-business-cases-studie_teil-1-hauptstudie.pdf,Calculated with 0.7 ct/kWh * 5 kWh/kg = 350€/t; find better data; Check future costs of transport
+,transport,urea,,,EUR/t,350,,,https://www.heise.de/select/tr/2021/5/2115413182032992195; https://www.frontier-economics.com/media/4979/frontier-ptx-business-cases-studie_teil-1-hauptstudie.pdf,Calculated with 0.7 ct/kWh * 5 kWh/kg = 350€/t; find better data; Check
 ELEC,capex,,,,EUR/MW,800000,,2025,,Simplified value
 ELEC,capex,,,,EUR/MW,300000,,2050,,Simplified value
 ELEC,energy_demand,electricity,,,1,1.47,,2025,IEA,
