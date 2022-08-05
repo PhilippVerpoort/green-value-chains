@@ -5,7 +5,8 @@ from src.load.yaml_load import loadYamlFile
 # load config data for plots and figures
 plots = loadYamlFile('plots.yml')
 figure_print = loadYamlFile('figure_print.yml')
-plots_cfg_global = loadYamlFile('plotting/global.yml')
+plots_cfg_global = loadYamlFile('plotting/globalConfig.yml')
+plots_cfg_styling = loadYamlFile('plotting/globalStyling.yml')
 
 plots_cfg = {
     plotName: open(getFilePathInput(f"plotting/{plotName}.yml"), 'r').read()

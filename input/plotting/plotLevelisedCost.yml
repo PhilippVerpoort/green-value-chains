@@ -1,42 +1,6 @@
-yaxislabel: Levelised Cost of Steel (EUR/t)
+yaxislabel: Levelised Cost of Commodities (EUR/t)
 
 ymax: 700.0
-
-labels:
-  direct: Total direct production cost
-  capital: Capital cost
-  fonmco: Fixed operation<br>and maintenance cost
-  feedstock: Feedstock cost<br>(non-energy, non-iron)
-  iron: Iron feedstock cost
-  energy: Energy cost
-  transport: Transport cost
-  carbon: Carbon cost from carbon pricing
-
-colours:
-  direct: '#8a4c39'
-  capital: '#f36f21'
-  fonmco: '#00813e'
-  energy: '#e6af2e'
-  feedstock: '#3745a3'
-  iron: '#cccccc'
-  carbon: '#db2a1a'
-  transport: '#7c1f8a'
-
-component_labels:
-  alloies: Alloys
-  dri: DRI
-  graphite: Graphite
-  labour: Labour
-  lime: Lime
-  natural gas: Natural gas
-  electricity: Electricity
-  hydrogen: Hydrogen
-  onm: Operation and Maintenance
-  ore: Iron ore
-  scrap: Steel scrap
-  steel: Steel
-
-# add labels for ammonia here
 
 aggregate_by: subcomponent # all, process, component, subcomponent, or none
 

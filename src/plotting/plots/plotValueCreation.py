@@ -3,7 +3,7 @@ import re
 import pandas as pd
 import plotly.graph_objects as go
 
-from src.load.load_default_data import all_routes
+from src.load.load_default_data import all_routes, all_processes
 from src.plotting.styling.styling import defaultStyling
 
 
@@ -32,8 +32,9 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     processes = all_routes['Steel'][baseRoute]['processes']
     processes_keys = list(processes.keys())
 
-    mapping = {t: 'non-energy' for t in costDataNew['type'] if t!='energy'}
-    costDataNew.replace({'type': mapping}, inplace=True)
+    if config['simplify_types']:
+        mapping = {t: 'non-energy' for t in costDataNew['type'] if t!='energy'}
+        costDataNew.replace({'type': mapping}, inplace=True)
 
     for i, p in enumerate(processes_keys[:-1]):
         upstreamCostData = costDataNew.query(f"process=='{p}'").assign(type='upstream')
@@ -43,8 +44,10 @@ def __adjustData(costData: pd.DataFrame, config: dict):
                              .agg({'process': 'first', 'type': 'first', 'val': 'sum'})\
                              .reset_index(drop=True)
 
-    dummyData = pd.DataFrame.from_records([{'process': p, 'type': 'dummy', 'val': 0.0, 'val_year': y}
+    dummyData = pd.DataFrame.from_records([{'process': p, 'process_label': all_processes[p]['label'], 'type': 'dummy', 'val': 0.0, 'val_year': y}
                                            for p in processes for y in years])
+
+    costDataNew['process_label'] = [all_processes[p]['label'] for p in costDataNew['process']]
 
     return pd.concat([costDataNew, dummyData])
 
@@ -56,22 +59,22 @@ def __produceFigure(costData: pd.DataFrame, config: dict):
     # add dummy entries such that the order is correct
     dummyData = costData.query(f"type=='dummy'")
     fig.add_trace(go.Bar(
-        x=dummyData.process,
+        x=dummyData.process_label,
         y=dummyData.val,
         showlegend=False,
     ))
 
     # add traces for all cost types
-    keys = config['labels'].keys()
-    for stack in keys:
-        plotData = costData.query(f"type=='{stack}'")
+    for type, display in config['types'].items():
+        if type == 'dummy': continue
+        plotData = costData.query(f"type=='{type}'")
 
         fig.add_trace(go.Bar(
-            x=plotData.process,
+            x=plotData.process_label,
             y=plotData.val,
-            marker_color=config['colours'][stack],
-            name=config['labels'][stack],
-            hovertemplate=f"<b>{config['labels'][stack]}</b><br>LCoS: %{{y}} EUR/t<extra></extra>",
+            marker_color=display['colour'],
+            name=display['label'],
+            hovertemplate=f"<b>{display['label']}</b><br>Cost: %{{y}} EUR/t<extra></extra>",
         ))
 
     # set axes labels

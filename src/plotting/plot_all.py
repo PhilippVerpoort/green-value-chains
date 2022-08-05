@@ -3,7 +3,7 @@ import importlib
 
 import yaml
 
-from src.load.load_config_plot import plots, plots_cfg_global
+from src.load.load_config_plot import plots, plots_cfg_global, plots_cfg_styling
 
 
 def plotAllFigs(outputData: dict, plots_cfg: dict, plot_list: Union[list, None] = None, global_cfg = 'print'):
@@ -30,7 +30,7 @@ def plotAllFigs(outputData: dict, plots_cfg: dict, plot_list: Union[list, None] 
             if 'import' in config:
                 for imp in config['import']:
                     config[imp] = yaml.load(plots_cfg[imp], Loader=yaml.FullLoader)
-            config = {**config, **yaml.load(plots_cfg[plotName], Loader=yaml.FullLoader), **{'global': plots_cfg_global[global_cfg]}}
+            config = {**config, **yaml.load(plots_cfg[plotName], Loader=yaml.FullLoader), **plots_cfg_global, **{'global': plots_cfg_styling[global_cfg]}}
 
             module = importlib.import_module(f"src.plotting.plots.{plotName}")
             plotFigMethod = getattr(module, plotName)

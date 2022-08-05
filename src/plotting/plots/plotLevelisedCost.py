@@ -73,9 +73,9 @@ def __adjustData(costData: pd.DataFrame, config: dict):
 
         costDataNew = costDataNew.fillna({'component': 'empty'}) \
                                  .groupby(group_cols).sum() \
-                                 .sort_values('component', key=lambda col: [list(config['component_labels']).index(c) if c!='empty' else -1 for c in col]) \
+                                 .sort_values('component', key=lambda col: [list(config['components']).index(c) if c!='empty' else -1 for c in col]) \
                                  .reset_index()
-        costDataNew['hover_label'] = [config['component_labels'][c] if c!='empty' else None for c in costDataNew['component']]
+        costDataNew['hover_label'] = [config['components'][c] if c!='empty' else None for c in costDataNew['component']]
     elif config['aggregate_by'] == 'all':
         group_cols = ['type', 'val_year', 'commodity', 'route']
         costDataNew = costDataNew.groupby(group_cols).sum().reset_index()
@@ -103,18 +103,17 @@ def __produceFigure(costData: pd.DataFrame, config: dict, commodity: str = ''):
     ))
 
     # add traces for all cost types
-    keys = config['labels'].keys()
-    for stack in keys:
-        plotData = costData.query(f"type=='{stack}'")
+    for type, display in config['types'].items():
+        plotData = costData.query(f"type=='{type}'")
         hoverLabel = 'hover_label' in plotData.columns and any(plotData.hover_label.unique())
 
         fig.add_trace(go.Bar(
             x=[plotData.val_year, plotData.route] if commodity else [plotData.commodity, plotData.route],
             y=plotData.val,
-            marker_color=config['colours'][stack],
-            name=config['labels'][stack],
+            marker_color=display['colour'],
+            name=display['label'],
             customdata=plotData.hover_label if hoverLabel else None,
-            hovertemplate=f"<b>{config['labels'][stack]}</b>{'<br>%{customdata}' if hoverLabel else ''}<br>LCoS: %{{y}} EUR/t<extra></extra>",
+            hovertemplate=f"<b>{display['label']}</b>{'<br>%{customdata}' if hoverLabel else ''}<br>Cost: %{{y}} EUR/t<extra></extra>",
         ))
 
     # add vertical line
