@@ -26,6 +26,7 @@ def getFullData(prices: pd.DataFrame, options: dict):
     return {
         'techDataFull': techDataFull,
         'costData': pd.concat(costDataList),
+        'prices': prices,
     }
 
 

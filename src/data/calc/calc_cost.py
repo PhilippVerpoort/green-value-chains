@@ -3,7 +3,7 @@ import pandas as pd
 from src.load.load_default_data import all_processes
 
 
-def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, selectedRoutes: dict, commodity: str):
+def calcCost(tech_data_full: pd.DataFrame, prices: pd.DataFrame, selectedRoutes: dict, commodity: str):
     # technology data
     all_processes = list(set([p for route in selectedRoutes.values() for p in route['processes']]))
     techData = tech_data_full.filter(['process', 'type', 'component', 'subcomponent', 'val', 'val_year', 'mode'])\
@@ -15,8 +15,8 @@ def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, selectedRo
 
 
     # obtain prices from spreadsheet
-    defaultPrices = assumptions.query(f"id.str.startswith('price ')").filter(['id', 'val', 'val_year']).rename(columns={'id': 'component'})
-    defaultPrices['component'] = defaultPrices['component'].str.replace('price ', '')
+    prices = prices.query(f"id.str.startswith('price ')").filter(['id', 'val', 'val_year']).rename(columns={'id': 'component'})
+    prices['component'] = prices['component'].str.replace('price ', '')
 
 
     # list of entries to return
@@ -27,10 +27,10 @@ def calcCost(tech_data_full: pd.DataFrame, assumptions: pd.DataFrame, selectedRo
     for route_id, route_details in selectedRoutes.items():
         if route_details['import_cases'] and len(route_details['import_cases']) > 1:
             for case_name, case_imports in route_details['import_cases'].items():
-                es_rout = __calcRouteCost(costData, defaultPrices, route_details['processes'], case_imports)
+                es_rout = __calcRouteCost(costData, prices, route_details['processes'], case_imports)
                 es_ret.extend([e.assign(route=f"{route_id}_{case_name}") for e in es_rout])
         else:
-            es_rout = __calcRouteCost(costData, defaultPrices, route_details['processes'], next(c for c in route_details['import_cases'].values()) if route_details['import_cases'] else None)
+            es_rout = __calcRouteCost(costData, prices, route_details['processes'], next(c for c in route_details['import_cases'].values()) if route_details['import_cases'] else None)
             es_ret.extend([e.assign(route=route_id) for e in es_rout])
 
 
