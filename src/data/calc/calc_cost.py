@@ -77,7 +77,8 @@ def __prepareCostData(techData: pd.DataFrame):
     # transport cost
     costTransport = techData.query("type=='transport'")\
                             .drop(columns=['process', 'subcomponent', 'mode'])\
-                            .merge(pd.DataFrame.from_records([{'process': p, 'component': all_processes[p]['output']} for p in techData.process.unique() if pd.notna(p)]), on=['component'], how='left')\
+                            .merge(pd.DataFrame.from_records([{'process': p, 'component': all_processes[p]['output']}
+                                                              for p in techData.process.unique() if pd.notna(p)]), on=['component'], how='left')
 
     costTransport = pd.concat([
         costTransport.dropna(subset=['process']),
@@ -109,7 +110,6 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
 
     # all intermediate process outputs
     allOutputs = [all_processes[p]['output'] for p in processes]
-    outputsToProcesses = {all_processes[p]['output']: p for p in processes}
 
 
     # condition for using import or export prices

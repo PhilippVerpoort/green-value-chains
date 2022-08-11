@@ -6,3 +6,5 @@ plotLevelisedCost:
     - figS1b
 plotValueCreation:
   - fig2
+plotCostDiffElecPrice:
+  - fig3

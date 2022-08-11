@@ -1,0 +1,5 @@
+name: Figure 3
+title: Cost difference of scenarios for varying elec. price difference
+desc: The cost difference between scenarios changes based on the price difference of renewable electricity.
+width: 100%
+display: [/, /advanced]
