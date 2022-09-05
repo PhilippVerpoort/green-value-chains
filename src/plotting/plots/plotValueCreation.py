@@ -165,18 +165,3 @@ def __produceFigure(costData: pd.DataFrame, config: dict):
 
 
     return fig
-
-
-def __styling(fig: go.Figure):
-    # update axis styling
-    for axis in ['xaxis', 'yaxis']:
-        update = {axis: dict(
-            showline=True,
-            linewidth=2,
-            linecolor='black',
-            showgrid=False,
-            zeroline=False,
-            mirror=True,
-            ticks='outside',
-        )}
-        fig.update_layout(**update)

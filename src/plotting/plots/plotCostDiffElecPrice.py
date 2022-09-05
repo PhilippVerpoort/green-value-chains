@@ -127,18 +127,3 @@ def __produceFigure(plotData: dict, config: dict):
 
 
     return fig
-
-
-def __styling(fig: go.Figure):
-    # update axis styling
-    for axis in [f"{t}axis{n+1 if n else ''}" for t in ['x', 'y'] for n in range(3)]:
-        update = {axis: dict(
-            showline=True,
-            linewidth=2,
-            linecolor='black',
-            showgrid=False,
-            zeroline=False,
-            mirror=True,
-            ticks='outside',
-        )}
-        fig.update_layout(**update)
