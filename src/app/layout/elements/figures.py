@@ -1,27 +1,25 @@
 from dash import html, dcc
 
 from src.load.load_config_plot import plots
-from src.load.load_config_app import figs_cfg
+from src.load.load_config_app import figs_cfg, app_cfg
 
 
 def getFigures():
-    figs = []
-    for plotName in plots:
-        if isinstance(plots[plotName], list):
-            figs.extend([__getFigTemplate(fig, [fig], plotName, bool(i)) for i, fig in enumerate(plots[plotName])])
-        elif isinstance(plots[plotName], dict):
-            figs.extend([__getFigTemplate(fig, plots[plotName][fig], plotName, bool(i)) for i, fig in enumerate(plots[plotName])])
-        else:
-            raise Exception('Unknown figure type.')
+    cards = []
 
-    return figs
+    for fig in app_cfg['figures']:
+        plotName = next(plotName for plotName in plots if fig in plots[plotName])
+        figCard = __getFigTemplate(fig, plots[plotName][fig], plotName)
+        cards.append(figCard)
+
+    return cards
 
 
-def __getFigTemplate(figName: str, subFigNames: list, plotName: str, showConfigButton: bool):
+def __getFigTemplate(figName: str, subFigNames: list, plotName: str):
     figCfg = figs_cfg[figName]
     width = figCfg['width'] if 'width' in figCfg else '100%'
     height = figCfg['height'] if 'height' in figCfg else '450px'
-    display = '/' in figCfg['display']
+    display = False
 
     return html.Div(
         id=f"card-{figName}",
@@ -51,13 +49,13 @@ def __getFigTemplate(figName: str, subFigNames: list, plotName: str, showConfigB
             html.Hr(),
             html.B(f"{figCfg['name']} | {figCfg['title']}"),
             html.P(figCfg['desc']),
-            html.Div([
+            (html.Div([
                     html.Hr(),
                     html.Button(id=f"{plotName}-settings", children='Config', n_clicks=0,),
                 ],
                 id=f"{plotName}-settings-div",
                 style={'display': 'none'},
-            ) if showConfigButton else None,
+            ) if ('nosettings' not in figCfg or not figCfg['nosettings']) else None),
         ],
         style={} if display else {'display': 'none'},
     )

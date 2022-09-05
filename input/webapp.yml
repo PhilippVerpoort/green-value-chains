@@ -4,3 +4,8 @@ desc:
   price differences for renewable electricity.
 auth: Philipp C. Verpoort, Lukas Gast, Anke Hofmann, Falko Ueckerdt
 date: 03/03/2022
+figures:
+  fig1: [/, /advanced]
+  fig2: [/, /advanced]
+  fig3: [/, /advanced]
+  figS1: [/advanced]

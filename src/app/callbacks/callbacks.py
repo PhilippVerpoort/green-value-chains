@@ -3,10 +3,10 @@ from dash.dependencies import Input, Output, State
 from flask import send_file
 
 from src.app.app import dash_app
-from src.app.callbacks.update import updateScenarioInputSimple
-from src.load.load_config_app import figNames, figs_cfg, allSubFigNames
+from src.app.callbacks.init import figsDefault
+from src.app.callbacks.update import updateScenarioInput
+from src.load.load_config_app import figNames, figs_cfg, subfigsDisplayed, app_cfg
 from src.data.data import getFullData
-from src.load.load_default_data import default_prices, default_options
 from src.load.load_config_plot import plots
 from src.load.file_paths import getFilePathAssets
 from src.plotting.styling.webapp import addWebappSpecificStyling
@@ -15,25 +15,29 @@ from src.plotting.plot_all import plotAllFigs
 
 # general callback for (re-)generating plots
 @dash_app.callback(
-    [*(Output(subFigName, 'figure') for subFigName in allSubFigNames),],
+    [*(Output(subfigName, 'figure') for subfigName in subfigsDisplayed),],
     [Input('simple-update', 'n_clicks'),
+     State('url', 'pathname'),
      State('plots-cfg', 'data'),
      State('simple-important-params', 'data'),
      State('simple-electrolysis', 'value'),
      State('simple-gwp', 'value'),])
-def callbackUpdate(n1, plots_cfg: dict, simple_important_params: list, simple_electrolysis: bool, simple_gwp: str):
+def callbackUpdate(n1, route: str, plots_cfg: dict, simple_important_params: list, simple_electrolysis: bool, simple_gwp: str):
     ctx = dash.callback_context
+
     if not ctx.triggered:
-        outputData = getFullData(default_prices, default_options)
+        print("Loading figures from default values")
+        return *figsDefault.values(),
     else:
         btnPressed = ctx.triggered[0]['prop_id'].split('.')[0]
         if btnPressed == 'simple-update':
-            prices, options = updateScenarioInputSimple(simple_important_params, simple_electrolysis, simple_gwp)
-            outputData = getFullData(prices, options)
+            inputDataUpdated =  updateScenarioInput(simple_important_params, simple_electrolysis, simple_gwp)
+            outputData = getFullData(inputDataUpdated)
         else:
-            raise Exception('Unknown button pressed!')
+            raise Exception(f"Unknown button pressed: {btnPressed}")
 
-    figs = plotAllFigs(outputData, plots_cfg, global_cfg='webapp')
+    figsNeeded = [fig for fig, routes in app_cfg['figures'].items() if route in routes]
+    figs = plotAllFigs(outputData, inputDataUpdated, plots_cfg, global_cfg='webapp', figs_needed=figsNeeded)
 
     addWebappSpecificStyling(figs)
 
@@ -41,18 +45,21 @@ def callbackUpdate(n1, plots_cfg: dict, simple_important_params: list, simple_el
 
 
 # update figure plotting settings
+settingsButtons = [plotName for plotName, figList in plots.items() if any(f in app_cfg['figures'] and not ('nosettings' in figs_cfg[f] and figs_cfg[f]['nosettings']) for f in figList)]
 @dash_app.callback(
     [Output('plot-config-modal', 'is_open'),
      Output('plots-cfg', 'data'),
      Output('plot-config-modal-textfield', 'value'),],
-    [*(Input(f'{plotName}-settings', 'n_clicks') for plotName in plots),
+    [*(Input(f'{plotName}-settings', 'n_clicks') for plotName in settingsButtons),
      Input('plot-config-modal-ok', 'n_clicks'),
      Input('plot-config-modal-cancel', 'n_clicks'),],
     [State('plot-config-modal-textfield', 'value'),
      State('plots-cfg', 'data'),],
 )
-def callbackSettingsModal(n1: int, n2: int, n_ok: int, n_cancel: int,
-                          settings_modal_textfield: str, plots_cfg: dict):
+def callbackSettingsModal(*args):
+    settings_modal_textfield = args[-2]
+    plots_cfg = args[-1]
+
     ctx = dash.callback_context
     if not ctx.triggered:
         plots_cfg['last_btn_pressed'] = None
@@ -75,20 +82,21 @@ def callbackSettingsModal(n1: int, n2: int, n_ok: int, n_cancel: int,
 
 # display of simple or advanced controls
 @dash_app.callback(
-    Output('simple-controls-card', 'style'),
-    *(Output(f"card-{figName}", 'style') for figName in figNames),
-    *(Output(f"{plotName}-settings-div", 'style') for plotName in plots),
+    *(Output(f"card-{f}", 'style') for f in figNames if f in app_cfg['figures']),
+    *(Output(f'{plotName}-settings-div', 'style') for plotName, figList in plots.items() if any(f in app_cfg['figures'] and not ('nosettings' in figs_cfg[f] and figs_cfg[f]['nosettings']) for f in figList)),
     [Input('url', 'pathname')]
 )
 def callbackDisplayForRoutes(route):
     r = []
 
-    r.append({'display': 'none'} if route != '/' else {})
-
+    # display of figures for different routes
     for figName in figNames:
-        r.append({'display': 'none'} if route not in figs_cfg[figName]['display'] else {})
+        if figName not in app_cfg['figures']: continue
+        r.append({'display': 'none'} if route not in app_cfg['figures'][figName] else {})
 
+    # display plot config buttons only on advanced
     for figName in figNames:
+        if figName not in app_cfg['figures'] or  ('nosettings' in figs_cfg[figName] and figs_cfg[figName]['nosettings']): continue
         r.append({'display': 'none'} if route != '/advanced' else {})
 
     return r

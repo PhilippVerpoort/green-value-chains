@@ -86,7 +86,7 @@ def getElementSimpleControlsCard():
                 className='card-element',
             ),
             html.Div(
-                children=html.Button(id='simple-update', n_clicks=0, children='Update', className='scenario-buttons'),
+                children=html.Button(id='simple-update', n_clicks=0, children='GENERATE', className='scenario-buttons'),
                 className='card-element',
             ),
         ],

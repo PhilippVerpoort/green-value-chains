@@ -1,26 +1,23 @@
-import re
-
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from src.load.load_default_data import all_routes
-from src.plotting.styling.styling import defaultStyling
+
+def plotCostDiffElecPrice(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame, config: dict,
+                          subfigs_needed: list, is_webapp: bool = False):
+    ret = {}
 
 
-def plotCostDiffElecPrice(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame, config: dict):
     # make adjustments to data
-    plotData = __adjustData(costData, costDataRef, prices, config)
+    plotData = __adjustData(costData, costDataRef, prices, config) if subfigs_needed else None
+
 
     # produce figure
-    fig = __produceFigure(plotData, config)
+    ret['fig3'] = __produceFigure(plotData, config) if 'fig3' in subfigs_needed else None
 
-    # styling figure
-    defaultStyling(fig)
-    __styling(fig)
 
-    return {'fig3': fig}
+    return ret
 
 
 # make adjustments to data before plotting

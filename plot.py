@@ -7,20 +7,27 @@ from src.plotting.export_file import exportFigsToFiles
 from src.plotting.plot_all import plotAllFigs
 
 
-# Get list of figs to plot from command line args.
+# get list of figs to plot from command line args.
 if len(sys.argv) > 1:
-    plot_list = sys.argv[1:]
+    figs_needed = sys.argv[1:]
 else:
-    plot_list = None
+    figs_needed = None
 
 
-# Get plotting data
-outputData = getFullData(default_prices, default_options)
+# collect input data for calculations
+inputData = {
+    'prices': default_prices,
+    'options': default_options,
+}
 
 
-# Run plotting routines to generate figures
-figs = plotAllFigs(outputData, plots_cfg, plot_list=plot_list)
+# obtain full computed output data from inputs
+outputData = getFullData(inputData)
 
 
-# Export figures to files
+# run plotting routines to generate figures
+figs = plotAllFigs(outputData, inputData, plots_cfg, figs_needed=figs_needed)
+
+
+# export figures to files
 exportFigsToFiles(figs)

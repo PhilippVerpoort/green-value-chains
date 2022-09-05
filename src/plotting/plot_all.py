@@ -2,43 +2,83 @@ from typing import Union
 import importlib
 
 import yaml
+import plotly.io as pio
+import plotly.graph_objects as go
 
 from src.load.load_config_plot import plots, plots_cfg_global, plots_cfg_styling
+from src.load.load_config_app import app_cfg
+from src.plotting.styling.template import defineTemplate
 
 
-def plotAllFigs(outputData: dict, plots_cfg: dict, plot_list: Union[list, None] = None, global_cfg = 'print'):
+pio.templates['pik'] = defineTemplate()
 
-    allPlotArgs = {
-        'plotLevelisedCost': (outputData['costData'],),
-        'plotValueCreation': (outputData['costData'],),
-        'plotCostDiffElecPrice': (outputData['costData'], outputData['costDataRef'], outputData['prices'],),
+
+def plotAllFigs(output_data: dict, input_data: dict, plots_cfg: dict,
+                figs_needed: Union[list, None] = None, global_cfg='print'):
+
+    # determine which plots need to be run based on the figures that are needed
+    plotsNeeded = {
+        plotName: [subfig for fig, subfigs in figs.items() if (figs_needed is None or fig in figs_needed) for subfig in subfigs]
+        for plotName, figs in plots.items()
     }
 
-    figs = {}
-    for i, plotName in enumerate(plots):
-        if plot_list is not None and plotName not in plot_list:
-            if isinstance(plots[plotName], list):
-                figs.update({f"{fig}": None for fig in plots[plotName]})
-            elif isinstance(plots[plotName], dict):
-                figs.update({f"{subFig}": None for fig in plots[plotName] for subFig in plots[plotName][fig]})
-            else:
-                raise Exception('Unknown figure type.')
+    # collect args for plot functions from data
+    allPlotArgs = {
+        'plotLevelisedCost': (output_data['costData'],),
+        'plotValueCreation': (output_data['costData'],),
+        'plotCostDiffElecPrice': (output_data['costData'], output_data['costDataRef'], input_data['prices'],),
+    }
 
+    # set default theme
+    pio.templates.default = "pik"
+
+    ret = {}
+    for i, plotName in enumerate(plots):
+        if plotName not in plotsNeeded or not plotsNeeded[plotName]:
+            ret.update({f"{subFig}": None for fig in plots[plotName] for subFig in plots[plotName][fig]})
         else:
             print(f"Plotting {plotName}...")
+
+            # get plot args
             plotArgs = allPlotArgs[plotName]
+
+            # get plot config
             config = yaml.load(plots_cfg[plotName], Loader=yaml.FullLoader)
             if 'import' in config:
                 for imp in config['import']:
                     config[imp] = yaml.load(plots_cfg[imp], Loader=yaml.FullLoader)
             config = {**config, **yaml.load(plots_cfg[plotName], Loader=yaml.FullLoader), **plots_cfg_global, **{'global': plots_cfg_styling[global_cfg]}}
 
+            # load and execute plot function
             module = importlib.import_module(f"src.plotting.plots.{plotName}")
-            plotFigMethod = getattr(module, plotName)
+            plotFunc = getattr(module, plotName)
 
-            newFigs = plotFigMethod(*plotArgs, config)
-            figs.update(newFigs)
+            # execute plot function
+            newFigs = plotFunc(*plotArgs, config, plotsNeeded[plotName], is_webapp=(global_cfg=='webapp'))
+            ret.update(newFigs)
 
-    print('Done with plotting...')
+    print('Plot creation complete...')
 
-    return figs
+    # insert empty figure for 'None' values
+    if global_cfg=='webapp':
+        for subfig in ret:
+            if ret[subfig] is None:
+                if any(subfig in fs[fig] for plotName, fs in plots.items() for fig in fs if fig in app_cfg['figures']):
+                    f = go.Figure()
+                    f.add_annotation(
+                        text='<b>Press GENERATE to<br>display this plot.</b>',
+                        xanchor='center',
+                        xref='x domain',
+                        x=0.5,
+                        yanchor='middle',
+                        yref='y domain',
+                        y=0.5,
+                        showarrow=False,
+                        bordercolor='black',
+                        borderwidth=2,
+                        borderpad=3,
+                        bgcolor='white',
+                    )
+                    ret[subfig] = f
+
+    return {subfigName: subfig for subfigName, subfig in ret.items() if subfig is not None}

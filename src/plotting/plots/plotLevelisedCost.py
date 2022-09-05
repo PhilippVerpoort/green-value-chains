@@ -5,30 +5,28 @@ import pandas as pd
 import plotly.graph_objects as go
 
 from src.load.load_default_data import all_processes, all_routes
-from src.plotting.styling.styling import defaultStyling
 
 
-def plotLevelisedCost(costData: pd.DataFrame, config: dict):
+def plotLevelisedCost(costData: pd.DataFrame, config: dict, subfigs_needed: list, is_webapp: bool = False):
+    ret = {}
+
+
     # make adjustments to data
-    costDataAggregated = __adjustData(costData, config)
+    costDataAggregated = __adjustData(costData, config) if subfigs_needed else None
+
 
     # produce fig1
-    fig1 = __produceFigure(costDataAggregated, config)
+    ret['fig1'] = __produceFigure(costDataAggregated, config) if 'fig1' in subfigs_needed else None
+
 
     # produce SI figs
     subfigs = []
-    for commodity in list(all_routes.keys()):
-        subfigs.append(__produceFigure(costDataAggregated, config, commodity=commodity))
+    for k, commodity in enumerate(list(all_routes.keys())):
+        subfigName = f"figS1{ascii_lowercase[k]}"
+        ret[subfigName] = __produceFigure(costDataAggregated, config, commodity=commodity) if subfigName in subfigs_needed else None
 
-    # styling figure
-    for f in [fig1, *subfigs]:
-        defaultStyling(f)
-        __styling(f)
 
-    return {
-        'fig1': fig1,
-        **{f"figS1{ascii_lowercase[k]}": fig for k, fig in enumerate(subfigs)},
-    }
+    return ret
 
 
 # make adjustments to data (route names, component labels)
@@ -132,18 +130,3 @@ def __produceFigure(costData: pd.DataFrame, config: dict, commodity: str = ''):
     )
 
     return fig
-
-
-def __styling(fig: go.Figure):
-    # update axis styling
-    for axis in ['xaxis', 'yaxis']:
-        update = {axis: dict(
-            showline=True,
-            linewidth=2,
-            linecolor='black',
-            showgrid=False,
-            zeroline=False,
-            mirror=True,
-            ticks='outside',
-        )}
-        fig.update_layout(**update)

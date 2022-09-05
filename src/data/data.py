@@ -6,7 +6,11 @@ from src.load.load_default_data import all_routes
 
 
 # obtain all required data for a scenario
-def getFullData(prices: pd.DataFrame, options: dict):
+def getFullData(input_data: dict):
+    prices = input_data['prices']
+    options = input_data['options']
+
+
     # convert basic inputs to complete dataframes
     techDataFull = getFullTechData(options['times'])
 

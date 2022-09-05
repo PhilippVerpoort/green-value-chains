@@ -1,6 +1,0 @@
-name: Figure S1
-title: Levelised cost of steel
-desc: 'Based on hydrogen direct reduction (H-DR) as well as fossil references using coal in blast furnace/basic-oxygen furance (BF-BOF) and natural-gas direct reduction (NG-DR). Cases 1-4 represent the four different import routes for H-DR (1: importing iron ore only, 2: importing iron ore and hydrogen, 3: importing directly reduced iron, 4: importing a finished steel product).'
-width: 100%
-height: 800px
-display: [/, /advanced]

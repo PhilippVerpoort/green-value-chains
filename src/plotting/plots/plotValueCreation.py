@@ -4,21 +4,21 @@ import pandas as pd
 import plotly.graph_objects as go
 
 from src.load.load_default_data import all_routes, all_processes
-from src.plotting.styling.styling import defaultStyling
 
 
-def plotValueCreation(costData: pd.DataFrame, config: dict):
+def plotValueCreation(costData: pd.DataFrame, config: dict, subfigs_needed: list, is_webapp: bool = False):
+    ret = {}
+
+
     # make adjustments to data
-    costDataNew = __adjustData(costData, config)
+    costDataNew = __adjustData(costData, config) if subfigs_needed else None
+
 
     # produce figure
-    fig = __produceFigure(costDataNew, config)
+    ret['fig2'] = __produceFigure(costDataNew, config) if 'fig2' in subfigs_needed else None
 
-    # styling figure
-    defaultStyling(fig)
-    __styling(fig)
 
-    return {'fig2': fig}
+    return ret
 
 
 # make adjustments to data before plotting

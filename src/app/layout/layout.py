@@ -29,22 +29,22 @@ def getLayout(logo_url: str):
                                 html.B(app_cfg['title']),
                                 className='app-title',
                             ),
-                            # html.Div(
-                            #     dcc.Link(
-                            #         'Simple',
-                            #         href='/',
-                            #         className='mainlink',
-                            #     ),
-                            #     className='app-modes',
-                            # ),
-                            # html.Div(
-                            #     dcc.Link(
-                            #         'Advanced',
-                            #         href='/advanced',
-                            #         className='mainlink',
-                            #     ),
-                            #     className='app-modes',
-                            # ),
+                            html.Div(
+                                dcc.Link(
+                                    'Simple',
+                                    href='/',
+                                    className='mainlink',
+                                ),
+                                className='app-modes',
+                            ),
+                            html.Div(
+                                dcc.Link(
+                                    'Advanced',
+                                    href='/advanced',
+                                    className='mainlink',
+                                ),
+                                className='app-modes',
+                            ),
                         ],
                         className='header-left-side',
                     ),
