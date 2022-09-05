@@ -95,6 +95,7 @@ def __prepareCostData(techData: pd.DataFrame):
     energyFeedstockDemand = energyFeedstockDemand.merge(mergeDummy, on=['process', 'component', 'val_year'], how='outer')
     energyFeedstockDemand = energyFeedstockDemand[pd.isnull(energyFeedstockDemand['remove'])].drop(columns=['remove'])
 
+
     return {
         'capital': costCapital,
         'fixed': costFixed,

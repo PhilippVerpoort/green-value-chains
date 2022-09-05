@@ -11,8 +11,17 @@ def getFullData(prices: pd.DataFrame, options: dict):
     techDataFull = getFullTechData(options['times'])
 
 
+    # set prices for reference calculation
+    exporterPrices = [p.rstrip(' exporter') for p in prices.id.unique() if p.endswith(' exporter')]
+    pricesRef = pd.concat([
+        prices.query("not id.str.endswith(' exporter')"),
+        prices.query(f"id in {exporterPrices}").assign(id=lambda x: x.id.astype(str) + ' exporter'),
+    ])
+
+
     # determine routes based on options
     costDataList = []
+    costDataListRef = []
     for commodity in all_routes:
         selectedRoutes = {
             r: all_routes[commodity][r]
@@ -22,10 +31,14 @@ def getFullData(prices: pd.DataFrame, options: dict):
         # calculate cost from tech data
         costDataList.append(calcCost(techDataFull, prices, selectedRoutes, commodity))
 
+        # calculate reference cost without price differences for Fig. 3
+        costDataListRef.append(calcCost(techDataFull, pricesRef, selectedRoutes, commodity))
+
 
     return {
         'techDataFull': techDataFull,
         'costData': pd.concat(costDataList),
+        'costDataRef': pd.concat(costDataListRef),
         'prices': prices,
     }
 

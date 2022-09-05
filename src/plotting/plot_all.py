@@ -11,7 +11,7 @@ def plotAllFigs(outputData: dict, plots_cfg: dict, plot_list: Union[list, None] 
     allPlotArgs = {
         'plotLevelisedCost': (outputData['costData'],),
         'plotValueCreation': (outputData['costData'],),
-        'plotCostDiffElecPrice': (outputData['costData'], outputData['prices']),
+        'plotCostDiffElecPrice': (outputData['costData'], outputData['costDataRef'], outputData['prices'],),
     }
 
     figs = {}

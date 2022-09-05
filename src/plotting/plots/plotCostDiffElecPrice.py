@@ -1,5 +1,6 @@
 import re
 
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -8,9 +9,9 @@ from src.load.load_default_data import all_routes
 from src.plotting.styling.styling import defaultStyling
 
 
-def plotCostDiffElecPrice(costData: pd.DataFrame, prices: pd.DataFrame, config: dict):
+def plotCostDiffElecPrice(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame, config: dict):
     # make adjustments to data
-    plotData = __adjustData(costData, prices, config)
+    plotData = __adjustData(costData, costDataRef, prices, config)
 
     # produce figure
     fig = __produceFigure(plotData, config)
@@ -23,63 +24,63 @@ def plotCostDiffElecPrice(costData: pd.DataFrame, prices: pd.DataFrame, config: 
 
 
 # make adjustments to data before plotting
-def __adjustData(costData: pd.DataFrame, prices: pd.DataFrame, config: dict):
-    comp = 'electricity'
-    prices = prices.query(f"id.str.startswith('price {comp}')").filter(['id', 'val', 'val_year']).rename(columns={'id': 'component'}).reset_index(drop=True)
-    prices['route'] = '1'
-    prices.loc[prices.component.str.endswith(' exporter'), 'route'] = '4'
-    prices['component'] = prices['component'].str.replace('price ', '').str.replace(' exporter', '')
+def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame, config: dict):
+    # cost delta of scenarios 2-4 in relation to scenario 1
+    cost = costData \
+        .groupby(['commodity', 'route', 'val_year']) \
+        .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
+        .reset_index(drop=True)
+
+    costDelta = cost.query(r"(not route.str.endswith('_1')) and route.str.match('.*_\d+$')") \
+        .assign(baseRoute=lambda x: x.route.str.replace(r'_\d+$', '', regex=True)) \
+        .merge(cost.query("route.str.endswith('_1')").assign(baseRoute=lambda x: x.route.str.replace(r'_\d+$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
+        .assign(cost=lambda x: x.val_y - x.val_x) \
+        .drop(columns=['val_x', 'val_y', 'baseRoute'])
 
 
-    pNew = config['xrange'][1]
-    mapping = {t: 'non-energy' for t in costData['type'] if t!='energy'}
-    ret = {}
-    for c in all_routes:
-        costDataNew = costData.query(f"commodity=='{c}' and (route.str.endswith('_1') or route.str.endswith('_4'))")\
-                              .replace({'type': mapping})
+    # cost delta of scenarios 2-4 in relation to scenario 1 for reference with zero elec price difference
+    costRef = costDataRef \
+        .groupby(['commodity', 'route', 'val_year']) \
+        .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
+        .reset_index(drop=True)
 
-        baseRoute = re.sub(r'_\d+$', '', costDataNew.route.iloc[0])
-        pricesOld = prices.copy()
-        pricesOld.route = baseRoute + '_' + pricesOld.route.str[:]
-        pricesNew = pd.concat([prices.query(f"route=='4'"), prices.query(f"route=='4'").assign(val=lambda r: r.val+pNew, route='1')])
-        # pricesNew = prices.copy()
-        # pricesNew.loc[pricesNew.route=='4', 'val'] = pricesNew.loc[pricesNew.route=='1', 'val'] - pNew
-        pricesNew.route = baseRoute + '_' + pricesNew.route.str[:]
-
-        cond = "(type=='energy' and component=='electricity')"
-        costDataNewVarying = costDataNew.query(cond)\
-                                        .merge(pricesOld, on=['route', 'component', 'val_year']) \
-                                        .assign(val=lambda x: x.val_x / x.val_y) \
-                                        .drop(columns=['val_x', 'val_y'])\
-                                        .merge(pricesNew, on=['route', 'component', 'val_year']) \
-                                        .assign(val=lambda x: x.val_x * x.val_y) \
-                                        .drop(columns=['val_x', 'val_y'])
-        costDataNewConstant = costDataNew.query('not' + cond)
-
-        costDataNewMin = costDataNewConstant\
-                           .groupby(['route', 'val_year'])\
-                           .agg({'route': 'first', 'val_year': 'first', 'val': 'sum'})\
-                           .reset_index(drop=True)
-
-        costDataNewMax = pd.concat([costDataNewVarying, costDataNewConstant])\
-                           .groupby(['route', 'val_year'])\
-                           .agg({'route': 'first', 'val_year': 'first', 'val': 'sum'})\
-                           .reset_index(drop=True)
-
-        ret[c] = {}
-        for y in costDataNewMax.val_year.unique():
-            dMin = costDataNewMin.query(f"val_year=={y}")
-            dMax = costDataNewMax.query(f"val_year=={y}")
-            ret[c][int(y)] = [0.0, dMin.iloc[0].val-dMin.iloc[1].val, pNew, dMax.iloc[0].val-dMax.iloc[1].val]
+    costRefDelta = costRef.query(r"(not route.str.endswith('_1')) and route.str.match('.*_\d+$')") \
+        .assign(baseRoute=lambda x: x.route.str.replace(r'_\d+$', '', regex=True)) \
+        .merge(costRef.query("route.str.endswith('_1')").assign(baseRoute=lambda x: x.route.str.replace(r'_\d+$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
+        .assign(costRef=lambda x: x.val_y - x.val_x) \
+        .drop(columns=['val_x', 'val_y', 'baseRoute'])
 
 
-    return ret
+    # electricity price difference from prices object
+    elecPriceDiff = prices \
+        .query("id=='price electricity'").filter(['val_year', 'val']) \
+        .merge(prices.query("id=='price electricity exporter'").filter(['val_year', 'val']), on=['val_year']) \
+        .assign(priceDiff=lambda x: x.val_x - x.val_y) \
+        .drop(columns=['val_x', 'val_y'])
 
 
-def __produceFigure(printData: dict, config: dict):
+    # linear interpolation of cost difference as a function of elec price
+    tmp = costRefDelta \
+        .merge(costDelta, on=['commodity', 'route', 'val_year']) \
+        .merge(elecPriceDiff, on=['val_year'])
+
+    pdMax = config['xrange'][1]
+    plotData = pd.concat([
+        tmp.assign(pd=pd, cd=lambda r: r.costRef + (r.cost-r.costRef)/r.priceDiff * pd)
+        for pd in np.linspace(config['xrange'][0], config['xrange'][1], config['xsamples'])
+    ]).drop(columns=['cost', 'costRef', 'priceDiff'])
+
+
+    return plotData
+
+
+def __produceFigure(plotData: dict, config: dict):
+    commodities = plotData.commodity.unique().tolist()
+
+
     # create figure
     fig = make_subplots(
-        cols=len(printData),
+        cols=len(commodities),
         shared_yaxes=True,
         horizontal_spacing=0.025,
     )
@@ -87,23 +88,30 @@ def __produceFigure(printData: dict, config: dict):
 
     # plot lines
     hasLegend = []
-    for c, item in printData.items():
-        for year, data in item.items():
-            x0, y0, x1, y1 = data
+    for i, commodity in enumerate(commodities):
+        commData = plotData.query(f"commodity=='{commodity}'")
 
-            fig.add_trace(
-                go.Scatter(
-                    x=[x0, x1],
-                    y=[y0, y1],
-                    mode='lines',
-                    name=year,
-                    line=dict(color=config['line_colour'][year], width=config['global']['lw_default']),
-                    showlegend=year not in hasLegend,
-                    legendgroup=year,
-                ),
-                col=list(printData.keys()).index(c)+1,
-                row=1,
-            )
+        for j, year in enumerate(plotData.val_year.unique()):
+            yearData = commData.query(f"val_year=={year}")
+
+            for route in plotData.route.unique():
+                routeID = int(route[-1])
+                thisData = yearData.query(f"route=='{route}'")
+
+                fig.add_trace(
+                    go.Scatter(
+                        x=thisData.pd,
+                        y=thisData.cd,
+                        mode='lines',
+                        name=year,
+                        legendgroup=routeID,
+                        legendgrouptitle=dict(text=f"<b>Case {routeID}</b>"),
+                        line=dict(color=config['line_colour'][routeID], width=config['global']['lw_default'], dash='dot' if j else None),
+                        showlegend=not i,
+                    ),
+                    col=i+1,
+                    row=1,
+                )
 
             if year not in hasLegend:
                 hasLegend.append(year)
@@ -114,8 +122,8 @@ def __produceFigure(printData: dict, config: dict):
         legend_title='',
         yaxis=dict(title=config['yaxislabel'], range=[0.0, config['ymax']]),
         **{
-            f"xaxis{n+1 if n else ''}": dict(title='', range=config['xrange'])
-            for n in range(len(printData))
+            f"xaxis{i+1 if i else ''}": dict(title=f"{config['xaxislabel']}<br>{commodity}", range=config['xrange'])
+            for i, commodity in enumerate(commodities)
         }
     )
 

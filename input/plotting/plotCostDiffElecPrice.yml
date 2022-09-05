@@ -1,11 +1,13 @@
-yaxislabel: Cost difference (EUR/t)
-
-ymax: 200.0
-
+xaxislabel: Electricity-price difference (EUR/MWh)
 xrange:
   - 0.0
   - 50.0
+xsamples: 20
+
+yaxislabel: Cost difference (EUR/t)
+ymax: 200.0
 
 line_colour:
-  2025: '#db2a1a'
-  2050: '#00813e'
+  2: '#db2a1a'
+  3: '#00813e'
+  4: '#0000CC'
