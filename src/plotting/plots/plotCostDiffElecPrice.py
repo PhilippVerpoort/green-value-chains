@@ -105,6 +105,7 @@ def __produceFigure(plotData: dict, config: dict):
                         legendgrouptitle=dict(text=f"<b>Case {routeID}</b>"),
                         line=dict(color=config['line_colour'][routeID], width=config['global']['lw_default'], dash='dot' if j else None),
                         showlegend=not i,
+                        hovertemplate=f"<b>Case {routeID} in {int(year)}</b><br>Price difference: %{{x:.2f}}<br>Cost difference: %{{y:.2f}}<extra></extra>",
                     ),
                     col=i+1,
                     row=1,
