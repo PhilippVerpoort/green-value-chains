@@ -27,6 +27,7 @@ def plotAllFigs(output_data: dict, input_data: dict, plots_cfg: dict,
         'plotLevelisedCost': (output_data['costData'],),
         'plotValueCreation': (output_data['costData'],),
         'plotCostDiffElecPrice': (output_data['costData'], output_data['costDataRef'], input_data['prices'],),
+        'plotFlexibleCost': (output_data['costData'], output_data['costDataRef'], input_data['prices'],),
     }
 
     # set default theme

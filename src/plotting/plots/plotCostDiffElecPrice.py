@@ -61,7 +61,6 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
         .merge(costDelta, on=['commodity', 'route', 'val_year']) \
         .merge(elecPriceDiff, on=['val_year'])
 
-    pdMax = config['xrange'][1]
     plotData = pd.concat([
         tmp.assign(pd=pd, cd=lambda r: r.costRef + (r.cost-r.costRef)/r.priceDiff * pd)
         for pd in np.linspace(config['xrange'][0], config['xrange'][1], config['xsamples'])
@@ -84,7 +83,6 @@ def __produceFigure(plotData: dict, config: dict):
 
 
     # plot lines
-    hasLegend = []
     for i, commodity in enumerate(commodities):
         commData = plotData.query(f"commodity=='{commodity}'")
 
@@ -110,9 +108,6 @@ def __produceFigure(plotData: dict, config: dict):
                     col=i+1,
                     row=1,
                 )
-
-            if year not in hasLegend:
-                hasLegend.append(year)
 
 
     # set axes labels

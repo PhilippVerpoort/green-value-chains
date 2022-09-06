@@ -8,3 +8,5 @@ plotValueCreation:
   - fig2
 plotCostDiffElecPrice:
   - fig3
+plotFlexibleCost:
+  - fig4

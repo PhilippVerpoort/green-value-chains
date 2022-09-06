@@ -29,6 +29,14 @@ fig3:
   name: Figure 3
   title: Cost difference of scenarios for varying elec. price difference
   width: 100%
+fig4:
+  desc: Showing cost as a function of both operational capacity and electricity price.
+  display:
+  - /
+  - /advanced
+  name: Figure 4
+  title: Cost-effectiveness of flexible operation
+  width: 100%
 figS1:
   desc: 'Based on hydrogen direct reduction (H-DR) as well as fossil references using
     coal in blast furnace/basic-oxygen furance (BF-BOF) and natural-gas direct reduction
