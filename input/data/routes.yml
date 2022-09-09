@@ -8,70 +8,96 @@ Steel:
       BF: {}
       BOF:
         mode: primary
-  ELEC_H2DR_EAF:
-    import_cases:
-      '1':
-      - ore
-      '2':
-      - ore
-      - hydrogen
-      '3':
-      - dri
-      '4':
-      - steel
-    name: H2-DR
-    processes:
-      ELEC: {}
-      DR:
-        mode: H2
-      EAF:
-        mode: primary
-  H2DR_EAF:
-    import_cases:
-      '1':
-      - ore
-      '2':
-      - ore
-      - hydrogen
-      '3':
-      - dri
-      '4':
-      - steel
-    name: H2-DR
-    processes:
-      DR:
-        mode: H2
-      EAF:
-        mode: primary
   NGDR_EAF:
     import_cases:
       '1':
       - ore
     name: NG-DR
     processes:
-      ELEC: {}
       DR:
         mode: NG
       EAF:
         mode: primary
+  ELEC_H2DR_PRIMARY_EAF:
+    import_cases:
+      '1':
+      - ore
+      '2':
+      - ore
+      - hydrogen
+      '3':
+      - dri
+      '4':
+      - steel
+    name: H2-DR
+    processes:
+      ELEC: {}
+      DR:
+        mode: H2
+      EAF:
+        mode: primary
+  H2DR_PRIMARY_EAF:
+    import_cases:
+      '1':
+      - ore
+      '2':
+      - ore
+      - hydrogen
+      '3':
+      - dri
+      '4':
+      - steel
+    name: H2-DR
+    processes:
+      DR:
+        mode: H2
+      EAF:
+        mode: primary
+  ELEC_H2DR_SECONDARY_EAF:
+    import_cases:
+      '1':
+      - ore
+      '2':
+      - ore
+      - hydrogen
+      '3':
+      - dri
+      '4':
+      - steel
+    name: H2-DR
+    processes:
+      ELEC: {}
+      DR:
+        mode: H2
+      EAF:
+        mode: secondary
+  H2DR_SECONDARY_EAF:
+    import_cases:
+      '1':
+      - ore
+      '2':
+      - ore
+      - hydrogen
+      '3':
+      - dri
+      '4':
+      - steel
+    name: H2-DR
+    processes:
+      DR:
+        mode: H2
+      EAF:
+        mode: secondary
 
 
 Urea:
-  ELEC_HB_CCU_UREA:
+  SMR_HB_UREA:
     import_cases:
       '1':
       - none
-      '2':
-      - hydrogen
-      '3':
-      - ammonia
-      '4':
-      - urea
-    name: ELEC
+    name: SMR
     processes:
-      ELEC: {}
-      CCU: {}
-      HB: {}
+      SMR_HB: {}
       UREA: {}
   ELEC_HB_DAC_UREA:
     import_cases:
@@ -89,11 +115,49 @@ Urea:
       DAC: {}
       HB: {}
       UREA: {}
-  SMR_HB_UREA:
+  HB_DAC_UREA:
     import_cases:
       '1':
       - none
-    name: SMR
+      '2':
+      - hydrogen
+      '3':
+      - ammonia
+      '4':
+      - urea
+    name: ELEC
     processes:
-      SMR_HB: {}
+      DAC: {}
+      HB: {}
+      UREA: {}
+  ELEC_HB_CCU_UREA:
+    import_cases:
+      '1':
+      - none
+      '2':
+      - hydrogen
+      '3':
+      - ammonia
+      '4':
+      - urea
+    name: ELEC
+    processes:
+      ELEC: {}
+      CCU: {}
+      HB: {}
+      UREA: {}
+  HB_CCU_UREA:
+    import_cases:
+      '1':
+      - none
+      '2':
+      - hydrogen
+      '3':
+      - ammonia
+      '4':
+      - urea
+    name: ELEC
+    processes:
+      CCU: {}
+      HB: {}
       UREA: {}

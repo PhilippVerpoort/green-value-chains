@@ -3,6 +3,5 @@ times:
   - 2050
 
 include_electrolysis: True
-dac_or_ccu: DAC
 
 gwp: gwp100

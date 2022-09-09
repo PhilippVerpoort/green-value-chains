@@ -49,9 +49,11 @@ def __prepareCostData(techData: pd.DataFrame):
     FCR = i * (1 + i) ** n / ((1 + i) ** n - 1)
     IF = 1.8  # integration factor
 
+
     # capital cost
     costCapital = techData.query("type=='capex'").assign(val=lambda x: FCR * IF * x.val, type='capital')
     costCapital.loc[costCapital['process'] == 'ELEC', 'val'] /= 8760.0 # convert MW to MWh_pa
+
 
     # fixed cost
     fopexData = techData.query("type=='fixed_opex'")
@@ -61,6 +63,7 @@ def __prepareCostData(techData: pd.DataFrame):
                             .drop(columns=['val_x', 'val_y'])
     fopexDataLabour = fopexData.query("component=='labour'").assign(val=lambda x: x.val, type='fonmco')
     costFixed = pd.concat([fopexDataOnM, fopexDataLabour])
+
 
     # energy and feedstock cost
     energyFeedstockPrices = techData.query("type=='energy_prices' | type=='feedstock_prices'")

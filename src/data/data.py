@@ -26,36 +26,42 @@ def getFullData(input_data: dict):
     # determine routes based on options
     costDataList = []
     costDataListRef = []
+    costDataListRec = []
     for commodity in all_routes:
-        selectedRoutes = {
+        routes = {
             r: all_routes[commodity][r]
-            for r in __selectRoutes(commodity, options['include_electrolysis'], options['dac_or_ccu'])
+            for r in __selectRoutes(commodity, options['include_electrolysis'])
         }
 
+        recyclingTokens = ['SECONDARY', 'CCU']
+        routesWORecycling = {k: v for k, v in routes.items() if not any(t in k for t in recyclingTokens)}
+        routesWithRecycling = {k: v for k, v in routes.items() if any(t in k for t in recyclingTokens)}
+
         # calculate cost from tech data
-        costDataList.append(calcCost(techDataFull, prices, selectedRoutes, commodity))
+        costDataList.append(calcCost(techDataFull, prices, routesWORecycling, commodity))
 
         # calculate reference cost without price differences for Fig. 3
-        costDataListRef.append(calcCost(techDataFull, pricesRef, selectedRoutes, commodity))
+        costDataListRef.append(calcCost(techDataFull, pricesRef, routesWORecycling, commodity))
+
+        # calculate recycling cost for Fig. 5
+        costDataListRec.append(calcCost(techDataFull, pricesRef, routesWithRecycling, commodity))
 
 
     return {
         'techDataFull': techDataFull,
         'costData': pd.concat(costDataList),
         'costDataRef': pd.concat(costDataListRef),
+        'costDataRec': pd.concat(costDataListRec),
         'prices': prices,
     }
 
 
 # define which routes to work with based on options (include electrolysis, DAC vs CCU, etc.)
-def __selectRoutes(commodity: dict, include_electrolysis: bool, dac_or_ccu: str):
+def __selectRoutes(commodity: dict, include_electrolysis: bool):
     prefix = 'ELEC_'
     ret = [r for r in all_routes[commodity]]
-    route_electrolysis = [r.lstrip(prefix) for r in ret if r.startswith(prefix)]
+    route_electrolysis = [r.replace(prefix, '') for r in ret if r.startswith(prefix)]
     inc = prefix if include_electrolysis else ''
-    ret = [r for r in ret if r.lstrip(prefix) not in route_electrolysis] + [(inc + r) for r in route_electrolysis]
-
-    filter = 'DAC' if dac_or_ccu=='CCU' else 'CCU'
-    ret = [r for r in ret if filter not in r]
+    ret = [r for r in ret if r.replace(prefix, '') not in route_electrolysis] + [(inc + r) for r in route_electrolysis]
 
     return ret
