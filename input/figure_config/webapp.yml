@@ -7,7 +7,7 @@ fig1:
   display:
   - /
   - /advanced
-  height: 800px
+  height: 600px
   name: Figure 1
   title: Levelised cost of steel
   width: 100%
@@ -17,6 +17,7 @@ fig2:
   display:
   - /
   - /advanced
+  height: 600px
   name: Figure 2
   title: Value creation of processes
   width: 100%
@@ -46,7 +47,7 @@ figS1:
   display:
   - /
   - /advanced
-  height: 800px
+  height: 600px
   name: Figure S1
   nosettings: true
   title: Levelised cost of steel
