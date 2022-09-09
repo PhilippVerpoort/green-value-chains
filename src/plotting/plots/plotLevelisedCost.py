@@ -89,8 +89,10 @@ def __produceFigure(costData: pd.DataFrame, config: dict, commodity: str = ''):
     else:
         costData = costData.query(f"val_year=={config['show_year']} & route.str.startswith('Case')")
 
+
     # create figure
     fig = go.Figure()
+
 
     # add dummy entries such that the order is correct
     dummyData = costData.query(f"type=='dummy'")
@@ -99,6 +101,7 @@ def __produceFigure(costData: pd.DataFrame, config: dict, commodity: str = ''):
         y=dummyData.val,
         showlegend=False,
     ))
+
 
     # add traces for all cost types
     for type, display in config['types'].items():
@@ -114,12 +117,23 @@ def __produceFigure(costData: pd.DataFrame, config: dict, commodity: str = ''):
             hovertemplate=f"<b>{display['label']}</b>{'<br>%{customdata}' if hoverLabel else ''}<br>Cost: %{{y}} EUR/t<extra></extra>",
         ))
 
-    # add vertical line
-    nCommodities = costData['commodity'].nunique() if commodity else costData['val_year'].nunique()
-    nRoutes = costData['route'].nunique()
-    for i in range(nCommodities-1):
-        fig.add_vline(nRoutes*(i+1)-0.5, line_width=0.5, line_color='black')
-        fig.add_vline(nRoutes*(i+1)-0.5, line_width=0.5, line_color='black')
+
+    # add vertical lines
+    if commodity:
+        nY = costData.val_year.nunique()
+        for i, y in enumerate(sorted(costData.val_year.unique())):
+            if i+1 == nY: continue
+            nRoutes = costData.query(f"val_year=={y}").route.nunique()
+            fig.add_vline(nRoutes*(i+1)-0.5, line_width=0.5, line_color='black')
+            fig.add_vline(nRoutes*(i+1)-0.5, line_width=0.5, line_color='black')
+    else:
+        nC = costData.commodity.nunique()
+        for i, c in enumerate(costData.commodity.unique()):
+            if i+1 == nC: continue
+            nRoutes = costData.query(f"commodity=='{c}'").route.nunique()
+            fig.add_vline(nRoutes*(i+1)-0.5, line_width=0.5, line_color='black')
+            fig.add_vline(nRoutes*(i+1)-0.5, line_width=0.5, line_color='black')
+
 
     # set axes labels
     fig.update_layout(
