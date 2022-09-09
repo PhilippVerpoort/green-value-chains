@@ -148,11 +148,37 @@ def __produceFigure(costData: pd.DataFrame, config: dict):
                     hasLegend.append(type)
 
 
-    # add vertical line
-    for i, c in enumerate(costData.commodity.unique()[:-1]):
-        nProcesses = costData.query(f"commodity=='{c}'").process.nunique()
-        fig.add_vline(nProcesses*(i+1)-0.5, line_width=0.5, line_color='black')
-        fig.add_vline(nProcesses*(i+1)-0.5, line_width=0.5, line_color='black')
+    # add vertical lines and annotations
+    annotationArgs = dict(
+        xref='x domain',
+        xanchor='left',
+        y=1.0,
+        yref='y domain',
+        yanchor='top',
+        showarrow=False,
+        bordercolor='black',
+        borderwidth=2,
+        borderpad=3,
+        bgcolor='white',
+    )
+
+    nProcTot = sum(costData.query(f"commodity=='{c}'").process.nunique() for c in costData.commodity.unique())
+    nProcCur = 0
+    for i, c in enumerate(costData.commodity.unique()):
+        nProc = costData.query(f"commodity=='{c}'").process.nunique()
+
+        # add annotaiton
+        fig.add_annotation(
+            x=nProcCur/nProcTot,
+            text=f"<b>{c}</b>",
+            **annotationArgs,
+        )
+        nProcCur += nProc
+
+        # add vlines
+        if i+1 == costData.commodity.nunique(): continue
+        fig.add_vline(nProc*(i+1)-0.5, line_width=0.5, line_color='black')
+        fig.add_vline(nProc*(i+1)-0.5, line_width=0.5, line_color='black')
 
 
     # set axes labels
@@ -161,6 +187,17 @@ def __produceFigure(costData: pd.DataFrame, config: dict):
         xaxis=dict(title=''),
         yaxis=dict(title=config['yaxislabel'], range=[0.0, config['ymax']], domain=[0.4, 1.0]),
         legend_title='',
+    )
+
+
+    # set legend position
+    fig.update_layout(
+        legend=dict(
+            yanchor='top',
+            y=1.0,
+            xanchor='right',
+            x=1.0,
+        ),
     )
 
 

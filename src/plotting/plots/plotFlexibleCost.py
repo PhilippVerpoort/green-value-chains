@@ -97,6 +97,7 @@ def __produceFigure(pd_samples: np.ndarray, ocf_samples: np.ndarray, plotData: d
     for i, commodity in enumerate(plotData):
         tickvals = [100 * i for i in range(6)]
         ticktext = [str(v) for v in tickvals]
+
         fig.add_trace(
             go.Heatmap(
                 x=pd_samples,
@@ -150,12 +151,31 @@ def __produceFigure(pd_samples: np.ndarray, ocf_samples: np.ndarray, plotData: d
         )
 
 
+        # add text annotations explaining figure content
+        fig.add_annotation(
+            x=0.0,
+            xref='x domain',
+            xanchor='left',
+            y=1.0,
+            yref='y domain',
+            yanchor='top',
+            text=f"<b>{commodity}</b>",
+            showarrow=False,
+            bordercolor='black',
+            borderwidth=2,
+            borderpad=3,
+            bgcolor='white',
+            col=i+1,
+            row=1,
+        )
+
+
     # set axes labels
     fig.update_layout(
         legend_title='',
         yaxis=dict(title=config['yaxislabel'], range=config['yrange']),
         **{
-            f"xaxis{i+1 if i else ''}": dict(title=f"{config['xaxislabel']}<br>{commodity}", range=config['xrange'])
+            f"xaxis{i+1 if i else ''}": dict(title=f"{config['xaxislabel']}", range=config['xrange'])
             for i, commodity in enumerate(plotData)
         }
     )

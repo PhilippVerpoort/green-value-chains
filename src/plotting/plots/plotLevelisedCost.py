@@ -118,29 +118,76 @@ def __produceFigure(costData: pd.DataFrame, config: dict, commodity: str = ''):
         ))
 
 
-    # add vertical lines
+    # add vertical lines and annotations
+    annotationArgs = dict(
+        xref='x domain',
+        xanchor='left',
+        y=1.0,
+        yref='y domain',
+        yanchor='top',
+        showarrow=False,
+        bordercolor='black',
+        borderwidth=2,
+        borderpad=3,
+        bgcolor='white',
+    )
+
     if commodity:
-        nY = costData.val_year.nunique()
-        for i, y in enumerate(sorted(costData.val_year.unique())):
-            if i+1 == nY: continue
-            nRoutes = costData.query(f"val_year=={y}").route.nunique()
-            fig.add_vline(nRoutes*(i+1)-0.5, line_width=0.5, line_color='black')
-            fig.add_vline(nRoutes*(i+1)-0.5, line_width=0.5, line_color='black')
+        nProcTot = sum(costData.query(f"val_year=={y}").process.nunique() for y in costData.val_year.unique())
+        nProcCur = 0
+        for i, y in enumerate(costData.val_year.unique()):
+            nProc = costData.query(f"val_year=={y}").process.nunique()
+
+            # add annotaiton
+            fig.add_annotation(
+                x=nProcCur/nProcTot,
+                text=f"<b>{int(y)}</b>",
+                **annotationArgs,
+            )
+            nProcCur += nProc
+
+            # add vlines
+            if i+1 == costData.val_year.nunique(): continue
+            fig.add_vline(nProc*(i+1)-0.5, line_width=0.5, line_color='black')
+            fig.add_vline(nProc*(i+1)-0.5, line_width=0.5, line_color='black')
     else:
-        nC = costData.commodity.nunique()
+        nProcTot = sum(costData.query(f"commodity=='{c}'").route.nunique() for c in costData.commodity.unique())
+        nProcCur = 0
         for i, c in enumerate(costData.commodity.unique()):
-            if i+1 == nC: continue
-            nRoutes = costData.query(f"commodity=='{c}'").route.nunique()
-            fig.add_vline(nRoutes*(i+1)-0.5, line_width=0.5, line_color='black')
-            fig.add_vline(nRoutes*(i+1)-0.5, line_width=0.5, line_color='black')
+            nProc = costData.query(f"commodity=='{c}'").route.nunique()
+
+            # add annotaiton
+            fig.add_annotation(
+                x=nProcCur/nProcTot,
+                text=f"<b>{c}</b>",
+                **annotationArgs,
+            )
+            nProcCur += nProc
+
+            # add vlines
+            if i+1 == costData.commodity.nunique(): continue
+            fig.add_vline(nProc*(i+1)-0.5, line_width=0.5, line_color='black')
+            fig.add_vline(nProc*(i+1)-0.5, line_width=0.5, line_color='black')
 
 
     # set axes labels
     fig.update_layout(
         barmode='stack',
         xaxis=dict(title=''),
-        yaxis=dict(title=config['yaxislabel'], range=[0.0, config['ymax']]),
-        legend_title=''
+        yaxis=dict(title=config['yaxislabel'], range=[0.0, config['ymax']['commodity' if commodity else 'overview']]),
+        legend_title='',
     )
+
+
+    # set legend position
+    fig.update_layout(
+        legend=dict(
+            yanchor='top',
+            y=1.0,
+            xanchor='right',
+            x=1.0,
+        ),
+    )
+
 
     return fig

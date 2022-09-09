@@ -71,7 +71,7 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
 
 
 def __produceFigure(plotData: dict, config: dict):
-    commodities = plotData.commodity.unique().tolist()
+    commodities = plotData.commodity.unique().tolist()+['Ethylene']
 
 
     # create figure
@@ -110,14 +110,45 @@ def __produceFigure(plotData: dict, config: dict):
                 )
 
 
+        # add text annotations explaining figure content
+        fig.add_annotation(
+            x=0.0,
+            xref='x domain',
+            xanchor='left',
+            y=1.0,
+            yref='y domain',
+            yanchor='top',
+            text=f"<b>{commodity}</b>",
+            showarrow=False,
+            bordercolor='black',
+            borderwidth=2,
+            borderpad=3,
+            bgcolor='white',
+            col=i+1,
+            row=1,
+        )
+
+
     # set axes labels
     fig.update_layout(
         legend_title='',
         yaxis=dict(title=config['yaxislabel'], range=[0.0, config['ymax']]),
         **{
-            f"xaxis{i+1 if i else ''}": dict(title=f"{config['xaxislabel']}<br>{commodity}", range=config['xrange'])
+            f"xaxis{i+1 if i else ''}": dict(title=f"{config['xaxislabel']}", range=config['xrange'])
             for i, commodity in enumerate(commodities)
         }
+    )
+
+
+    # set legend position
+    fig.update_layout(
+        legend=dict(
+            orientation='h',
+            yanchor='top',
+            y=-0.25,
+            xanchor='left',
+            x=0.0,
+        ),
     )
 
 
