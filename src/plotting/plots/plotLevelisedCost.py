@@ -7,23 +7,27 @@ import plotly.graph_objects as go
 from src.load.load_default_data import all_processes, all_routes
 
 
-def plotLevelisedCost(costData: pd.DataFrame, config: dict, subfigs_needed: list, is_webapp: bool = False):
+def plotLevelisedCost(costData: pd.DataFrame, costDataRec: pd.DataFrame, config: dict, subfigs_needed: list, is_webapp: bool = False):
     ret = {}
 
 
     # make adjustments to data
-    costDataAggregated = __adjustData(costData, config) if subfigs_needed else None
+    costDataAggregated = __adjustData(costData, config) if any(fName in subfigs_needed for fName in ['fig1', 'figS1a', 'figS1b']) else None
+    costDataRecAggregated = __adjustData(costDataRec, config) if 'figS2' in subfigs_needed else None
 
 
     # produce fig1
     ret['fig1'] = __produceFigure(costDataAggregated, config) if 'fig1' in subfigs_needed else None
 
 
-    # produce SI figs
-    subfigs = []
+    # produce figS1
     for k, commodity in enumerate(list(all_routes.keys())):
         subfigName = f"figS1{ascii_lowercase[k]}"
         ret[subfigName] = __produceFigure(costDataAggregated, config, commodity=commodity) if subfigName in subfigs_needed else None
+
+
+    # produce figS2
+    ret['figS2'] = __produceFigure(costDataRecAggregated, config) if 'figS2' in subfigs_needed else None
 
 
     return ret

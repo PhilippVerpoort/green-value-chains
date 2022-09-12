@@ -1,0 +1,13 @@
+xaxislabel: Share of recycling (%)
+xrange:
+  - 0.0
+  - 90.0
+xsamples: 50
+
+yaxislabel: Cost difference (EUR/t)
+ymax: 200.0
+
+line_colour:
+  2: '#db2a1a'
+  3: '#00813e'
+  4: '#0000CC'

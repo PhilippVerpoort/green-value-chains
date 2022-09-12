@@ -4,9 +4,13 @@ plotLevelisedCost:
   figS1:
     - figS1a
     - figS1b
+  figS2:
+    - figS2
 plotValueCreation:
   - fig2
 plotCostDiffElecPrice:
   - fig3
 plotFlexibleCost:
   - fig4
+plotRecyclingCost:
+  - fig5

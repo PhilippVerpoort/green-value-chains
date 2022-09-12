@@ -38,6 +38,14 @@ fig4:
   name: Figure 4
   title: Cost-effectiveness of flexible operation
   width: 100%
+fig5:
+  desc: Showing cost as a function of the recylcing share.
+  display:
+  - /
+  - /advanced
+  name: Figure 5
+  title: Cost-effectiveness of recycling
+  width: 100%
 figS1:
   desc: 'Based on hydrogen direct reduction (H-DR) as well as fossil references using
     coal in blast furnace/basic-oxygen furance (BF-BOF) and natural-gas direct reduction
@@ -50,5 +58,15 @@ figS1:
   height: 600px
   name: Figure S1
   nosettings: true
-  title: Levelised cost of steel
+  title: Levelised cost for multiple years
+  width: 100%
+figS2:
+  desc: Using higher shares of recycling.
+  display:
+  - /
+  - /advanced
+  height: 600px
+  name: Figure S2
+  nosettings: true
+  title: Levelised cost for recycled routes
   width: 100%

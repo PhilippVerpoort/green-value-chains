@@ -44,7 +44,7 @@ def getFullData(input_data: dict):
         costDataListRef.append(calcCost(techDataFull, pricesRef, routesWORecycling, commodity))
 
         # calculate recycling cost for Fig. 5
-        costDataListRec.append(calcCost(techDataFull, pricesRef, routesWithRecycling, commodity))
+        costDataListRec.append(calcCost(techDataFull, prices, routesWithRecycling, commodity))
 
 
     return {

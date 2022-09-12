@@ -24,10 +24,11 @@ def plotAllFigs(output_data: dict, input_data: dict, plots_cfg: dict,
 
     # collect args for plot functions from data
     allPlotArgs = {
-        'plotLevelisedCost': (output_data['costData'],),
+        'plotLevelisedCost': (output_data['costData'], output_data['costDataRec'],),
         'plotValueCreation': (output_data['costData'],),
         'plotCostDiffElecPrice': (output_data['costData'], output_data['costDataRef'], input_data['prices'],),
         'plotFlexibleCost': (output_data['costData'], output_data['costDataRef'], input_data['prices'],),
+        'plotRecyclingCost': (output_data['costData'], output_data['costDataRec'],),
     }
 
     # set default theme
