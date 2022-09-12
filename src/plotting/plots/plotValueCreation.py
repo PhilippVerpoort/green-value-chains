@@ -2,6 +2,7 @@ import re
 
 import pandas as pd
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 from src.load.load_default_data import all_routes, all_processes
 
@@ -11,11 +12,11 @@ def plotValueCreation(costData: pd.DataFrame, config: dict, subfigs_needed: list
 
 
     # make adjustments to data
-    costDataNew = __adjustData(costData, config) if subfigs_needed else None
+    costDataNew, order = __adjustData(costData, config) if subfigs_needed else (None, None)
 
 
     # produce figure
-    ret['fig2'] = __produceFigure(costDataNew, config) if 'fig2' in subfigs_needed else None
+    ret['fig2'] = __produceFigure(costDataNew, order, config) if 'fig2' in subfigs_needed else None
 
 
     return ret
@@ -40,7 +41,8 @@ def __adjustData(costData: pd.DataFrame, config: dict):
 
 
     # modify data for each commodity
-    ret = []
+    retData = []
+    retOrder = {}
     for commodity, showRoute in plottedRoutes.items():
         # query relevant commodity data for given route
         costDataNewComm = costDataNew.query(f"route=='{showRoute}' & val_year=={config['show_year']}")\
@@ -64,50 +66,35 @@ def __adjustData(costData: pd.DataFrame, config: dict):
         costDataNewComm['process_label'] = [all_processes[p]['label'] for p in costDataNewComm['process']]
 
         # append data
-        ret.append(costDataNewComm)
+        retData.append(costDataNewComm)
 
-        # append dummy data for ordering entries correctly
-        dummyData = pd.DataFrame.from_records([
-            {
-                'commodity': commodity,
-                'process': p,
-                'process_label': all_processes[p]['label'],
-                'type': 'dummy',
-                'val': 0.0,
-            }
-            for p in processes_keys
-        ])
-
-        ret.append(dummyData)
+        # save list of processes, so they display in the correct order
+        retOrder[commodity] = processes_keys
 
 
-    return pd.concat(ret)
+    return pd.concat(retData), retOrder
 
 
-def __produceFigure(costData: pd.DataFrame, config: dict):
+def __produceFigure(costData: pd.DataFrame, processesOrdered: dict, config: dict):
+    commodities = costData.commodity.unique().tolist()
+
+
     # create figure
-    fig = go.Figure()
+    fig = make_subplots(
+        cols=len(commodities),
+        shared_yaxes=True,
+        horizontal_spacing=0.0,
+    )
 
 
-    # add dummy entries such that the order is correct
-    dummyData = costData.query(f"type=='dummy'")
-    fig.add_trace(go.Bar(
-        x=[dummyData.commodity, dummyData.process_label],
-        y=dummyData.val,
-        showlegend=False,
-    ))
-
-
-    # add traces for all cost types
-    showTypes = [(t, d) for t, d in config['types'].items() if t != 'dummy']
+    # add bars for each subplot
+    showTypes = [(t, d) for t, d in config['types'].items() if t in costData.type.unique()]
     hasLegend = []
-    index = 0
-    total = len([p for c in costData.commodity.unique() for p in dummyData.query(f"commodity=='{c}'").process.unique()])
-    for c in costData.commodity.unique():
-        plotDataComm = costData.query(f"commodity=='{c}' and type!='dummy'")
+    for i, c in enumerate(commodities):
+        plotData = costData.query(f"commodity=='{c}'")
 
-        for p in dummyData.query(f"commodity=='{c}'").process.unique():
-            plotDataProc = plotDataComm.query(f"process=='{p}'")
+        for j, p in enumerate(processesOrdered[c]):
+            plotDataProc = plotData.query(f"process=='{p}'")
 
             # add pie charts
             plotDataPie = plotDataProc.query(f"type!='upstream'")
@@ -115,32 +102,38 @@ def __produceFigure(costData: pd.DataFrame, config: dict):
                 labels=plotDataPie.replace({'type': {t: d['label'] for t,d in showTypes}}).type,
                 values=plotDataPie.val,
                 marker_colors=plotDataPie.replace({'type': {t: d['colour'] for t,d in showTypes}}).type,
-                hovertemplate='<b>%{label}</b><extra></extra>',
+                hovertemplate=f"<b>{all_processes[p]['label']}</b><br>%{{label}}<extra></extra>",
                 showlegend=False,
-                domain=dict(x=[1.0/total*index, 1.0/total*(index+1)], y=[0.0, 0.23]),
+                domain=dict(
+                    x=[i*1.0/len(commodities) + j*1.0/len(processesOrdered[c])/len(commodities), i*1.0/len(commodities) + (j+1)*1.0/len(processesOrdered[c])/len(commodities)],
+                    y=[0.0, 0.23],
+                ),
             ))
-            index += 1
 
             # add bar charts
             base = 0.0
             for type, display in showTypes:
-                plotData = plotDataProc.query(f"type=='{type}'")
-                addHeight = plotData.val.sum()
+                plotDataProcType = plotDataProc.query(f"type=='{type}'")
+                addHeight = plotDataProcType.val.sum()
 
                 if type == 'upstream' and p in config['skip_upstream']:
                     base += addHeight
                     continue
 
-                fig.add_trace(go.Bar(
-                    x=[plotData.commodity, plotData.process_label],
-                    y=plotData.val,
-                    base=base,
-                    marker_color=display['colour'],
-                    name=display['label'],
-                    hovertemplate=f"<b>{display['label']}</b><br>Cost: %{{y}} EUR/t<extra></extra>",
-                    showlegend=type not in hasLegend,
-                    legendgroup=type,
-                ))
+                fig.add_trace(
+                    go.Bar(
+                        x=plotDataProcType.process_label,
+                        y=plotDataProcType.val,
+                        base=base,
+                        marker_color=display['colour'],
+                        name=display['label'],
+                        hovertemplate=f"<b>{display['label']}</b><br>Cost: %{{y}} EUR/t<extra></extra>",
+                        showlegend=type not in hasLegend,
+                        legendgroup=type,
+                    ),
+                    row=1,
+                    col=i+1,
+                )
 
                 base += addHeight
 
@@ -148,44 +141,38 @@ def __produceFigure(costData: pd.DataFrame, config: dict):
                     hasLegend.append(type)
 
 
-    # add vertical lines and annotations
-    annotationArgs = dict(
-        xref='x domain',
-        xanchor='left',
-        y=1.0,
-        yref='y domain',
-        yanchor='top',
-        showarrow=False,
-        bordercolor='black',
-        borderwidth=2,
-        borderpad=3,
-        bgcolor='white',
-    )
-
-    nProcTot = sum(costData.query(f"commodity=='{c}'").process.nunique() for c in costData.commodity.unique())
-    nProcCur = 0
-    for i, c in enumerate(costData.commodity.unique()):
-        nProc = costData.query(f"commodity=='{c}'").process.nunique()
-
-        # add annotaiton
+        # add annotations
         fig.add_annotation(
-            x=nProcCur/nProcTot,
             text=f"<b>{c}</b>",
-            **annotationArgs,
+            x=0.0,
+            xref='x domain',
+            xanchor='left',
+            y=1.0,
+            yref='y domain',
+            yanchor='top',
+            showarrow=False,
+            bordercolor='black',
+            borderwidth=2,
+            borderpad=3,
+            bgcolor='white',
+            row=1,
+            col=i+1,
         )
-        nProcCur += nProc
-
-        # add vlines
-        if i+1 == costData.commodity.nunique(): continue
-        fig.add_vline(nProc*(i+1)-0.5, line_width=0.5, line_color='black')
-        fig.add_vline(nProc*(i+1)-0.5, line_width=0.5, line_color='black')
 
 
-    # set axes labels
+        # update layout of subplot
+        fig.update_layout(
+            **{
+                f"xaxis{i+1 if i else ''}": dict(title='', categoryorder='array', categoryarray=[p for p in processesOrdered[c] if p in plotData.process.unique()]),
+                f"yaxis{i+1 if i else ''}": dict(domain=[0.4, 1.0]),
+            },
+        )
+
+
+    # update layout of all plots
     fig.update_layout(
         barmode='stack',
-        xaxis=dict(title=''),
-        yaxis=dict(title=config['yaxislabel'], range=[0.0, config['ymax']], domain=[0.4, 1.0]),
+        yaxis=dict(title=config['yaxislabel'], range=[0.0, config['ymax']]),
         legend_title='',
     )
 
