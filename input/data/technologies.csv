@@ -9,7 +9,7 @@ UREA,capex,,,,EUR/t,232,,,Calculated from https://www.sciencedirect.com/science/
 HB,energy_demand,natural gas,,,t/t,0.17,,,Data Documentation (avg. from three sources),Natural gas is required for providing process heat; can be replaced with electric heat in 2050; approximately 6.8 GJ/t-7.65GJ/t heat (correct for boiler and heatpump efficiencies)
 SMR_HB,energy_demand,electricity,,,MWh/t,,,,,
 SMR_HB,energy_demand,natural gas,,,t/t,0.65,,,Boulamanti and Moya (2017),
-CCU,energy_demand,electricity,,,MWh/t,2,,,,Test value
+CCU,energy_demand,electricity,,,MWh/t,0.1,,,,Test value
 DAC,energy_demand,electricity,,,MWh/t,2,,,,Test value
 UREA,energy_demand,electricity,,,MWh/t,0.173,,,https://iopscience.iop.org/article/10.1088/1755-1315/472/1/012034/pdf,Quelle prüfen; hat keine Wärme GJ/t
 HB,feedstock_demand,nitrogen,,,t/t,0.85,,,UBA (2019),
@@ -56,11 +56,12 @@ BOF,feedstock_demand,scrap,,secondary,1,0.6,,,Agora Stahlrechner,
 DR,feedstock_demand,ore,,,1,1.504,,,Agora Stahlrechner,
 EAF,feedstock_demand,alloies,,,1,0.011,,,Agora Stahlrechner,
 EAF,feedstock_demand,dri,,primary,1,0.85,,,Agora Stahlrechner,
-EAF,feedstock_demand,dri,,secondary,1,0.35,,,Agora Stahlrechner,
+EAF,feedstock_demand,dri,,secondary,1,"0.1
+",,,Agora Stahlrechner,
 EAF,feedstock_demand,graphite,,,1,0.002,,,Agora Stahlrechner,
 EAF,feedstock_demand,lime,,,1,0.05,,,Agora Stahlrechner,
 EAF,feedstock_demand,scrap,,primary,1,0.1,,,Agora Stahlrechner,
-EAF,feedstock_demand,scrap,,secondary,1,0.6,,,Agora Stahlrechner,
+EAF,feedstock_demand,scrap,,secondary,1,0.85,,,Agora Stahlrechner,
 BOF,feedstock_prices,oxygen,,,EUR/t,60.8,,,Agora Stahlrechner,
 DR,feedstock_prices,ore,,,EUR/t,130,,,Agora Stahlrechner,
 EAF,feedstock_prices,alloies,,,EUR/t,1777,,,Agora Stahlrechner,
