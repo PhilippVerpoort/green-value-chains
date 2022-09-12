@@ -1,8 +1,8 @@
-import re
 from string import ascii_lowercase
 
 import pandas as pd
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 from src.load.load_default_data import all_processes, all_routes
 
@@ -12,22 +12,22 @@ def plotLevelisedCost(costData: pd.DataFrame, costDataRec: pd.DataFrame, config:
 
 
     # make adjustments to data
-    costDataAggregated = __adjustData(costData, config) if any(fName in subfigs_needed for fName in ['fig1', 'figS1a', 'figS1b']) else None
-    costDataRecAggregated = __adjustData(costDataRec, config) if 'figS2' in subfigs_needed else None
+    costDataAggregated, routeorder = __adjustData(costData, config) if any(fName in subfigs_needed for fName in ['fig1', 'figS1a', 'figS1b']) else (None, None)
+    costDataRecAggregated, _ = __adjustData(costDataRec, config) if 'figS2' in subfigs_needed else (None, None)
 
 
     # produce fig1
-    ret['fig1'] = __produceFigure(costDataAggregated, config) if 'fig1' in subfigs_needed else None
+    ret['fig1'] = __produceFigure(costDataAggregated, routeorder, config) if 'fig1' in subfigs_needed else None
 
 
     # produce figS1
     for k, commodity in enumerate(list(all_routes.keys())):
         subfigName = f"figS1{ascii_lowercase[k]}"
-        ret[subfigName] = __produceFigure(costDataAggregated, config, commodity=commodity) if subfigName in subfigs_needed else None
+        ret[subfigName] = __produceFigure(costDataAggregated, routeorder, config, commodity=commodity) if subfigName in subfigs_needed else None
 
 
     # produce figS2
-    ret['figS2'] = __produceFigure(costDataRecAggregated, config) if 'figS2' in subfigs_needed else None
+    ret['figS2'] = __produceFigure(costDataRecAggregated, routeorder, config) if 'figS2' in subfigs_needed else None
 
 
     return ret
@@ -49,10 +49,8 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     route_names_wiimp = {route_id: f"Case {route_id.split('_')[-1]}" for route_id in costDataNew['route'].unique() if route_id not in route_names_woimp}
     route_names = {**route_names_woimp, **route_names_wiimp}
 
-    # replace route names and add dummy data to force correct ordering
+    # rename routes into something readable
     costDataNew.replace({'route': route_names}, inplace=True)
-    dummyData = pd.DataFrame.from_records([{'commodity': pg, 'route': route_names[r], 'type': 'dummy', 'val': 0.0, 'val_year': y}
-                                           for r in route_names for y in showYears for pg in costData['commodity'].unique() if re.sub(r'_\d+$', '', r) in all_routes[pg]])
 
     # determine breakdown level of bars and associated hover labels
     if config['aggregate_by'] in ['none', 'subcomponent']:
@@ -84,100 +82,79 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     else:
         raise Exception('Value of aggregate_by in the plot config is invalid.')
 
-    return pd.concat([costDataNew, dummyData])
+    return costDataNew, list(route_names.values())
 
 
-def __produceFigure(costData: pd.DataFrame, config: dict, commodity: str = ''):
+def __produceFigure(costData: pd.DataFrame, routeorder: list, config: dict, commodity: str = ''):
     if commodity:
         costData = costData.query(f"commodity=='{commodity}'")
+        subplots = [int(y) for y in sorted(costData.val_year.unique())]
     else:
         costData = costData.query(f"val_year=={config['show_year']} & route.str.startswith('Case')")
+        subplots = costData.commodity.unique().tolist()+['Ethylene']
 
 
     # create figure
-    fig = go.Figure()
-
-
-    # add dummy entries such that the order is correct
-    dummyData = costData.query(f"type=='dummy'")
-    fig.add_trace(go.Bar(
-        x=[dummyData.val_year, dummyData.route] if commodity else [dummyData.commodity, dummyData.route],
-        y=dummyData.val,
-        showlegend=False,
-    ))
-
-
-    # add traces for all cost types
-    for type, display in config['types'].items():
-        plotData = costData.query(f"type=='{type}'")
-        hoverLabel = 'hover_label' in plotData.columns and any(plotData.hover_label.unique())
-
-        fig.add_trace(go.Bar(
-            x=[plotData.val_year, plotData.route] if commodity else [plotData.commodity, plotData.route],
-            y=plotData.val,
-            marker_color=display['colour'],
-            name=display['label'],
-            customdata=plotData.hover_label if hoverLabel else None,
-            hovertemplate=f"<b>{display['label']}</b>{'<br>%{customdata}' if hoverLabel else ''}<br>Cost: %{{y}} EUR/t<extra></extra>",
-        ))
-
-
-    # add vertical lines and annotations
-    annotationArgs = dict(
-        xref='x domain',
-        xanchor='left',
-        y=1.0,
-        yref='y domain',
-        yanchor='top',
-        showarrow=False,
-        bordercolor='black',
-        borderwidth=2,
-        borderpad=3,
-        bgcolor='white',
+    fig = make_subplots(
+        cols=len(subplots),
+        shared_yaxes=True,
+        horizontal_spacing=0.0,
     )
 
-    if commodity:
-        nProcTot = sum(costData.query(f"val_year=={y}").process.nunique() for y in costData.val_year.unique())
-        nProcCur = 0
-        for i, y in enumerate(costData.val_year.unique()):
-            nProc = costData.query(f"val_year=={y}").process.nunique()
 
-            # add annotaiton
-            fig.add_annotation(
-                x=nProcCur/nProcTot,
-                text=f"<b>{int(y)}</b>",
-                **annotationArgs,
+    # add bars for each subplot
+    for i, subplot in enumerate(subplots):
+        plotData = costData.query(f"val_year=={subplot}" if commodity else f"commodity=='{subplot}'")
+
+
+        # add traces for all cost types
+        for type, display in config['types'].items():
+            thisData = plotData.query(f"type=='{type}'")
+            hoverLabel = 'hover_label' in thisData.columns and any(thisData.hover_label.unique())
+
+            fig.add_trace(
+                go.Bar(
+                    x=thisData.route,
+                    y=thisData.val,
+                    marker_color=display['colour'],
+                    name=display['label'],
+                    customdata=thisData.hover_label if hoverLabel else None,
+                    showlegend=not i,
+                    hovertemplate=f"<b>{display['label']}</b>{'<br>%{customdata}' if hoverLabel else ''}<br>Cost: %{{y}} EUR/t<extra></extra>",
+                ),
+                row=1,
+                col=i+1,
             )
-            nProcCur += nProc
-
-            # add vlines
-            if i+1 == costData.val_year.nunique(): continue
-            fig.add_vline(nProc*(i+1)-0.5, line_width=0.5, line_color='black')
-            fig.add_vline(nProc*(i+1)-0.5, line_width=0.5, line_color='black')
-    else:
-        nProcTot = sum(costData.query(f"commodity=='{c}'").route.nunique() for c in costData.commodity.unique())
-        nProcCur = 0
-        for i, c in enumerate(costData.commodity.unique()):
-            nProc = costData.query(f"commodity=='{c}'").route.nunique()
-
-            # add annotaiton
-            fig.add_annotation(
-                x=nProcCur/nProcTot,
-                text=f"<b>{c}</b>",
-                **annotationArgs,
-            )
-            nProcCur += nProc
-
-            # add vlines
-            if i+1 == costData.commodity.nunique(): continue
-            fig.add_vline(nProc*(i+1)-0.5, line_width=0.5, line_color='black')
-            fig.add_vline(nProc*(i+1)-0.5, line_width=0.5, line_color='black')
 
 
-    # set axes labels
+        # add annotations
+        fig.add_annotation(
+            text=f"<b>{subplot}</b>",
+            x=0.0,
+            xref='x domain',
+            xanchor='left',
+            y=1.0,
+            yref='y domain',
+            yanchor='top',
+            showarrow=False,
+            bordercolor='black',
+            borderwidth=2,
+            borderpad=3,
+            bgcolor='white',
+            row=1,
+            col=i+1,
+        )
+
+
+        # update layout of subplot
+        fig.update_layout(
+            **{f"xaxis{i+1 if i else ''}": dict(title='', categoryorder='array', categoryarray=[r for r in routeorder if r in plotData.route.unique()])},
+        )
+
+
+    # update layout of all plots
     fig.update_layout(
         barmode='stack',
-        xaxis=dict(title=''),
         yaxis=dict(title=config['yaxislabel'], range=[0.0, config['ymax']['commodity' if commodity else 'overview']]),
         legend_title='',
     )
