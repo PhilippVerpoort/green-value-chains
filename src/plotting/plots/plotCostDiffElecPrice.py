@@ -98,7 +98,7 @@ def __produceFigure(plotData: dict, config: dict):
                         x=thisData.pd,
                         y=thisData.cd,
                         mode='lines',
-                        name=year,
+                        name=int(year),
                         legendgroup=routeID,
                         legendgrouptitle=dict(text=f"<b>Case {routeID}</b>"),
                         line=dict(color=config['line_colour'][routeID], width=config['global']['lw_default'], dash='dot' if j else None),
