@@ -17,7 +17,7 @@ def plotLevelisedCost(costData: pd.DataFrame, costDataRec: pd.DataFrame, config:
 
 
     # produce fig1
-    ret['fig1'] = __produceFigure(costDataAggregated, routeorder, config) if 'fig1' in subfigs_needed else None
+    ret['fig1'] = __produceFigure(costDataAggregated, routeorder, config, is_webapp) if 'fig1' in subfigs_needed else None
 
 
     # produce figS1
@@ -85,7 +85,7 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     return costDataNew, list(route_names.values())
 
 
-def __produceFigure(costData: pd.DataFrame, routeorder: list, config: dict, commodity: str = ''):
+def __produceFigure(costData: pd.DataFrame, routeorder: list, config: dict, commodity: str = '', is_webapp: bool = False):
     if commodity:
         costData = costData.query(f"commodity=='{commodity}'")
         subplots = [int(y) for y in sorted(costData.val_year.unique())]
@@ -150,6 +150,53 @@ def __produceFigure(costData: pd.DataFrame, routeorder: list, config: dict, comm
         fig.update_layout(
             **{f"xaxis{i+1 if i else ''}": dict(title='', categoryorder='array', categoryarray=[r for r in routeorder if r in plotData.route.unique()])},
         )
+
+
+        # add cost differences from Base Case
+        if not commodity and not is_webapp:
+            correction = 10.0
+            xshift = 2.5
+
+            baseCost = plotData.query("route.str.endswith(' 1')").val.sum()
+            fig.add_hline(
+                baseCost,
+                line_color='black',
+                line_width=config['global']['lw_thin'],
+                row=1,
+                col=i+1,
+            )
+
+            for j, route in enumerate(sorted(plotData.route.unique().tolist())[1:]):
+                thisCost = plotData.query(f"route=='{route}'").val.sum()
+
+                fig.add_annotation(
+                    x=j+1,
+                    y=thisCost,
+                    yref=f"y{i+1 if i else ''}",
+                    ax=j+1,
+                    ay=baseCost+correction,
+                    ayref=f"y{i+1 if i else ''}",
+                    arrowcolor='black',
+                    arrowwidth=config['global']['lw_thin'],
+                    arrowhead=2,
+                    row=1,
+                    col=i+1,
+                )
+
+                fig.add_annotation(
+                    text=f"{baseCost-thisCost: .2f}<br>({(baseCost-thisCost)/baseCost*100:.2f}%)",
+                    align='left',
+                    showarrow=False,
+                    x=j+1,
+                    xanchor='left',
+                    xshift=xshift,
+                    y=thisCost+(baseCost-thisCost)/2,
+                    yref=f"y{i+1 if i else ''}",
+                    yanchor='middle',
+                    row=1,
+                    col=i+1,
+                )
+
 
 
     # update layout of all plots
