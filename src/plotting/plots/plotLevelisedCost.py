@@ -17,7 +17,7 @@ def plotLevelisedCost(costData: pd.DataFrame, costDataRec: pd.DataFrame, config:
 
 
     # produce fig1
-    ret['fig1'] = __produceFigure(costDataAggregated, routeorder, config, is_webapp) if 'fig1' in subfigs_needed else None
+    ret['fig1'] = __produceFigure(costDataAggregated, routeorder, config, show_costdiff=not is_webapp) if 'fig1' in subfigs_needed else None
 
 
     # produce figS1
@@ -46,7 +46,7 @@ def __adjustData(costData: pd.DataFrame, config: dict):
 
     # define route names and ordering
     route_names_woimp = {route_id: route_vals['name'] for route_details in all_routes.values() for route_id, route_vals in sorted(route_details.items()) if route_id in costDataNew['route'].unique()}
-    route_names_wiimp = {route_id: f"Case {route_id.split('_')[-1]}" for route_id in costDataNew['route'].unique() if route_id not in route_names_woimp}
+    route_names_wiimp = {route_id: route_id.split('--')[-1] for route_id in costDataNew['route'].unique() if route_id not in route_names_woimp}
     route_names = {**route_names_woimp, **route_names_wiimp}
 
     # rename routes into something readable
@@ -82,15 +82,16 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     else:
         raise Exception('Value of aggregate_by in the plot config is invalid.')
 
+
     return costDataNew, list(route_names.values())
 
 
-def __produceFigure(costData: pd.DataFrame, routeorder: list, config: dict, commodity: str = '', is_webapp: bool = False):
+def __produceFigure(costData: pd.DataFrame, routeorder: list, config: dict, commodity: str = '', show_costdiff: bool = False):
     if commodity:
         costData = costData.query(f"commodity=='{commodity}'")
         subplots = [int(y) for y in sorted(costData.val_year.unique())]
     else:
-        costData = costData.query(f"val_year=={config['show_year']} & route.str.startswith('Case')")
+        costData = costData.query(f"val_year=={config['show_year']} & route.str.contains('Case')")
         subplots = costData.commodity.unique().tolist()+['Ethylene']
 
 
@@ -153,11 +154,11 @@ def __produceFigure(costData: pd.DataFrame, routeorder: list, config: dict, comm
 
 
         # add cost differences from Base Case
-        if not commodity and not is_webapp:
+        if show_costdiff:
             correction = 10.0
             xshift = 2.5
 
-            baseCost = plotData.query("route.str.endswith(' 1')").val.sum()
+            baseCost = plotData.query("route=='Base Case'").val.sum()
             fig.add_hline(
                 baseCost,
                 line_color='black',

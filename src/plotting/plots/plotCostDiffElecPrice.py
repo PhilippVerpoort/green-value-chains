@@ -28,9 +28,9 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
         .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
         .reset_index(drop=True)
 
-    costDelta = cost.query(r"(not route.str.endswith('_1')) and route.str.match('.*_\d+$')") \
-        .assign(baseRoute=lambda x: x.route.str.replace(r'_\d+$', '', regex=True)) \
-        .merge(cost.query("route.str.endswith('_1')").assign(baseRoute=lambda x: x.route.str.replace(r'_\d+$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
+    costDelta = cost.query(r"(not route.str.endswith('Base Case')) and route.str.match(r'.*--.*$')") \
+        .assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)) \
+        .merge(cost.query("route.str.endswith('Base Case')").assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
         .assign(cost=lambda x: x.val_y - x.val_x) \
         .drop(columns=['val_x', 'val_y', 'baseRoute'])
 
@@ -41,9 +41,9 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
         .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
         .reset_index(drop=True)
 
-    costRefDelta = costRef.query(r"(not route.str.endswith('_1')) and route.str.match('.*_\d+$')") \
-        .assign(baseRoute=lambda x: x.route.str.replace(r'_\d+$', '', regex=True)) \
-        .merge(costRef.query("route.str.endswith('_1')").assign(baseRoute=lambda x: x.route.str.replace(r'_\d+$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
+    costRefDelta = costRef.query(r"(not route.str.endswith('Base Case')) and route.str.match(r'.*--.*$')") \
+        .assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)) \
+        .merge(costRef.query("route.str.endswith('Base Case')").assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
         .assign(costRef=lambda x: x.val_y - x.val_x) \
         .drop(columns=['val_x', 'val_y', 'baseRoute'])
 

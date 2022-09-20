@@ -27,9 +27,9 @@ def __adjustData(costData: pd.DataFrame, costDataRec: pd.DataFrame, config: dict
         .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
         .reset_index(drop=True)
 
-    costDelta = cost.query(r"(not route.str.endswith('_1')) and route.str.match('.*_\d+$')") \
-        .assign(baseRoute=lambda x: x.route.str.replace(r'_\d+$', '', regex=True)) \
-        .merge(cost.query("route.str.endswith('_1')").assign(baseRoute=lambda x: x.route.str.replace(r'_\d+$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
+    costDelta = cost.query(r"(not route.str.endswith('Base Case')) and route.str.match(r'.*--.*$')") \
+        .assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)) \
+        .merge(cost.query("route.str.endswith('Base Case')").assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
         .assign(cost=lambda x: x.val_y - x.val_x) \
         .merge(pd.DataFrame.from_records([{'commodity': 'Steel', 'sh': 0.1}, {'commodity': 'Urea', 'sh': 0.0}])) \
         .drop(columns=['val_x', 'val_y', 'baseRoute']) \
@@ -42,9 +42,9 @@ def __adjustData(costData: pd.DataFrame, costDataRec: pd.DataFrame, config: dict
         .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
         .reset_index(drop=True)
 
-    costRecDelta = costRec.query(r"(not route.str.endswith('_1')) and route.str.match('.*_\d+$')") \
-        .assign(baseRoute=lambda x: x.route.str.replace(r'_\d+$', '', regex=True)) \
-        .merge(costRec.query("route.str.endswith('_1')").assign(baseRoute=lambda x: x.route.str.replace(r'_\d+$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
+    costRecDelta = costRec.query(r"(not route.str.endswith('Base Case')) and route.str.match(r'.*--.*$')") \
+        .assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)) \
+        .merge(costRec.query("route.str.endswith('Base Case')").assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
         .assign(costRef=lambda x: x.val_y - x.val_x) \
         .merge(pd.DataFrame.from_records([{'commodity': 'Steel', 'shRef': 0.85}, {'commodity': 'Urea', 'shRef': 1.0}])) \
         .drop(columns=['val_x', 'val_y', 'baseRoute']) \

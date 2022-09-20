@@ -7,8 +7,8 @@ simplify_types: True
 show_year: 2050
 
 import_route:
-  Steel: 1
-  Urea: 1
+  Steel: Base Case
+  Urea: Base Case
 
 skip_upstream:
   - DAC

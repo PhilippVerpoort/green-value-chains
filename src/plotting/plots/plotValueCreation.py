@@ -49,7 +49,7 @@ def __adjustData(costData: pd.DataFrame, config: dict):
                                      .drop(columns=['component', 'route', 'val_year'])
 
         # get processes in the route
-        processes = all_routes[commodity][re.sub('_\\d', '', showRoute)]['processes']
+        processes = all_routes[commodity][re.sub('--.*', '', showRoute)]['processes']
         processes_keys = list(processes.keys())
 
         # add upstream data for plotting

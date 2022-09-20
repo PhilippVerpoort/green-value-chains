@@ -29,7 +29,7 @@ def calcCost(tech_data_full: pd.DataFrame, prices: pd.DataFrame, selectedRoutes:
         if route_details['import_cases'] and len(route_details['import_cases']) > 1:
             for case_name, case_imports in route_details['import_cases'].items():
                 es_rout = __calcRouteCost(costData, prices, route_details['processes'], case_imports)
-                es_ret.extend([e.assign(route=f"{route_id}_{case_name}") for e in es_rout])
+                es_ret.extend([e.assign(route=f"{route_id}--{case_name}") for e in es_rout])
         else:
             es_rout = __calcRouteCost(costData, prices, route_details['processes'], next(c for c in route_details['import_cases'].values()) if route_details['import_cases'] else None)
             es_ret.extend([e.assign(route=route_id) for e in es_rout])
@@ -86,9 +86,9 @@ def __prepareCostData(techData: pd.DataFrame):
     costTransport = pd.concat([
         costTransport.dropna(subset=['process']),
         costTransport.query('process.isnull()', engine='python')
-                     .drop(columns=['process'])\
+                     .drop(columns=['process'])
                      .merge(energyFeedstockDemand.filter(['process', 'component', 'subcomponent', 'val', 'val_year', 'mode']), on=['component', 'val_year'], how='left')\
-                     .assign(val=lambda x: x.val_x * x.val_y)\
+                     .assign(val=lambda x: x.val_x * x.val_y)
                      .drop(columns=['val_x', 'val_y'])
     ])
 

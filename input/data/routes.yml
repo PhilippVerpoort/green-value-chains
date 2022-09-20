@@ -1,7 +1,7 @@
 Steel:
   BF_BOF:
     import_cases:
-      '1':
+      'Base Case':
       - ore
     name: BF-BOF
     processes:
@@ -10,7 +10,7 @@ Steel:
         mode: primary
   NGDR_EAF:
     import_cases:
-      '1':
+      'Base Case':
       - ore
     name: NG-DR
     processes:
@@ -20,14 +20,14 @@ Steel:
         mode: primary
   ELEC_H2DR_PRIMARY_EAF:
     import_cases:
-      '1':
+      'Base Case':
       - ore
-      '2':
+      'Case 1':
       - ore
       - hydrogen
-      '3':
+      'Case 2':
       - dri
-      '4':
+      'Case 3':
       - steel
     name: H2-DR
     processes:
@@ -38,14 +38,14 @@ Steel:
         mode: primary
   H2DR_PRIMARY_EAF:
     import_cases:
-      '1':
+      'Base Case':
       - ore
-      '2':
+      'Case 1':
       - ore
       - hydrogen
-      '3':
+      'Case 2':
       - dri
-      '4':
+      'Case 3':
       - steel
     name: H2-DR
     processes:
@@ -55,14 +55,14 @@ Steel:
         mode: primary
   ELEC_H2DR_SECONDARY_EAF:
     import_cases:
-      '1':
+      'Base Case':
       - ore
-      '2':
+      'Case 1':
       - ore
       - hydrogen
-      '3':
+      'Case 2':
       - dri
-      '4':
+      'Case 3':
       - steel
     name: H2-DR
     processes:
@@ -73,14 +73,14 @@ Steel:
         mode: secondary
   H2DR_SECONDARY_EAF:
     import_cases:
-      '1':
+      'Base Case':
       - ore
-      '2':
+      'Case 1':
       - ore
       - hydrogen
-      '3':
+      'Case 2':
       - dri
-      '4':
+      'Case 3':
       - steel
     name: H2-DR
     processes:
@@ -93,7 +93,7 @@ Steel:
 Urea:
   SMR_HB_UREA:
     import_cases:
-      '1':
+      'Base Case':
       - none
     name: SMR
     processes:
@@ -101,13 +101,13 @@ Urea:
       UREA: {}
   ELEC_HB_DAC_UREA:
     import_cases:
-      '1':
+      'Base Case':
       - none
-      '2':
+      'Case 1':
       - hydrogen
-      '3':
+      'Case 2':
       - ammonia
-      '4':
+      'Case 3':
       - urea
     name: ELEC
     processes:
@@ -117,13 +117,13 @@ Urea:
       UREA: {}
   HB_DAC_UREA:
     import_cases:
-      '1':
+      'Base Case':
       - none
-      '2':
+      'Case 1':
       - hydrogen
-      '3':
+      'Case 2':
       - ammonia
-      '4':
+      'Case 3':
       - urea
     name: ELEC
     processes:
@@ -132,13 +132,13 @@ Urea:
       UREA: {}
   ELEC_HB_CCU_UREA:
     import_cases:
-      '1':
+      'Base Case':
       - none
-      '2':
+      'Case 1':
       - hydrogen
-      '3':
+      'Case 2':
       - ammonia
-      '4':
+      'Case 3':
       - urea
     name: ELEC
     processes:
@@ -148,13 +148,13 @@ Urea:
       UREA: {}
   HB_CCU_UREA:
     import_cases:
-      '1':
+      'Base Case':
       - none
-      '2':
+      'Case 1':
       - hydrogen
-      '3':
+      'Case 2':
       - ammonia
-      '4':
+      'Case 3':
       - urea
     name: ELEC
     processes:
