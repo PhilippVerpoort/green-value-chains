@@ -1,10 +1,10 @@
 process,type,component,subcomponent,mode,unit,val,val_uncertainty,val_year,source,comment
 HB,capex,,,,EUR/t,400,,,"VCI, IEA (2018), Boulamanti and Moya (2017)",
 SMR_HB,capex,,,,EUR/t,670,,,"VCI, 2019","up to 817 €/t in VCI, IEA (2018), Boulamanti and Moya (2017)"
-CCU,capex,,,,t/t,200,,2025,https://www.researchgate.net/figure/Project-CapEx-learning-curves-for-CO-2-capture-by-direct-air-capture-DAC-and-carbon_fig5_353782658,high_uncertainty
-CCU,capex,,,,t/t,100,,2050,https://www.researchgate.net/figure/Project-CapEx-learning-curves-for-CO-2-capture-by-direct-air-capture-DAC-and-carbon_fig5_353782658,high_uncertainty
-DAC,capex,,,,t/t,400,,2025,https://www.researchgate.net/figure/Project-CapEx-learning-curves-for-CO-2-capture-by-direct-air-capture-DAC-and-carbon_fig5_353782658,high_uncertainty
-DAC,capex,,,,t/t,200,,2050,https://www.researchgate.net/figure/Project-CapEx-learning-curves-for-CO-2-capture-by-direct-air-capture-DAC-and-carbon_fig5_353782658,high_uncertainty
+CCU,capex,,,,EUR/t,200,high_uncertainty,2025,https://www.researchgate.net/figure/Project-CapEx-learning-curves-for-CO-2-capture-by-direct-air-capture-DAC-and-carbon_fig5_353782658,
+CCU,capex,,,,EUR/t,100,high_uncertainty,2050,https://www.researchgate.net/figure/Project-CapEx-learning-curves-for-CO-2-capture-by-direct-air-capture-DAC-and-carbon_fig5_353782658,
+DAC,capex,,,,EUR/t,400,high_uncertainty,2025,https://www.researchgate.net/figure/Project-CapEx-learning-curves-for-CO-2-capture-by-direct-air-capture-DAC-and-carbon_fig5_353782658,
+DAC,capex,,,,EUR/t,200,high_uncertainty,2050,https://www.researchgate.net/figure/Project-CapEx-learning-curves-for-CO-2-capture-by-direct-air-capture-DAC-and-carbon_fig5_353782658,
 UREA,capex,,,,EUR/t,232,,,Calculated from https://www.sciencedirect.com/science/article/pii/S1364032118300078,348 M for 1.5 Mt/yr = 232€/t; muss für korrekte Berechnung ggf. annuisiert werden mit erwarteter Lebensdauer;
 HB,energy_demand,natural gas,,,t/t,0.17,,,Data Documentation (avg. from three sources),Natural gas is required for providing process heat; can be replaced with electric heat in 2050; approximately 6.8 GJ/t-7.65GJ/t heat (correct for boiler and heatpump efficiencies)
 SMR_HB,energy_demand,electricity,,,MWh/t,,,,,
@@ -12,7 +12,7 @@ SMR_HB,energy_demand,natural gas,,,t/t,0.65,,,Boulamanti and Moya (2017),
 CCU,energy_demand,electricity,,,MWh/t,0.1,,,,Test value
 DAC,energy_demand,electricity,,,MWh/t,2,,,,Test value
 UREA,energy_demand,electricity,,,MWh/t,0.173,,,https://iopscience.iop.org/article/10.1088/1755-1315/472/1/012034/pdf,Quelle prüfen; hat keine Wärme GJ/t
-HB,feedstock_demand,nitrogen,,,t/t,0.85,,,UBA (2019),
+HB,feedstock_demand,nitrogen,,,t/t,0.85,low_uncertainty,,UBA (2019),Value from stoichiometric equation
 HB,energy_demand,hydrogen,,,MWh/t,5.93,,,Boulamanti and Moya (2017),Wert geprüft; UBA
 UREA,feedstock_demand,co2,,,t/t,0.76,,,"James A. Kent (Hrsg.): Riegel’s Handbook of Industrial Chemistry. Van Nostrand Reinhold, 1974",Prozess-Output: Wasser (0.34 t/t); CO2 und Ammonia werden teilweise im Kreis geführt (überstöchiometrischer Bedarf)
 UREA,feedstock_demand,ammonia,,,t/t,0.58,,,"James A. Kent (Hrsg.): Riegel’s Handbook of Industrial Chemistry. Van Nostrand Reinhold, 1974",Prozess-Output: Wasser (0.34 t/t); CO2 und Ammonia werden teilweise im Kreis geführt (überstöchiometrischer Bedarf)
@@ -31,49 +31,58 @@ ELEC,fixed_opex,onm,,,1,0.03,,,Agora Stahlrechner,
 BF,capex,,,,EUR/t,106,,,Agora Stahlrechner,
 BOF,capex,,,,EUR/t,64,,,Agora Stahlrechner,
 DR,capex,,,,EUR/t,230,,2025,Vogl et al,
-DR,capex,,,,EUR/t,200,,2050,Own assumptions,
+DR,capex,,,,EUR/t,200,,2050,Assumption,
 EAF,capex,,,,EUR/t,184,,,Vogl et al,
-BF,energy_demand,coal,,,1,0.17,,,Agora Stahlrechner,
-BF,energy_demand,coke,,,1,0.4,,,Agora Stahlrechner,
-BF,energy_demand,natural gas,,,MWh/t,0.17,,,Agora Stahlrechner,
-DR,energy_demand,electricity,,,MWh/t,0.329,,,Agora Stahlrechner,
-DR,energy_demand,hydrogen,,H2,MWh/t,1.69983,,,Vogl et al,
-DR,energy_demand,natural gas,,H2,MWh/t,0.5,,,Agora Stahlrechner,
-DR,energy_demand,natural gas,,NG,MWh/t,2.79,,,Agora Stahlrechner,
-EAF,energy_demand,electricity,For CDRI w/o heating,primary,MWh/t,0.753,,,Agora Stahlrechner,
-EAF,energy_demand,electricity,For using scrap,secondary,MWh/t,0.667,,,Agora Stahlrechner,
-EAF,energy_demand,electricity,Heating of CDRI,,MWh/t,0.159,,,Agora Stahlrechner,
-BF,energy_prices,coal,,,EUR/t,110,,,Agora Stahlrechner,
-BF,energy_prices,coke,,,EUR/t,143,,,Agora Stahlrechner,
-BF,feedstock_demand,lime,,,1,0.278,,,Agora Stahlrechner,
+BF,energy_demand,coal,,,1,0.17,,,Agora KSV Rechner Stahl,
+BF,energy_demand,coke,,,1,0.4,,,Agora KSV Rechner Stahl,
+BF,energy_demand,natural gas,,,MWh/t,0.17,,,Agora KSV Rechner Stahl,
+DR,energy_demand,electricity,,,MWh/t,0.329,,,Agora KSV Rechner Stahl,
+DR,energy_demand,hydrogen,,H2,MWh/t,1.699,,,Vogl et al,
+DR,energy_demand,natural gas,,H2,MWh/t,0.5,,,Agora KSV Rechner Stahl,
+DR,energy_demand,natural gas,,NG,MWh/t,2.79,,,Agora KSV Rechner Stahl,
+EAF,energy_demand,electricity,For CDRI w/o heating,primary,MWh/t,0.753,,,Agora KSV Rechner Stahl,
+EAF,energy_demand,electricity,For using scrap,secondary,MWh/t,0.667,,,Agora KSV Rechner Stahl,
+EAF,energy_demand,electricity,Heating of CDRI,,MWh/t,0.159,,,Agora KSV Rechner Stahl,
+BF,energy_prices,coal,,,EUR/t,110,,,Agora KSV Rechner Stahl,
+BF,energy_prices,coke,,,EUR/t,143,,,Agora KSV Rechner Stahl,
+BF,feedstock_demand,lime,,,1,0.278,,,Agora KSV Rechner Stahl,
 BF,feedstock_demand,ore,,,1,1.5,,,,
-BOF,feedstock_demand,alloies,,,1,0.011,,,Agora Stahlrechner,
-BOF,feedstock_demand,oxygen,,,1,0.18,,,Agora Stahlrechner,
-BOF,feedstock_demand,pig iron,,primary,1,0.85,,,Agora Stahlrechner,
-BOF,feedstock_demand,pig iron,,secondary,1,0.35,,,Agora Stahlrechner,
-BOF,feedstock_demand,scrap,,primary,1,0.1,,,Agora Stahlrechner,
-BOF,feedstock_demand,scrap,,secondary,1,0.6,,,Agora Stahlrechner,
-DR,feedstock_demand,ore,,,1,1.504,,,Agora Stahlrechner,
-EAF,feedstock_demand,alloies,,,1,0.011,,,Agora Stahlrechner,
-EAF,feedstock_demand,dri,,primary,1,0.85,,,Agora Stahlrechner,
+BOF,feedstock_demand,alloies,,,1,0.011,,,Agora KSV Rechner Stahl,
+BOF,feedstock_demand,oxygen,,,1,0.18,,,Agora KSV Rechner Stahl,
+BOF,feedstock_demand,pig iron,,primary,1,0.85,,,Agora KSV Rechner Stahl,
+BOF,feedstock_demand,pig iron,,secondary,1,0.35,,,Agora KSV Rechner Stahl,
+BOF,feedstock_demand,scrap,,primary,1,0.1,,,Agora KSV Rechner Stahl,
+BOF,feedstock_demand,scrap,,secondary,1,0.6,,,Agora KSV Rechner Stahl,
+DR,feedstock_demand,ore,,,1,1.504,,,Agora KSV Rechner Stahl,
+EAF,feedstock_demand,alloies,,,1,0.011,,,Agora KSV Rechner Stahl,
+EAF,feedstock_demand,dri,,primary,1,0.85,,,Agora KSV Rechner Stahl,
 EAF,feedstock_demand,dri,,secondary,1,"0.1
-",,,Agora Stahlrechner,
-EAF,feedstock_demand,graphite,,,1,0.002,,,Agora Stahlrechner,
-EAF,feedstock_demand,lime,,,1,0.05,,,Agora Stahlrechner,
-EAF,feedstock_demand,scrap,,primary,1,0.1,,,Agora Stahlrechner,
-EAF,feedstock_demand,scrap,,secondary,1,0.85,,,Agora Stahlrechner,
-BOF,feedstock_prices,oxygen,,,EUR/t,60.8,,,Agora Stahlrechner,
-DR,feedstock_prices,ore,,,EUR/t,130,,,Agora Stahlrechner,
-EAF,feedstock_prices,alloies,,,EUR/t,1777,,,Agora Stahlrechner,
-EAF,feedstock_prices,graphite,,,EUR/t,4000,,,Agora Stahlrechner,
-EAF,feedstock_prices,lime,,,EUR/t,100,,,Agora Stahlrechner,
-EAF,feedstock_prices,scrap,,,EUR/t,180,,,Agora Stahlrechner,
-BF,fixed_opex,labour,,,EUR/t,38,,,Agora Stahlrechner,
-BF,fixed_opex,onm,,,1,0.03,,,Agora Stahlrechner,
-BOF,fixed_opex,onm,,,1,0.03,,,Agora Stahlrechner,
-DR,fixed_opex,onm,,,1,0.03,,,Agora Stahlrechner,
-EAF,fixed_opex,labour,,,EUR/t,35,,,Agora Stahlrechner,
-EAF,fixed_opex,onm,,,1,0.03,,,Agora Stahlrechner,
+",,,Agora KSV Rechner Stahl,
+EAF,feedstock_demand,graphite,,,1,0.002,,,Agora KSV Rechner Stahl,
+EAF,feedstock_demand,lime,,,1,0.05,,,Agora KSV Rechner Stahl,
+EAF,feedstock_demand,scrap,,primary,1,0.1,,,Agora KSV Rechner Stahl,
+EAF,feedstock_demand,scrap,,secondary,1,0.85,,,Agora KSV Rechner Stahl,
+BOF,feedstock_prices,oxygen,,,EUR/t,60.8,,,Agora KSV Rechner Stahl,
+DR,feedstock_prices,ore,,,EUR/t,130,,,Agora KSV Rechner Stahl,
+EAF,feedstock_prices,alloies,,,EUR/t,1777,,,Agora KSV Rechner Stahl,
+EAF,feedstock_prices,graphite,,,EUR/t,4000,,,Agora KSV Rechner Stahl,
+EAF,feedstock_prices,lime,,,EUR/t,100,,,Agora KSV Rechner Stahl,
+EAF,feedstock_prices,scrap,,,EUR/t,180,,,Agora KSV Rechner Stahl,
+BF,fixed_opex,labour,,,EUR/t,38,,,Agora KSV Rechner Stahl,
+BF,fixed_opex,onm,,,1,0.03,,,Agora KSV Rechner Stahl,
+BOF,fixed_opex,onm,,,1,0.03,,,Agora KSV Rechner Stahl,
+DR,fixed_opex,onm,,,1,0.03,,,Agora KSV Rechner Stahl,
+EAF,fixed_opex,labour,,,EUR/t,35,,,Agora KSV Rechner Stahl,
+EAF,fixed_opex,onm,,,1,0.03,,,Agora KSV Rechner Stahl,
 ,transport,dri,,,EUR/t,20,,,,Anke?
 ,transport,ore,,,EUR/t,14,,,,Anke?
 ,transport,steel,,,EUR/t,30,,,,Anke?
+METHANOL,energy_demand,,,,MWh/t,1.5,,,Dechema (2017),
+METHANOL,feedstock_demand,co2,,,1,1.373,,,Dechema (2017),
+METHANOL,feedstock_demand,hydrogen,,,1,0.189,,,Dechema (2017),
+METHANOL,fixed_opex,,,,EUR/t,20,,,"Assumption, similar to other processes",Overall OPEX are reported as 290� in Dechema (2017)
+METHANOL,capex,,,,EUR/t,600,,,Assumption,
+ETHYLENE,energy_demand,,,,MWh/t,1.38,,,Dechema (2017),"5 GJ/tHVC for process Dechema (2017), assuming 100% electrification"
+ETHYLENE,feedstock_demand,methanol,,,1,2.28,,,Dechema (2017),add: carbon dioxide output 0.4 kg/kgEthylene
+ETHYLENE,fixed_opex,,,,EUR/t,20,,,https://energy.nl/media/data/Technology-Factsheet-Advanced-methanol-to-olefins.pdf,
+ETHYLENE,capex,,,,EUR/t,760,,,https://energy.nl/media/data/Technology-Factsheet-Advanced-methanol-to-olefins.pdf,"Wie werden die annuisierten CAPEX berechnet, wenn keine expected lifetime vorhanden ist?"
