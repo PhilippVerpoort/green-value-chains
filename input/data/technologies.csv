@@ -6,7 +6,7 @@ CCU,capex,,,,EUR/t,100,high_uncertainty,2050,https://www.researchgate.net/figure
 DAC,capex,,,,EUR/t,400,high_uncertainty,2025,https://www.researchgate.net/figure/Project-CapEx-learning-curves-for-CO-2-capture-by-direct-air-capture-DAC-and-carbon_fig5_353782658,
 DAC,capex,,,,EUR/t,200,high_uncertainty,2050,https://www.researchgate.net/figure/Project-CapEx-learning-curves-for-CO-2-capture-by-direct-air-capture-DAC-and-carbon_fig5_353782658,
 UREA,capex,,,,EUR/t,232,,,Calculated from https://www.sciencedirect.com/science/article/pii/S1364032118300078,348 M for 1.5 Mt/yr = 232‚Ç¨/t; muss f√ºr korrekte Berechnung ggf. annuisiert werden mit erwarteter Lebensdauer;
-HB,energy_demand,natural gas,,,t/t,0.17,,,Data Documentation (avg. from three sources),Natural gas is required for providing process heat; can be replaced with electric heat in 2050; approximately 6.8 GJ/t-7.65GJ/t heat (correct for boiler and heatpump efficiencies)
+HB,energy_demand,natural gas,,,t/t,0.17,,,PIK Data Documentation (avg. from three sources),Natural gas is required for providing process heat; can be replaced with electric heat in 2050; approximately 6.8 GJ/t-7.65GJ/t heat (correct for boiler and heatpump efficiencies)
 SMR_HB,energy_demand,electricity,,,MWh/t,,,,,
 SMR_HB,energy_demand,natural gas,,,t/t,0.65,,,Boulamanti and Moya (2017),
 CCU,energy_demand,electricity,,,MWh/t,0.1,,,,Test value
@@ -25,11 +25,11 @@ ELEC,capex,,,,EUR/MW,800000,,2025,,Simplified value
 ELEC,capex,,,,EUR/MW,300000,,2050,,Simplified value
 ELEC,energy_demand,electricity,,,1,1.47,,2025,IEA,
 ELEC,energy_demand,electricity,,,1,1.33,,2050,,
-ELEC,fixed_opex,onm,,,1,0.03,,,Agora Stahlrechner,
+ELEC,fixed_opex,onm,,,1,0.03,,,Agora KSV Rechner Stahl,
 ,transport,hydrogen,,,EUR/t,30,,2025,Acatech Daten,Anke?
 ,transport,hydrogen,,,EUR/t,20,,2050,Acatech Daten,Anke?
-BF,capex,,,,EUR/t,106,,,Agora Stahlrechner,
-BOF,capex,,,,EUR/t,64,,,Agora Stahlrechner,
+BF,capex,,,,EUR/t,106,,,Agora KSV Rechner Stahl,
+BOF,capex,,,,EUR/t,64,,,Agora KSV Rechner Stahl,
 DR,capex,,,,EUR/t,230,,2025,Vogl et al,
 DR,capex,,,,EUR/t,200,,2050,Assumption,
 EAF,capex,,,,EUR/t,184,,,Vogl et al,
@@ -74,15 +74,19 @@ BOF,fixed_opex,onm,,,1,0.03,,,Agora KSV Rechner Stahl,
 DR,fixed_opex,onm,,,1,0.03,,,Agora KSV Rechner Stahl,
 EAF,fixed_opex,labour,,,EUR/t,35,,,Agora KSV Rechner Stahl,
 EAF,fixed_opex,onm,,,1,0.03,,,Agora KSV Rechner Stahl,
-,transport,dri,,,EUR/t,20,,,,Anke?
-,transport,ore,,,EUR/t,14,,,,Anke?
-,transport,steel,,,EUR/t,30,,,,Anke?
 METHANOL,energy_demand,,,,MWh/t,1.5,,,Dechema (2017),
 METHANOL,feedstock_demand,co2,,,1,1.373,,,Dechema (2017),
 METHANOL,feedstock_demand,hydrogen,,,1,0.189,,,Dechema (2017),
-METHANOL,fixed_opex,,,,EUR/t,20,,,"Assumption, similar to other processes",Overall OPEX are reported as 290€ in Dechema (2017)
-METHANOL,capex,,,,EUR/t,600,,,Assumption,
+METHANOL,fixed_opex,,,,EUR/t,20,,2050,Assumption for low-cost scenario,Overall OPEX are reported as 290€ in Dechema (2017)
+METHANOL,capex,,,,EUR/t,600,,2050,Assumption for low-cost scenario,
+METHANOL,fixed_opex,,,,EUR/t,290,Value seems to be very high,,Dechema (2017); Tabelle 35; year 2015,
+METHANOL,capex,,,,EUR/t,1450,Value seems to be very high,,Dechema (2017); Tabelle 35; year 2015,
 ETHYLENE,energy_demand,,,,MWh/t,1.38,,,Dechema (2017),"5 GJ/tHVC for process Dechema (2017), assuming 100% electrification"
 ETHYLENE,feedstock_demand,methanol,,,1,2.28,,,Dechema (2017),add: carbon dioxide output 0.4 kg/kgEthylene
 ETHYLENE,fixed_opex,,,,EUR/t,20,,,https://energy.nl/media/data/Technology-Factsheet-Advanced-methanol-to-olefins.pdf,
+ETHYLENE,fixed_opex,,,,EUR/t,45,,,Dechema (2017),
 ETHYLENE,capex,,,,EUR/t,760,,,https://energy.nl/media/data/Technology-Factsheet-Advanced-methanol-to-olefins.pdf,"Wie werden die annuisierten CAPEX berechnet, wenn keine expected lifetime vorhanden ist?"
+ETHYLENE,capex,,,,EUR/t,300,,,https://energy.nl/media/data/Technology-Factsheet-Advanced-methanol-to-olefins.pdf,"Wie werden die annuisierten CAPEX berechnet, wenn keine expected lifetime vorhanden ist?"
+,transport,dri,,,EUR/t,20,,,,Anke?
+,transport,ore,,,EUR/t,14,,,,Anke?
+,transport,steel,,,EUR/t,30,,,,Anke?
