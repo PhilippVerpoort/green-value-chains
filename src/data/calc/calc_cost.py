@@ -47,11 +47,10 @@ def __prepareCostData(techData: pd.DataFrame):
     i = 0.08
     n = 18
     FCR = i * (1 + i) ** n / ((1 + i) ** n - 1)
-    IF = 1.8  # integration factor
 
 
     # capital cost
-    costCapital = techData.query("type=='capex'").assign(val=lambda x: FCR * IF * x.val, type='capital')
+    costCapital = techData.query("type=='capex'").assign(val=lambda x: FCR * x.val, type='capital')
     costCapital.loc[costCapital['process'] == 'ELEC', 'val'] /= 8760.0 # convert MW to MWh_pa
 
 
