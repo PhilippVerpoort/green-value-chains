@@ -16,7 +16,7 @@ def plotValueCreation(costData: pd.DataFrame, config: dict, subfigs_needed: list
 
 
     # produce figure
-    ret['fig2'] = __produceFigure(costDataNew, order, config) if 'fig2' in subfigs_needed else None
+    ret['fig4'] = __produceFigure(costDataNew, order, config) if 'fig4' in subfigs_needed else None
 
 
     return ret

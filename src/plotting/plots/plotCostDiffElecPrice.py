@@ -14,7 +14,7 @@ def plotCostDiffElecPrice(costData: pd.DataFrame, costDataRef: pd.DataFrame, pri
 
 
     # produce figure
-    ret['fig3'] = __produceFigure(plotData, config) if 'fig3' in subfigs_needed else None
+    ret['fig5'] = __produceFigure(plotData, config) if 'fig5' in subfigs_needed else None
 
 
     return ret

@@ -12,12 +12,12 @@ def plotLevelisedCost(costData: pd.DataFrame, costDataRec: pd.DataFrame, config:
 
 
     # make adjustments to data
-    costDataAggregated, routeorder = __adjustData(costData, config) if any(fName in subfigs_needed for fName in ['fig1', 'figS1a', 'figS1b']) else (None, None)
+    costDataAggregated, routeorder = __adjustData(costData, config) if any(fName in subfigs_needed for fName in ['fig3', 'figS1a', 'figS1b', 'figS1c', 'figS2']) else (None, None)
     costDataRecAggregated, _ = __adjustData(costDataRec, config) if 'figS2' in subfigs_needed else (None, None)
 
 
     # produce fig1
-    ret['fig1'] = __produceFigure(costDataAggregated, routeorder, config, show_costdiff=not is_webapp) if 'fig1' in subfigs_needed else None
+    ret['fig3'] = __produceFigure(costDataAggregated, routeorder, config, show_costdiff=not is_webapp) if 'fig3' in subfigs_needed else None
 
 
     # produce figS1

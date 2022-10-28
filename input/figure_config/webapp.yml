@@ -1,4 +1,4 @@
-fig1:
+fig3:
   desc: 'Based on hydrogen direct reduction (H-DR) as well as fossil references using
     coal in blast furnace/basic-oxygen furance (BF-BOF) and natural-gas direct reduction
     (NG-DR). Cases 1-4 represent the four different import routes for H-DR (1: importing
@@ -11,7 +11,7 @@ fig1:
   name: Figure 1
   title: Levelised cost of steel
   width: 100%
-fig2:
+fig4:
   desc: The relative share of energy cost in the value creation in each process step
     for Case 1 from above.
   display:
@@ -21,7 +21,7 @@ fig2:
   name: Figure 2
   title: Value creation of processes
   width: 100%
-fig3:
+fig5:
   desc: The cost difference between scenarios changes based on the price difference
     of renewable electricity.
   display:
@@ -30,7 +30,7 @@ fig3:
   name: Figure 3
   title: Cost difference of scenarios for varying elec. price difference
   width: 100%
-fig4:
+fig6:
   desc: Showing cost as a function of both operational capacity and electricity price.
   display:
   - /
@@ -38,7 +38,7 @@ fig4:
   name: Figure 4
   title: Cost-effectiveness of flexible operation
   width: 100%
-fig5:
+fig7:
   desc: Showing cost as a function of the recylcing share.
   display:
   - /
