@@ -161,3 +161,68 @@ Urea:
       CCU: {}
       HB: {}
       UREA: {}
+
+
+Ethylene:
+  ELEC_DAC_MEOH_MTO:
+    import_cases:
+      'Base Case':
+      - none
+      'Case 1':
+      - hydrogen
+      'Case 2':
+      - methanol
+      'Case 3':
+      - ethylene
+    name: ELEC
+    processes:
+      ELEC: {}
+      DAC: {}
+      MEOH: {}
+      MTO: {}
+  DAC_MEOH_MTO:
+    import_cases:
+      'Base Case':
+      - none
+      'Case 1':
+      - hydrogen
+      'Case 2':
+      - methanol
+      'Case 3':
+      - ethylene
+    name: ELEC
+    processes:
+      DAC: {}
+      MEOH: {}
+      MTO: {}
+  ELEC_CCU_MEOH_MTO:
+    import_cases:
+      'Base Case':
+      - none
+      'Case 1':
+      - hydrogen
+      'Case 2':
+      - methanol
+      'Case 3':
+      - ethylene
+    name: ELEC
+    processes:
+      ELEC: {}
+      DAC: {}
+      MEOH: {}
+      MTO: {}
+  CCU_MEOH_MTO:
+    import_cases:
+      'Base Case':
+      - none
+      'Case 1':
+      - hydrogen
+      'Case 2':
+      - methanol
+      'Case 3':
+      - ethylene
+    name: ELEC
+    processes:
+      DAC: {}
+      MEOH: {}
+      MTO: {}

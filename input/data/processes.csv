@@ -10,6 +10,6 @@ UREA,Urea production,urea,t
 SMR_HB,Integrated ammonia plant,ammonia,t
 DAC,Direct-air capture,co2,t
 CCU,Carbon-capture and storage,co2,t
-ASUN,Air separation for nitrogen,nitrogen,t
-METHANOL,Methanol production,methanol,t
-ETHYLENE,Methanol-to-Ethylene,ethylene,t
+ASU,Air separation for nitrogen,nitrogen,t
+MEOH,Methanol production,methanol,t
+MTO,Methanol-to-Ethylene,ethylene,t
