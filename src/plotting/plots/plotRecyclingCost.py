@@ -136,16 +136,4 @@ def __produceFigure(plotData: dict, config: dict):
     )
 
 
-    # set legend position
-    fig.update_layout(
-        legend=dict(
-            orientation='h',
-            yanchor='top',
-            y=-0.25,
-            xanchor='left',
-            x=0.0,
-        ),
-    )
-
-
     return fig

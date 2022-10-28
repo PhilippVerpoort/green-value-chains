@@ -1,7 +1,5 @@
 yaxislabel: Levelised Cost of Commodities (EUR/t)
 
-ymax: 600.0
-
 simplify_types: True
 
 show_year: 2050
@@ -9,6 +7,7 @@ show_year: 2050
 import_route:
   Steel: Base Case
   Urea: Base Case
+  Ethylene: Base Case
 
 skip_upstream:
   - DAC

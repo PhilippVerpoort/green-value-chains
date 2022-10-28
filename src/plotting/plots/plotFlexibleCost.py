@@ -75,7 +75,7 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
     ocf_samples = np.linspace(config['yrange'][0], config['yrange'][1], config['samples'])
     pd, ocf = np.meshgrid(pd_samples, ocf_samples)
 
-    plotData = {}
+    plotData = {c: 0.0 for c in costData.commodity.unique().tolist()}
     for index, row in tmp.iterrows():
         if row.val_year != config['showYear']: continue
         plotData[row.commodity] = row.costCap * (100.0/ocf - 1.0) + row.costRef + (row.cost - row.costRef) / row.priceDiff * pd

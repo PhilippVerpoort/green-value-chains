@@ -82,6 +82,9 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     else:
         raise Exception('Value of aggregate_by in the plot config is invalid.')
 
+    # sort by commodities
+    commodityOrder = costData.commodity.unique().tolist()
+    costDataNew.sort_values(by='commodity', key=lambda row: [commodityOrder.index(c) for c in row], inplace=True)
 
     return costDataNew, list(route_names.values())
 
@@ -92,20 +95,27 @@ def __produceFigure(costData: pd.DataFrame, routeorder: list, config: dict, comm
         subplots = [int(y) for y in sorted(costData.val_year.unique())]
     else:
         costData = costData.query(f"val_year=={config['show_year']} & route.str.contains('Case')")
-        subplots = costData.commodity.unique().tolist()+['Ethylene']
+        subplots = costData.commodity.unique().tolist()
 
 
     # create figure
     fig = make_subplots(
         cols=len(subplots),
-        shared_yaxes=True,
-        horizontal_spacing=0.0,
+        horizontal_spacing=0.05,
     )
 
 
     # add bars for each subplot
     for i, subplot in enumerate(subplots):
+        # select data for each subplot
         plotData = costData.query(f"val_year=={subplot}" if commodity else f"commodity=='{subplot}'")
+
+
+        # determine ymax
+        if config['ymaxcalc']:
+            ymax = 1.1 * plotData.query("route=='Base Case'").val.sum()
+        else:
+            ymax = config['ymax'][commodity] if commodity else config['ymax'][subplot]
 
 
         # add traces for all cost types
@@ -149,13 +159,16 @@ def __produceFigure(costData: pd.DataFrame, routeorder: list, config: dict, comm
 
         # update layout of subplot
         fig.update_layout(
-            **{f"xaxis{i+1 if i else ''}": dict(title='', categoryorder='array', categoryarray=[r for r in routeorder if r in plotData.route.unique()])},
+            **{
+                f"xaxis{i+1 if i else ''}": dict(title='', categoryorder='array', categoryarray=[r for r in routeorder if r in plotData.route.unique()]),
+                f"yaxis{i+1 if i else ''}": dict(title='', range=[0.0, ymax]),
+            },
         )
 
 
         # add cost differences from Base Case
         if show_costdiff:
-            correction = 10.0
+            correction = 0.018
             xshift = 2.5
 
             baseCost = plotData.query("route=='Base Case'").val.sum()
@@ -175,7 +188,7 @@ def __produceFigure(costData: pd.DataFrame, routeorder: list, config: dict, comm
                     y=thisCost,
                     yref=f"y{i+1 if i else ''}",
                     ax=j+1,
-                    ay=baseCost+correction,
+                    ay=baseCost+correction*ymax,
                     ayref=f"y{i+1 if i else ''}",
                     arrowcolor='black',
                     arrowwidth=config['global']['lw_thin'],
@@ -199,23 +212,11 @@ def __produceFigure(costData: pd.DataFrame, routeorder: list, config: dict, comm
                 )
 
 
-
     # update layout of all plots
     fig.update_layout(
         barmode='stack',
-        yaxis=dict(title=config['yaxislabel'], range=[0.0, config['ymax']['commodity' if commodity else 'overview']]),
+        yaxis_title=config['yaxislabel'],
         legend_title='',
-    )
-
-
-    # set legend position
-    fig.update_layout(
-        legend=dict(
-            yanchor='top',
-            y=1.0,
-            xanchor='right',
-            x=1.0,
-        ),
     )
 
 

@@ -1,8 +1,10 @@
 yaxislabel: Levelised Cost of Commodities (EUR/t)
 
+ymaxcalc: True
 ymax:
-  overview: 600.0
-  commodity: 700.0
+  Steel: 600
+  Urea: 500
+  Ethylene: 1000
 
 aggregate_by: subcomponent # all, process, component, subcomponent, or none
 

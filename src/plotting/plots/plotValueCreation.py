@@ -80,10 +80,10 @@ def __produceFigure(costData: pd.DataFrame, processesOrdered: dict, config: dict
 
 
     # create figure
+    hspcng = 0.04
     fig = make_subplots(
         cols=len(commodities),
-        shared_yaxes=True,
-        horizontal_spacing=0.0,
+        horizontal_spacing=hspcng,
     )
 
 
@@ -91,10 +91,30 @@ def __produceFigure(costData: pd.DataFrame, processesOrdered: dict, config: dict
     showTypes = [(t, d) for t, d in config['types'].items() if t in costData.type.unique()]
     hasLegend = []
     for i, c in enumerate(commodities):
+        # plot data for commodity
         plotData = costData.query(f"commodity=='{c}'")
 
+
+        # determine ymax
+        ymax = 1.2 * plotData.query("type!='upstream'").val.sum()
+
+
         for j, p in enumerate(processesOrdered[c]):
+            # plot data for individual process
             plotDataProc = plotData.query(f"process=='{p}'")
+
+
+            # determine spacing of pie charts
+            w1 = (1.0 - hspcng*(len(commodities)-1))/len(commodities)
+            w2 = w1/len(processesOrdered[c])
+
+            size = 0.10
+            spacing = 0.04
+
+            xstart = i * (w1+hspcng) + j * w2
+            xend = i * (w1 + hspcng) + (j+1) * w2
+            ypos = plotDataProc.val.sum()/ymax + size/2 + spacing
+
 
             # add pie charts
             plotDataPie = plotDataProc.query(f"type!='upstream'")
@@ -105,8 +125,8 @@ def __produceFigure(costData: pd.DataFrame, processesOrdered: dict, config: dict
                 hovertemplate=f"<b>{all_processes[p]['label']}</b><br>%{{label}}<extra></extra>",
                 showlegend=False,
                 domain=dict(
-                    x=[i*1.0/len(commodities) + j*1.0/len(processesOrdered[c])/len(commodities), i*1.0/len(commodities) + (j+1)*1.0/len(processesOrdered[c])/len(commodities)],
-                    y=[0.0, 0.23],
+                    x=[xstart, xend],
+                    y=[ypos-size/2, ypos+size/2],
                 ),
             ))
 
@@ -164,7 +184,7 @@ def __produceFigure(costData: pd.DataFrame, processesOrdered: dict, config: dict
         fig.update_layout(
             **{
                 f"xaxis{i+1 if i else ''}": dict(title='', categoryorder='array', categoryarray=[p for p in processesOrdered[c] if p in plotData.process.unique()]),
-                f"yaxis{i+1 if i else ''}": dict(domain=[0.4, 1.0]),
+                f"yaxis{i+1 if i else ''}": dict(title='', range=[0.0, ymax]),
             },
         )
 
@@ -172,19 +192,8 @@ def __produceFigure(costData: pd.DataFrame, processesOrdered: dict, config: dict
     # update layout of all plots
     fig.update_layout(
         barmode='stack',
-        yaxis=dict(title=config['yaxislabel'], range=[0.0, config['ymax']]),
+        yaxis=dict(title=config['yaxislabel']),
         legend_title='',
-    )
-
-
-    # set legend position
-    fig.update_layout(
-        legend=dict(
-            yanchor='top',
-            y=1.0,
-            xanchor='right',
-            x=1.0,
-        ),
     )
 
 

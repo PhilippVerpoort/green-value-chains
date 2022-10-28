@@ -67,18 +67,23 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
     ]).drop(columns=['cost', 'costRef', 'priceDiff'])
 
 
+    # sort by commodities
+    commodityOrder = costData.commodity.unique().tolist()
+    plotData.sort_values(by='commodity', key=lambda row: [commodityOrder.index(c) for c in row], inplace=True)
+
+
     return plotData
 
 
 def __produceFigure(plotData: dict, config: dict):
-    commodities = plotData.commodity.unique().tolist()+['Ethylene']
+    commodities = plotData.commodity.unique().tolist()
 
 
     # create figure
     fig = make_subplots(
         cols=len(commodities),
         shared_yaxes=True,
-        horizontal_spacing=0.025,
+        horizontal_spacing=0.01,
     )
 
 
@@ -137,18 +142,6 @@ def __produceFigure(plotData: dict, config: dict):
             f"xaxis{i+1 if i else ''}": dict(title=f"{config['xaxislabel']}", range=config['xrange'])
             for i, commodity in enumerate(commodities)
         }
-    )
-
-
-    # set legend position
-    fig.update_layout(
-        legend=dict(
-            orientation='h',
-            yanchor='top',
-            y=-0.25,
-            xanchor='left',
-            x=0.0,
-        ),
     )
 
 
