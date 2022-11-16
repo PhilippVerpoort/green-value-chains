@@ -63,7 +63,7 @@ def __adjustData(costData: pd.DataFrame, config: dict):
                                  .reset_index(drop=True)
 
         # add process labels
-        costDataNewComm['process_label'] = [all_processes[p]['label'] for p in costDataNewComm['process']]
+        costDataNewComm['process_label'] = [all_processes[p]['short'] for p in costDataNewComm['process']]
 
         # append data
         retData.append(costDataNewComm)
@@ -183,7 +183,7 @@ def __produceFigure(costData: pd.DataFrame, processesOrdered: dict, config: dict
         # update layout of subplot
         fig.update_layout(
             **{
-                f"xaxis{i+1 if i else ''}": dict(title='', categoryorder='array', categoryarray=[p for p in processesOrdered[c] if p in plotData.process.unique()]),
+                f"xaxis{i+1 if i else ''}": dict(title='', categoryorder='array', categoryarray=[all_processes[p]['short'] for p in processesOrdered[c] if p in plotData.process.unique()]),
                 f"yaxis{i+1 if i else ''}": dict(title='', range=[0.0, ymax]),
             },
         )

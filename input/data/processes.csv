@@ -1,15 +1,15 @@
-id,label,output,unit
-ELEC,Electrolysis,hydrogen,MWh (LHV)
-SMR,Steam methane reforming,hydrogen,MWh (LHV)
-DR,Direct reduction,dri,t
-EAF,Electric-arc furnace,steel,t
-BF,Blast furnace,pig iron,t
-BOF,Basic-oxygen furnace,steel,t
-HB,Haber-Bosch process,ammonia,t
-UREA,Urea production,urea,t
-SMR_HB,Integrated ammonia plant,ammonia,t
-DAC,Direct-air capture,co2,t
-CCU,Carbon-capture and storage,co2,t
-ASU,Air separation for nitrogen,nitrogen,t
-MEOH,Methanol production,methanol,t
-MTO,Methanol-to-Ethylene,ethylene,t
+id,short,label,output,unit
+ELEC,Electrolysis,Electrolysis,hydrogen,MWh (LHV)
+SMR,SMR,Steam methane reforming,hydrogen,MWh (LHV)
+DR,DR,Direct reduction,dri,t
+EAF,EAF,Electric-arc furnace,steel,t
+BF,BF,Blast furnace,pig iron,t
+BOF,BOF,Basic-oxygen furnace,steel,t
+HB,Haber-Bosch,Haber-Bosch process,ammonia,t
+UREA,Urea prod.,Urea production,urea,t
+SMR_HB,Integrated ammonia plant,Integrated ammonia plant,ammonia,t
+DAC,DAC,Direct-air capture,co2,t
+CCU,CCU,Carbon-capture and storage,co2,t
+ASU,ASU,Air separation for nitrogen,nitrogen,t
+MEOH,MeOH prod.,Methanol production,methanol,t
+MTO,MtO,Methanol-to-Ethylene,ethylene,t
