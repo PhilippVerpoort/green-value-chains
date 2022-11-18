@@ -71,14 +71,14 @@ UREA,feedstock_demand,co2,,,t/t,0.76,,,"James A. Kent (Hrsg.): Riegel’s Handbo
 UREA,fixed_opex,,,,EUR/t,11.6,,,Own calculation with 5% O&M cost,
 MEOH,capex,,,,EUR/t,600,,2050,Assumption for low-cost scenario,
 MEOH,capex,,,,EUR/t,1450,Value seems to be very high,,Dechema (2017); Tabelle 35; year 2015,
-MEOH,energy_demand,,,,MWh/t,1.5,,,Dechema (2017),
+MEOH,energy_demand,electricity,,,MWh/t,1.5,,,Dechema (2017),
 MEOH,feedstock_demand,co2,,,1,1.373,,,Dechema (2017),
 MEOH,feedstock_demand,hydrogen,,,1,0.189,,,Dechema (2017),
 MEOH,fixed_opex,,,,EUR/t,20,,2050,Assumption for low-cost scenario,Overall OPEX are reported as 290€ in Dechema (2017)
 MEOH,fixed_opex,,,,EUR/t,290,Value seems to be very high,,Dechema (2017); Tabelle 35; year 2015,
 MTO,capex,,,,EUR/t,760,,,https://energy.nl/media/data/Technology-Factsheet-Advanced-methanol-to-olefins.pdf,"Wie werden die annuisierten CAPEX berechnet, wenn keine expected lifetime vorhanden ist?"
 MTO,capex,,,,EUR/t,300,,,https://energy.nl/media/data/Technology-Factsheet-Advanced-methanol-to-olefins.pdf,"Wie werden die annuisierten CAPEX berechnet, wenn keine expected lifetime vorhanden ist?"
-MTO,energy_demand,,,,MWh/t,1.38,,,Dechema (2017),"5 GJ/tHVC for process Dechema (2017), assuming 100% electrification"
+MTO,energy_demand,electricity,,,MWh/t,1.38,,,Dechema (2017),"5 GJ/tHVC for process Dechema (2017), assuming 100% electrification"
 MTO,feedstock_demand,methanol,,,1,2.28,,,Dechema (2017),add: carbon dioxide output 0.4 kg/kgEthylene
 MTO,fixed_opex,,,,EUR/t,20,,,https://energy.nl/media/data/Technology-Factsheet-Advanced-methanol-to-olefins.pdf,
 MTO,fixed_opex,,,,EUR/t,45,,,Dechema (2017),
