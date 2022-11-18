@@ -9,9 +9,6 @@ def getFullTechData(times: list):
     # convert to standard units
     techdata = __convertUnits(default_techdata)
 
-    # add integration factors
-    techdata = __integrationFactors(techdata)
-
     # aggregate data from separate
     techdata = __aggregate(techdata)
 
@@ -23,15 +20,6 @@ def getFullTechData(times: list):
 
 def __convertUnits(techdata: pd.DataFrame):
     return techdata
-
-
-def __integrationFactors(techdata: pd.DataFrame):
-    if not techdata.query("integration_factor.notnull() and type!='capex'").empty:
-        raise Exception("Integration factor may only be set for CAPEX!")
-
-    return techdata.fillna({'integration_factor': 1.0}) \
-                   .assign(val=lambda x: x.integration_factor * x.val) \
-                   .drop(columns=['integration_factor'])
 
 
 
