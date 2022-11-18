@@ -3,13 +3,11 @@ electricity,importer,Elec. Price (Importer),EUR/MWh,60,2025
 electricity,exporter,Elec. Price (Exporter),EUR/MWh,30,2025
 electricity,importer,Elec. Price (Importer),EUR/MWh,50,2050
 electricity,exporter,Elec. Price (Exporter),EUR/MWh,15,2050
-hydrogen,importer,H2 price (Importer),EUR/MWh,100,2025
-hydrogen,exporter,H2 price (Exporter),EUR/MWh,60,2025
-hydrogen,importer,H2 price (Importer),EUR/MWh,60,2050
-hydrogen,exporter,H2 price (Exporter),EUR/MWh,40,2050
+hydrogen,importer,H₂ price (Importer),EUR/MWh,100,2025
+hydrogen,exporter,H₂ price (Exporter),EUR/MWh,60,2025
+hydrogen,importer,H₂ price (Importer),EUR/MWh,60,2050
+hydrogen,exporter,H₂ price (Exporter),EUR/MWh,40,2050
 natural gas,either,Natural-gas price,EUR/MWh,50,2025
 natural gas,either,Natural-gas price,EUR/MWh,45,2050
-ghg,either,Carbon price,EUR/t,100,2025
-ghg,either,Carbon price,EUR/t,300,2050
-co2,either,Carbon price,EUR/t,300,2025
-co2,either,Carbon price,EUR/t,100,2050
+co2,either,CO₂ feedstock price,EUR/t,100,2025
+co2,either,CO₂ feedstock price,EUR/t,200,2050
