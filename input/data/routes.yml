@@ -113,9 +113,9 @@ Urea:
     name: ELEC
     processes:
       ELEC: {}
-      DAC: {}
       ASU: {}
       HB: {}
+      DAC: {}
       UREA: {}
   HB_DAC_UREA:
     import_cases:
@@ -129,9 +129,9 @@ Urea:
       - urea
     name: ELEC
     processes:
-      DAC: {}
       ASU: {}
       HB: {}
+      DAC: {}
       UREA: {}
   ELEC_HB_CCU_UREA:
     import_cases:
@@ -146,9 +146,9 @@ Urea:
     name: ELEC
     processes:
       ELEC: {}
-      CCU: {}
       ASU: {}
       HB: {}
+      CCU: {}
       UREA: {}
   HB_CCU_UREA:
     import_cases:
@@ -162,9 +162,9 @@ Urea:
       - urea
     name: ELEC
     processes:
-      CCU: {}
       ASU: {}
       HB: {}
+      CCU: {}
       UREA: {}
 
 
