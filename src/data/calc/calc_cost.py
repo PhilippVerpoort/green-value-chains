@@ -130,7 +130,11 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
 
         # query for cost data relevant to this process and the chosen route
         queryStr = f"process=='{process}' & (mode.isnull() | mode.str.contains('{mode}'))" if mode else f"process=='{process}'"
-        thisCostData = {key: value.query(queryStr) for key, value in costData.items()}
+        thisCostData = {key: value.query(queryStr).copy() for key, value in costData.items()}
+
+        # remove entries if not needed for this import case
+        if 'dri' not in imports:
+            thisCostData['demand'] = thisCostData['demand'].query("subcomponent!='Heating of CDRI'")
 
         # add all data that does not need further treatment (capital & fixed cost + energy & feedstock cost with fixed prices)
         es_pro.append(thisCostData['capital'])
