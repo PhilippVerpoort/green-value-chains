@@ -50,8 +50,8 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
 
     # electricity price difference from prices object
     elecPriceDiff = prices \
-        .query("id=='price electricity'").filter(['val_year', 'val']) \
-        .merge(prices.query("id=='price electricity exporter'").filter(['val_year', 'val']), on=['val_year']) \
+        .query("component=='electricity' and location=='importer'").filter(['val_year', 'val']) \
+        .merge(prices.query("component=='electricity' and location=='exporter'").filter(['val_year', 'val']), on=['val_year']) \
         .assign(priceDiff=lambda x: x.val_x - x.val_y) \
         .drop(columns=['val_x', 'val_y'])
 

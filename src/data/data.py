@@ -16,10 +16,10 @@ def getFullData(input_data: dict):
 
 
     # set prices for reference calculation
-    exporterPrices = [p.rstrip(' exporter') for p in prices.id.unique() if p.endswith(' exporter')]
+    exporterPrices = prices.query("location=='exporter'").component.unique()
     pricesRef = pd.concat([
-        prices.query("not id.str.endswith(' exporter')"),
-        prices.query(f"id in {exporterPrices}").assign(id=lambda x: x.id.astype(str) + ' exporter'),
+        prices.query("location!='exporter'"),
+        prices.query(f"location=='importer' and component in @exporterPrices").assign(location='exporter'),
     ])
 
 

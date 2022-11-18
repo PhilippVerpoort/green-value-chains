@@ -15,11 +15,6 @@ def calcCost(tech_data_full: pd.DataFrame, prices: pd.DataFrame, selectedRoutes:
     costData = __prepareCostData(techData)
 
 
-    # obtain prices from spreadsheet
-    prices = prices.query(f"id.str.startswith('price ')").filter(['id', 'val', 'val_year']).rename(columns={'id': 'component'})
-    prices['component'] = prices['component'].str.replace('price ', '')
-
-
     # list of entries to return
     es_ret = []
 
@@ -116,13 +111,14 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
 
 
     # condition for using import or export prices
-    routePricesExportSpec = [c.rstrip(' exporter') for c in prices.component.unique() if 'exporter' in c]
     processAbroad = __getProcessesAbroad(costData, processes, imports)
 
-    condImport = ((costData['demand']['process'].isin(processAbroad) |
-                   costData['demand']['component'].isin(imports if imports else [])) &
-                   costData['demand']['component'].isin(routePricesExportSpec) &
-                  ~costData['demand']['component'].isin(allOutputs))
+    setLocation = costData['demand']['component'].isin(prices.query("location!='either'").component.unique()) & ~costData['demand']['component'].isin(allOutputs)
+    isImported = costData['demand']['process'].isin(processAbroad) | costData['demand']['component'].isin(imports if imports else [])
+
+    costData['demand'].loc[:, 'location'] = 'either'
+    costData['demand'].loc[setLocation & ~isImported, 'location'] = 'importer'
+    costData['demand'].loc[setLocation & isImported, 'location'] = 'exporter'
 
 
     for process in processes:
@@ -142,15 +138,10 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
         es_pro.append(thisCostData['energy_feedstock'])
         es_pro.append(thisCostData['transport'].query(f"component in @imports"))
 
-        # use exporters price where condition from above is met
-        pd.options.mode.chained_assignment = None
-        thisCostData['demand'].loc[condImport, 'component'] = thisCostData['demand'].loc[condImport, 'component'].replace('$', ' exporter', regex=True)
-        pd.options.mode.chained_assignment = 'warn'
-
         # add data for energy and feedstock cost with prices read from route_prices that are not upstream outputs
         es_pro.append(
             thisCostData['demand'].query('component not in @allOutputs') \
-                                  .merge(prices, on=['component', 'val_year']) \
+                                  .merge(prices.filter(['component', 'location', 'val', 'val_year']), on=['component', 'location', 'val_year']) \
                                   .assign(val=lambda x: x.val_x * x.val_y) \
                                   .drop(columns=['val_x', 'val_y'])
         )
