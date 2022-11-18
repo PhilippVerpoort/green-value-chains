@@ -18,7 +18,8 @@ def getElementSimpleControlsCard():
                     dash_table.DataTable(
                         id='simple-important-params',
                         columns=[
-                            {'id': 'id', 'name': 'ID', 'editable': False},
+                            {'id': 'component', 'name': 'ID', 'editable': False},
+                            {'id': 'location', 'name': 'Location', 'editable': False},
                             {'id': 'label', 'name': 'Parameter', 'editable': False,},
                             {'id': 'unit', 'name': 'Unit', 'editable': False,},
                             *({'id': f"val_{year}", 'name': f"Value {year}", 'type': 'numeric'} for year in default_options['times']),
@@ -28,7 +29,11 @@ def getElementSimpleControlsCard():
                         style_cell={'whiteSpace': 'pre-line'},
                         style_cell_conditional=[
                             {
-                                'if': {'column_id': 'id'},
+                                'if': {'column_id': 'component'},
+                                'display': 'none',
+                            },
+                            {
+                                'if': {'column_id': 'location'},
                                 'display': 'none',
                             },
                             {
