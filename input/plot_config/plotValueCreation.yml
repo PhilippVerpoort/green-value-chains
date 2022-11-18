@@ -10,4 +10,5 @@ import_route:
   Ethylene: Base Case
 
 skip_upstream:
+  - ASU
   - DAC

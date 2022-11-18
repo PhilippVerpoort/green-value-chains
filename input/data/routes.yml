@@ -97,6 +97,7 @@ Urea:
       - none
     name: SMR
     processes:
+      ASU: {}
       SMR_HB: {}
       UREA: {}
   ELEC_HB_DAC_UREA:
@@ -113,6 +114,7 @@ Urea:
     processes:
       ELEC: {}
       DAC: {}
+      ASU: {}
       HB: {}
       UREA: {}
   HB_DAC_UREA:
@@ -128,6 +130,7 @@ Urea:
     name: ELEC
     processes:
       DAC: {}
+      ASU: {}
       HB: {}
       UREA: {}
   ELEC_HB_CCU_UREA:
@@ -144,6 +147,7 @@ Urea:
     processes:
       ELEC: {}
       CCU: {}
+      ASU: {}
       HB: {}
       UREA: {}
   HB_CCU_UREA:
@@ -159,6 +163,7 @@ Urea:
     name: ELEC
     processes:
       CCU: {}
+      ASU: {}
       HB: {}
       UREA: {}
 
