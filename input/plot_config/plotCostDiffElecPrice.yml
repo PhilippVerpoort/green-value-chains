@@ -9,6 +9,8 @@ yaxislabel: Production-cost difference (EUR/t)
 ylabelshort: Prod-cost diff
 ymax: 200.0
 
+yaxis2label: Relative to Base Case production cost (%)
+
 line_colour:
   1: '#db2a1a'
   2: '#00813e'

@@ -10,11 +10,11 @@ def plotCostDiffElecPrice(costData: pd.DataFrame, costDataRef: pd.DataFrame, pri
 
 
     # make adjustments to data
-    plotData, elecPriceDiff = __adjustData(costData, costDataRef, prices, config) if subfigs_needed else None
+    plotData, elecPriceDiff, benchmarkCost = __adjustData(costData, costDataRef, prices, config) if subfigs_needed else None
 
 
     # produce figure
-    ret['fig5'] = __produceFigure(plotData, elecPriceDiff, config) if 'fig5' in subfigs_needed else None
+    ret['fig5'] = __produceFigure(plotData, elecPriceDiff, benchmarkCost, config) if 'fig5' in subfigs_needed else None
 
 
     return ret
@@ -72,10 +72,14 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
     plotData.sort_values(by='commodity', key=lambda row: [commodityOrder.index(c) for c in row], inplace=True)
 
 
-    return plotData, elecPriceDiff
+    # benchmark cost
+    benchmarkCost = cost.query("route.str.endswith('Base Case')")
 
 
-def __produceFigure(plotData: dict, elecPriceDiff: pd.DataFrame, config: dict):
+    return plotData, elecPriceDiff, benchmarkCost
+
+
+def __produceFigure(plotData: pd.DataFrame, elecPriceDiff: pd.DataFrame, benchmarkCost: pd.DataFrame, config: dict):
     commodities = plotData.commodity.unique().tolist()
 
 
@@ -83,7 +87,8 @@ def __produceFigure(plotData: dict, elecPriceDiff: pd.DataFrame, config: dict):
     fig = make_subplots(
         cols=len(commodities),
         shared_yaxes=True,
-        horizontal_spacing=0.01,
+        horizontal_spacing=0.03,
+        specs=[len(commodities) * [{"secondary_y": True}]],
     )
 
 
@@ -91,6 +96,7 @@ def __produceFigure(plotData: dict, elecPriceDiff: pd.DataFrame, config: dict):
     for i, commodity in enumerate(commodities):
         commData = plotData.query(f"commodity=='{commodity}' and val_year=={config['showYear']}")
         defaultPriceDiff = elecPriceDiff.query(f"val_year=={config['showYear']}").iloc[0].priceDiff
+        baseCaseCost = benchmarkCost.query(f"commodity=='{commodity}' and val_year=={config['showYear']}").iloc[0].val
 
         for route in plotData.route.unique():
             routeID = int(route[-1])
@@ -139,14 +145,31 @@ def __produceFigure(plotData: dict, elecPriceDiff: pd.DataFrame, config: dict):
         )
 
 
+        # add second yaxis
+        fig.add_trace(
+            go.Scatter(x=config["xrange"], y=[-10, -10], showlegend=False),
+            secondary_y=True,
+            col=i+1,
+            row=1,
+        )
+
+        fig.update_layout(
+            **{f"yaxis{2*i+2}": dict(
+                range=[0.0, config['ymax']/baseCaseCost*100],
+            )}
+        )
+
+
     # set axes labels
     fig.update_layout(
         legend_title='',
         yaxis=dict(title=config['yaxislabel'], range=[0.0, config['ymax']]),
         **{
-            f"xaxis{i+1 if i else ''}": dict(title=f"{config['xaxislabel']}", range=config['xrange'])
+            f"xaxis{i+1 if i else ''}": dict(range=config['xrange'])
             for i, commodity in enumerate(commodities)
-        }
+        },
+        xaxis2_title=f"{config['xaxislabel']}",
+        yaxis6_title=config['yaxis2label'],
     )
 
 
