@@ -1,13 +1,17 @@
 xaxislabel: Electricity-price difference (EUR/MWh)
+xlabelshort: Elec-price diff
 xrange:
   - 0.0
   - 50.0
 xsamples: 20
 
-yaxislabel: Cost difference (EUR/t)
+yaxislabel: Production-cost difference (EUR/t)
+ylabelshort: Prod-cost diff
 ymax: 200.0
 
 line_colour:
   1: '#db2a1a'
   2: '#00813e'
   3: '#0000CC'
+
+showYear: 2050

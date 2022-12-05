@@ -10,11 +10,11 @@ def plotCostDiffElecPrice(costData: pd.DataFrame, costDataRef: pd.DataFrame, pri
 
 
     # make adjustments to data
-    plotData = __adjustData(costData, costDataRef, prices, config) if subfigs_needed else None
+    plotData, elecPriceDiff = __adjustData(costData, costDataRef, prices, config) if subfigs_needed else None
 
 
     # produce figure
-    ret['fig5'] = __produceFigure(plotData, config) if 'fig5' in subfigs_needed else None
+    ret['fig5'] = __produceFigure(plotData, elecPriceDiff, config) if 'fig5' in subfigs_needed else None
 
 
     return ret
@@ -72,10 +72,10 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
     plotData.sort_values(by='commodity', key=lambda row: [commodityOrder.index(c) for c in row], inplace=True)
 
 
-    return plotData
+    return plotData, elecPriceDiff
 
 
-def __produceFigure(plotData: dict, config: dict):
+def __produceFigure(plotData: dict, elecPriceDiff: pd.DataFrame, config: dict):
     commodities = plotData.commodity.unique().tolist()
 
 
@@ -89,30 +89,35 @@ def __produceFigure(plotData: dict, config: dict):
 
     # plot lines
     for i, commodity in enumerate(commodities):
-        commData = plotData.query(f"commodity=='{commodity}'")
+        commData = plotData.query(f"commodity=='{commodity}' and val_year=={config['showYear']}")
+        defaultPriceDiff = elecPriceDiff.query(f"val_year=={config['showYear']}").iloc[0].priceDiff
 
-        for j, year in enumerate(plotData.val_year.unique()):
-            yearData = commData.query(f"val_year=={year}")
+        for route in plotData.route.unique():
+            routeID = int(route[-1])
+            thisData = commData.query(f"route=='{route}'")
 
-            for route in plotData.route.unique():
-                routeID = int(route[-1])
-                thisData = yearData.query(f"route=='{route}'")
+            fig.add_trace(
+                go.Scatter(
+                    x=thisData.pd,
+                    y=thisData.cd,
+                    mode='lines',
+                    name=f"Case {routeID}",
+                    line=dict(color=config['line_colour'][routeID], width=config['global']['lw_default']),
+                    showlegend=not i,
+                    hovertemplate=f"<b>Case {routeID}</b><br>{config['xlabelshort']}: %{{x:.2f}}<br>{config['ylabelshort']}: %{{y:.2f}}<extra></extra>",
+                ),
+                col=i+1,
+                row=1,
+            )
 
-                fig.add_trace(
-                    go.Scatter(
-                        x=thisData.pd,
-                        y=thisData.cd,
-                        mode='lines',
-                        name=int(year),
-                        legendgroup=routeID,
-                        legendgrouptitle=dict(text=f"<b>Case {routeID}</b>"),
-                        line=dict(color=config['line_colour'][routeID], width=config['global']['lw_default'], dash='dot' if j else None),
-                        showlegend=not i,
-                        hovertemplate=f"<b>Case {routeID} in {int(year)}</b><br>Price difference: %{{x:.2f}}<br>Cost difference: %{{y:.2f}}<extra></extra>",
-                    ),
-                    col=i+1,
-                    row=1,
-                )
+
+        # add vertical line indicating default price assumption
+        fig.add_vline(
+            defaultPriceDiff,
+            col=i+1,
+            row=1,
+            line_dash='dash',
+        )
 
 
         # add text annotations explaining figure content
