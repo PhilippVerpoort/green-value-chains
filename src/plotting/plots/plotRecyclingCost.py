@@ -13,7 +13,7 @@ def plotRecyclingCost(costData: pd.DataFrame, costDataRec: pd.DataFrame, config:
 
 
     # produce figure
-    ret['fig7'] = __produceFigure(plotData, config) if 'fig7' in subfigs_needed else None
+    ret['fig8'] = __produceFigure(plotData, config) if 'fig8' in subfigs_needed else None
 
 
     return ret
@@ -21,7 +21,7 @@ def plotRecyclingCost(costData: pd.DataFrame, costDataRec: pd.DataFrame, config:
 
 # make adjustments to data before plotting
 def __adjustData(costData: pd.DataFrame, costDataRec: pd.DataFrame, config: dict):
-    # cost delta of scenarios 2-4 in relation to scenario 1
+    # cost delta of Cases 1-3 in relation to Base Case
     cost = costData \
         .groupby(['commodity', 'route', 'val_year']) \
         .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
@@ -36,7 +36,7 @@ def __adjustData(costData: pd.DataFrame, costDataRec: pd.DataFrame, config: dict
         .assign(route=lambda x: x.route.str.get(-1))
 
 
-    # cost delta of scenarios 2-4 in relation to scenario 1 for reference with zero elec price difference
+    # cost delta of Cases 1-3 in relation to Base Case for reference with recycling
     costRec = costDataRec \
         .groupby(['commodity', 'route', 'val_year']) \
         .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \

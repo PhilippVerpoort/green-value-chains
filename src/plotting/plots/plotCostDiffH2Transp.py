@@ -4,57 +4,60 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 
-def plotFlexibleCost(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame, config: dict,
-                          subfigs_needed: list, is_webapp: bool = False):
+def plotCostDiffH2Transp(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame,
+                         costH2Transp: pd.DataFrame, config: dict, subfigs_needed: list, is_webapp: bool = False):
     ret = {}
 
 
     # make adjustments to data
-    pd_samples, ocf_samples, plotData = __adjustData(costData, costDataRef, prices, config) if subfigs_needed else None
+    pd_samples, tc_samples, plotData = __adjustData(costData, costDataRef, prices, costH2Transp, config) if subfigs_needed else None
 
 
     # produce figure
-    ret['fig7'] = __produceFigure(pd_samples, ocf_samples, plotData, config) if 'fig7' in subfigs_needed else None
+    ret['fig6'] = __produceFigure(pd_samples, tc_samples, plotData, config) if 'fig6' in subfigs_needed else None
 
 
     return ret
 
 
 # make adjustments to data before plotting
-def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame, config: dict):
-    # cost delta of Cases 1-3 in relation to Base Case
-    cost = costData.query("type!='capital'") \
+def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame, costH2TranspBase: pd.DataFrame, config: dict):
+    # transportation cost for hydrogen
+    costH2Transp = costData \
+        .query("type=='transport' and component=='hydrogen'") \
+        .groupby(['commodity', 'route', 'val_year']) \
+        .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
+        .reset_index(drop=True) \
+        .assign(costH2Transp=lambda x: x.val) \
+        .drop(columns=['val'])
+
+
+    # cost delta of Cases 1-3 in relation to Base Case without H2 transport cost
+    cost = costData \
+        .query("not (type=='transport' and component=='hydrogen')") \
         .groupby(['commodity', 'route', 'val_year']) \
         .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
         .reset_index(drop=True)
 
-    costDelta = cost.query("route.str.endswith('Case 3')") \
+    costDelta = cost.query(r"route.str.endswith('Case 1')") \
         .assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)) \
         .merge(cost.query("route.str.endswith('Base Case')").assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
         .assign(cost=lambda x: x.val_y - x.val_x) \
         .drop(columns=['val_x', 'val_y', 'baseRoute'])
 
 
-    # cost delta of Cases 1-3 in relation to Base Case for reference with zero elec price difference
-    costRef = costDataRef.query("type!='capital'") \
+    # cost delta of Cases 1-3 in relation to Base Case without H2 transport cost for reference with zero elec price difference
+    costRef = costDataRef \
+        .query("not (type=='transport' and component=='hydrogen')") \
         .groupby(['commodity', 'route', 'val_year']) \
         .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
         .reset_index(drop=True)
 
-    costRefDelta = costRef.query("route.str.endswith('Case 3')") \
+    costRefDelta = costRef.query(r"route.str.endswith('Case 1')") \
         .assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)) \
         .merge(costRef.query("route.str.endswith('Base Case')").assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
         .assign(costRef=lambda x: x.val_y - x.val_x) \
         .drop(columns=['val_x', 'val_y', 'baseRoute'])
-
-
-    # capital cost data
-    costCap = costData.query("type=='capital'") \
-        .groupby(['commodity', 'route', 'val_year']) \
-        .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
-        .reset_index(drop=True) \
-        .query("route.str.endswith('Case 3')") \
-        .rename(columns={'val': 'costCap'})
 
 
     # electricity price difference from prices object
@@ -65,26 +68,33 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
         .drop(columns=['val_x', 'val_y'])
 
 
+    # base H2 transportation cost
+    costH2TranspBase = costH2TranspBase \
+        .assign(costH2TranspBase=lambda x: x.val) \
+        .filter(['costH2TranspBase', 'val_year'])
+
+
     # linear interpolation of cost difference as a function of elec price
     tmp = costRefDelta \
         .merge(costDelta, on=['commodity', 'route', 'val_year']) \
-        .merge(costCap, on=['commodity', 'route', 'val_year']) \
+        .merge(costH2Transp, on=['commodity', 'route', 'val_year']) \
+        .merge(costH2TranspBase, on=['val_year']) \
         .merge(elecPriceDiff, on=['val_year'])
 
     pd_samples = np.linspace(config['xrange'][0], config['xrange'][1], config['samples'])
-    ocf_samples = np.linspace(config['yrange'][0], config['yrange'][1], config['samples'])
-    pd, ocf = np.meshgrid(pd_samples, ocf_samples)
+    tc_samples = np.linspace(config['yrange'][0], config['yrange'][1], config['samples'])
+    pd, tc = np.meshgrid(pd_samples, tc_samples)
 
     plotData = {c: 0.0 for c in costData.commodity.unique().tolist()}
     for index, r in tmp.iterrows():
         if r.val_year != config['showYear']: continue
-        plotData[r.commodity] = r.costCap * (100.0/ocf - 1.0) + r.costRef + (r.cost - r.costRef) / r.priceDiff * pd
+        plotData[r.commodity] = r.costRef + (r.cost-r.costRef)/r.priceDiff * pd - r.costH2Transp/r.costH2TranspBase * tc
 
 
-    return pd_samples, ocf_samples, plotData
+    return pd_samples, tc_samples, plotData
 
 
-def __produceFigure(pd_samples: np.ndarray, ocf_samples: np.ndarray, plotData: dict, config: dict):
+def __produceFigure(pd_samples: np.ndarray, tc_samples: np.ndarray, plotData: dict, config: dict):
     # create figure
     fig = make_subplots(
         cols=len(plotData),
@@ -95,29 +105,26 @@ def __produceFigure(pd_samples: np.ndarray, ocf_samples: np.ndarray, plotData: d
 
     # plot heatmaps and contours
     for i, commodity in enumerate(plotData):
-        tickvals = [100 * i for i in range(6)]
-        ticktext = [str(v) for v in tickvals]
-
         fig.add_trace(
             go.Heatmap(
                 x=pd_samples,
-                y=ocf_samples,
+                y=tc_samples,
                 z=plotData[commodity],
                 zsmooth='best',
                 zmin=config['zrange'][0],
                 zmax=config['zrange'][1],
                 colorscale=[
-                    [0.0, '#c6dbef'],
-                    [1.0, '#f7bba1'],
+                    [0.0, config['zcolours'][0]],
+                    [1.0, config['zcolours'][1]],
                 ],
                 colorbar=dict(
-                    x=1.05,
-                    y=0.25,
-                    len=0.5,
-                    title='Cost difference (EUR/t)',
-                    titleside='top',
-                    tickvals=tickvals,
-                    ticktext=ticktext,
+                    x=1.02,
+                    y=0.5,
+                    len=0.8,
+                    title=config['zaxislabel'],
+                    titleside='right',
+                    tickvals=[float(t) for t in config['zticks']],
+                    ticktext=config['zticks'],
                 ),
                 showscale=True,
                 hoverinfo='skip',
@@ -129,7 +136,7 @@ def __produceFigure(pd_samples: np.ndarray, ocf_samples: np.ndarray, plotData: d
         fig.add_trace(
             go.Contour(
                 x=pd_samples,
-                y=ocf_samples,
+                y=tc_samples,
                 z=plotData[commodity],
                 contours_coloring='lines',
                 colorscale=[
@@ -139,9 +146,9 @@ def __produceFigure(pd_samples: np.ndarray, ocf_samples: np.ndarray, plotData: d
                 line_width=config['global']['lw_thin'],
                 contours=dict(
                     showlabels=True,
-                    start=config['zrange'][0],
-                    end=config['zrange'][1],
-                    size=config['zdelta'],
+                    start=config['zrange2'][0],
+                    end=config['zrange2'][1],
+                    size=config['zdelta'][i],
                 ),
                 showscale=False,
                 hoverinfo='skip',
@@ -173,11 +180,16 @@ def __produceFigure(pd_samples: np.ndarray, ocf_samples: np.ndarray, plotData: d
     # set axes labels
     fig.update_layout(
         legend_title='',
-        yaxis=dict(title=config['yaxislabel'], range=config['yrange']),
+        yaxis_title=config['yaxislabel'],
+        xaxis2_title=f"{config['xaxislabel']}",
         **{
-            f"xaxis{i+1 if i else ''}": dict(title=f"{config['xaxislabel']}", range=config['xrange'])
+            f"xaxis{i+1 if i else ''}": dict(range=config['xrange'])
             for i, commodity in enumerate(plotData)
-        }
+        },
+        **{
+            f"yaxis{i+1 if i else ''}": dict(range=config['yrange'])
+            for i, commodity in enumerate(plotData)
+        },
     )
 
 

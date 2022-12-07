@@ -15,12 +15,14 @@ def getFullData(input_data: dict):
     techDataFull = getFullTechData(options['times'])
 
 
-    # set prices for reference calculation
+    # get tech data and prices for reference calculation
     exporterPrices = prices.query("location=='exporter'").component.unique()
     pricesRef = pd.concat([
         prices.query("location!='exporter'"),
         prices.query(f"location=='importer' and component in @exporterPrices").assign(location='exporter'),
     ])
+
+    costH2Transp = techDataFull.query(f"type=='transport' and component=='hydrogen'")
 
 
     # determine routes based on options
@@ -53,6 +55,7 @@ def getFullData(input_data: dict):
         'costDataRef': pd.concat(costDataListRef),
         'costDataRec': pd.concat(costDataListRec),
         'prices': prices,
+        'costH2Transp': costH2Transp,
     }
 
 

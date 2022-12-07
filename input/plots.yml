@@ -11,7 +11,9 @@ plotValueCreation:
   - fig4
 plotCostDiffElecPrice:
   - fig5
-plotFlexibleCost:
+plotCostDiffH2Transp:
   - fig6
-plotRecyclingCost:
+plotFlexibleCost:
   - fig7
+plotRecyclingCost:
+  - fig8

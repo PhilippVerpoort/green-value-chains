@@ -27,6 +27,7 @@ def plotAllFigs(output_data: dict, input_data: dict, plots_cfg: dict,
         'plotLevelisedCost': (output_data['costData'], output_data['costDataRec'],),
         'plotValueCreation': (output_data['costData'],),
         'plotCostDiffElecPrice': (output_data['costData'], output_data['costDataRef'], input_data['prices'],),
+        'plotCostDiffH2Transp': (output_data['costData'], output_data['costDataRef'], input_data['prices'], output_data['costH2Transp']),
         'plotFlexibleCost': (output_data['costData'], output_data['costDataRef'], input_data['prices'],),
         'plotRecyclingCost': (output_data['costData'], output_data['costDataRec'],),
     }

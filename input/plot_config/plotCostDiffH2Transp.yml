@@ -1,0 +1,38 @@
+xaxislabel: Electricity-price difference (EUR/MWh)
+xlabelshort: Elec-price diff
+xrange:
+  - 0.0
+  - 50.0
+xsamples: 20
+
+yaxislabel: H₂ specific transportation cost (EUR/MWh)
+ylabelshort:  H₂ transp cost
+yrange:
+  - 0.0
+  - 50.0
+
+zaxislabel: Production-cost difference (EUR/t)
+zlabelshort: Prod-cost diff
+zrange:
+  - -100.0
+  - +100.0
+zrange2:
+  - -400.0
+  - +400.0
+zdelta:
+  - 20.0
+  - 20.0
+  - 5.0
+zcolours:
+  - '#9DA4D2'
+  - '#F3DA9C'
+zticks:
+  - 100
+  - 50
+  - 0
+  - -50
+  - -100
+
+samples: 51
+
+showYear: 2050

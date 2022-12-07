@@ -22,7 +22,7 @@ def plotCostDiffElecPrice(costData: pd.DataFrame, costDataRef: pd.DataFrame, pri
 
 # make adjustments to data before plotting
 def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame, config: dict):
-    # cost delta of scenarios 2-4 in relation to scenario 1
+    # cost delta of Cases 1-3 in relation to Base Case
     cost = costData \
         .groupby(['commodity', 'route', 'val_year']) \
         .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
@@ -35,7 +35,7 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
         .drop(columns=['val_x', 'val_y', 'baseRoute'])
 
 
-    # cost delta of scenarios 2-4 in relation to scenario 1 for reference with zero elec price difference
+    # cost delta of Cases 1-3 in relation to Base Case for reference with zero elec price difference
     costRef = costDataRef \
         .groupby(['commodity', 'route', 'val_year']) \
         .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
