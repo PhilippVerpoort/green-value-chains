@@ -34,8 +34,7 @@ def __adjustData(costData: pd.DataFrame, config: dict):
 
     # determine the route to plot for each commodity
     plottedRoutes = {
-        c: next(key for key in costDataNew.query(f"commodity=='{c}'").route.unique()
-        if key.endswith(str(config['import_route'][c])))
+        c: costDataNew.query(f"commodity=='{c}' & case=='{config['import_route'][c]}'").route.iloc[0]
         for c in all_routes
     }
 
@@ -46,7 +45,7 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     for commodity, showRoute in plottedRoutes.items():
         # query relevant commodity data for given route
         costDataNewComm = costDataNew.query(f"route=='{showRoute}' & val_year=={config['show_year']}")\
-                                     .drop(columns=['component', 'route', 'val_year'])
+                                     .drop(columns=['component', 'route', 'case', 'val_year'])
 
         # get processes in the route
         processes = all_routes[commodity][re.sub('--.*', '', showRoute)]['processes']

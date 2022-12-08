@@ -12,8 +12,8 @@ ymax: 200.0
 yaxis2label: Relative to Base Case production cost (%)
 
 line_colour:
-  1: '#db2a1a'
-  2: '#00813e'
-  3: '#0000CC'
+  Case 1: '#db2a1a'
+  Case 2: '#00813e'
+  Case 3: '#0000CC'
 
 showYear: 2050

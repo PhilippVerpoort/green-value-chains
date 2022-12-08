@@ -8,6 +8,6 @@ yaxislabel: Cost difference (EUR/t)
 ymax: 200.0
 
 line_colour:
-  1: '#db2a1a'
-  2: '#00813e'
-  3: '#0000CC'
+  Case 1: '#db2a1a'
+  Case 2: '#00813e'
+  Case 3: '#0000CC'

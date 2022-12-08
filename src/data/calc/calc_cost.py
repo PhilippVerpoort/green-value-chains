@@ -24,17 +24,17 @@ def calcCost(tech_data_full: pd.DataFrame, prices: pd.DataFrame, selectedRoutes:
         if route_details['import_cases'] and len(route_details['import_cases']) > 1:
             for case_name, case_imports in route_details['import_cases'].items():
                 es_rout = __calcRouteCost(costData, prices, route_details['processes'], case_imports)
-                es_ret.extend([e.assign(route=f"{route_id}--{case_name}") for e in es_rout])
+                es_ret.extend([e.assign(route=f"{route_id}--{case_name}", baseRoute=route_id, case=case_name) for e in es_rout])
         else:
             es_rout = __calcRouteCost(costData, prices, route_details['processes'], next(c for c in route_details['import_cases'].values()) if route_details['import_cases'] else None)
-            es_ret.extend([e.assign(route=route_id) for e in es_rout])
+            es_ret.extend([e.assign(route=route_id, baseRoute=route_id) for e in es_rout])
 
 
     r = pd.concat(es_ret, ignore_index=True).assign(commodity=commodity)
 
     r['component'] = r['component'].str.replace(' exporter', '')
 
-    return r[['commodity', 'route', 'process', 'type', 'component', 'val', 'val_year']]
+    return r[['commodity', 'route', 'baseRoute', 'case', 'process', 'type', 'component', 'val', 'val_year']]
 
 
 def __prepareCostData(techData: pd.DataFrame):

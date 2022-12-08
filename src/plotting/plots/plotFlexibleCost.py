@@ -3,6 +3,8 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+from src.plotting.helperFuncs import groupbySumval
+
 
 def plotFlexibleCost(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame, config: dict,
                           subfigs_needed: list, is_webapp: bool = False):
@@ -23,37 +25,25 @@ def plotFlexibleCost(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: 
 # make adjustments to data before plotting
 def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame, config: dict):
     # cost delta of Cases 1-3 in relation to Base Case
-    cost = costData.query("type!='capital'") \
-        .groupby(['commodity', 'route', 'val_year']) \
-        .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
-        .reset_index(drop=True)
+    cost = groupbySumval(costData.query("type!='capital'"), ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case'])
 
-    costDelta = cost.query("route.str.endswith('Case 3')") \
-        .assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)) \
-        .merge(cost.query("route.str.endswith('Base Case')").assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
+    costDelta = cost.query("case=='Case 3'") \
+        .merge(cost.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'val_year']) \
         .assign(cost=lambda x: x.val_y - x.val_x) \
         .drop(columns=['val_x', 'val_y', 'baseRoute'])
 
 
     # cost delta of Cases 1-3 in relation to Base Case for reference with zero elec price difference
-    costRef = costDataRef.query("type!='capital'") \
-        .groupby(['commodity', 'route', 'val_year']) \
-        .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
-        .reset_index(drop=True)
+    costRef = groupbySumval(costDataRef.query("type!='capital'"), ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case'])
 
-    costRefDelta = costRef.query("route.str.endswith('Case 3')") \
-        .assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)) \
-        .merge(costRef.query("route.str.endswith('Base Case')").assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
+    costRefDelta = costRef.query("case=='Case 3'") \
+        .merge(costRef.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'val_year']) \
         .assign(costRef=lambda x: x.val_y - x.val_x) \
         .drop(columns=['val_x', 'val_y', 'baseRoute'])
 
 
     # capital cost data
-    costCap = costData.query("type=='capital'") \
-        .groupby(['commodity', 'route', 'val_year']) \
-        .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
-        .reset_index(drop=True) \
-        .query("route.str.endswith('Case 3')") \
+    costCap = groupbySumval(costData.query("type=='capital' & case=='Case 3'"), ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case']) \
         .rename(columns={'val': 'costCap'})
 
 
@@ -67,8 +57,8 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
 
     # linear interpolation of cost difference as a function of elec price
     tmp = costRefDelta \
-        .merge(costDelta, on=['commodity', 'route', 'val_year']) \
-        .merge(costCap, on=['commodity', 'route', 'val_year']) \
+        .merge(costDelta, on=['commodity', 'route', 'case', 'val_year']) \
+        .merge(costCap, on=['commodity', 'route', 'case', 'val_year']) \
         .merge(elecPriceDiff, on=['val_year'])
 
     pd_samples = np.linspace(config['xrange'][0], config['xrange'][1], config['samples'])

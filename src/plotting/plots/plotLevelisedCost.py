@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from src.load.load_default_data import all_processes, all_routes
+from src.plotting.helperFuncs import groupbySumval
 
 
 def plotLevelisedCost(costData: pd.DataFrame, costDataRec: pd.DataFrame, config: dict, subfigs_needed: list, is_webapp: bool = False):
@@ -53,32 +54,26 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     costDataNew.replace({'route': route_names}, inplace=True)
 
     # determine breakdown level of bars and associated hover labels
-    if config['aggregate_by'] in ['none', 'subcomponent']:
-        if config['aggregate_by'] == 'subcomponent':
-            group_cols = ['type', 'val_year', 'commodity', 'route', 'process', 'component']
-            costDataNew = costDataNew.fillna({'component': 'empty'}) \
-                                     .groupby(group_cols).sum() \
-                                     .sort_values('process', key=lambda col: [list(all_processes.keys()).index(p) for p in col]) \
-                                     .reset_index()
+    if config['aggregate_by'] == 'none':
+        costDataNew['hover_label'] = [all_processes[p]['label'] for p in costDataNew['process']]
+        costDataNew.loc[costDataNew['component']!='empty', 'hover_label'] = [f"{row['component'].capitalize()} ({row['hover_label']})" for index, row in costDataNew.loc[costDataNew['component']!='empty',:].iterrows()]
+    elif config['aggregate_by'] == 'subcomponent':
+        costDataNew = groupbySumval(costDataNew.fillna({'component': 'empty'}),
+                                    ['type', 'val_year', 'commodity', 'route', 'process', 'component'], keep=['case'])
         costDataNew['hover_label'] = [all_processes[p]['label'] for p in costDataNew['process']]
         costDataNew.loc[costDataNew['component']!='empty', 'hover_label'] = [f"{row['component'].capitalize()} ({row['hover_label']})" for index, row in costDataNew.loc[costDataNew['component']!='empty',:].iterrows()]
     elif config['aggregate_by'] == 'component':
-        group_cols = ['type', 'val_year', 'commodity', 'route', 'process']
-        costDataNew = costDataNew.groupby(group_cols).sum() \
-                                 .sort_values('process', key=lambda col: [list(all_processes.keys()).index(p) for p in col]) \
-                                 .reset_index()
+        costDataNew = groupbySumval(costDataNew.fillna({'component': 'empty'}),
+                                    ['type', 'val_year', 'commodity', 'route', 'process'], keep=['case'])
         costDataNew['hover_label'] = [all_processes[p]['label'] for p in costDataNew['process']]
     elif config['aggregate_by'] == 'process':
-        group_cols = ['type', 'val_year', 'commodity', 'route', 'component']
-
-        costDataNew = costDataNew.fillna({'component': 'empty'}) \
-                                 .groupby(group_cols).sum() \
-                                 .sort_values('component', key=lambda col: [list(config['components']).index(c) if c!='empty' else -1 for c in col]) \
-                                 .reset_index()
+        costDataNew = groupbySumval(costDataNew.fillna({'component': 'empty'}),
+                                    ['type', 'val_year', 'commodity', 'route', 'component'], keep=['case'])
         costDataNew['hover_label'] = [config['components'][c] if c!='empty' else None for c in costDataNew['component']]
     elif config['aggregate_by'] == 'all':
-        group_cols = ['type', 'val_year', 'commodity', 'route']
-        costDataNew = costDataNew.groupby(group_cols).sum().reset_index()
+        costDataNew = groupbySumval(costDataNew.fillna({'component': 'empty'}),
+                                    ['type', 'val_year', 'commodity', 'route'], keep=['case'])
+        costDataNew['hover_label'] = [config['types'][t]['label'] for t in costDataNew['type']]
     else:
         raise Exception('Value of aggregate_by in the plot config is invalid.')
 

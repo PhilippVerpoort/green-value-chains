@@ -3,6 +3,8 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+from src.plotting.helperFuncs import groupbySumval
+
 
 def plotRecyclingCost(costData: pd.DataFrame, costDataRec: pd.DataFrame, config: dict, subfigs_needed: list, is_webapp: bool = False):
     ret = {}
@@ -21,40 +23,31 @@ def plotRecyclingCost(costData: pd.DataFrame, costDataRec: pd.DataFrame, config:
 
 # make adjustments to data before plotting
 def __adjustData(costData: pd.DataFrame, costDataRec: pd.DataFrame, config: dict):
-    # cost delta of Cases 1-3 in relation to Base Case
-    cost = costData \
-        .groupby(['commodity', 'route', 'val_year']) \
-        .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
-        .reset_index(drop=True)
+    shares = [{'commodity': 'Steel', 'sh': 0.1}, {'commodity': 'Urea', 'sh': 0.0}, {'commodity': 'Ethylene', 'sh': 0.0}]
+    sharesRec = [{'commodity': 'Steel', 'shRef': 0.85}, {'commodity': 'Urea', 'shRef': 1.0}, {'commodity': 'Ethylene', 'shRef': 1.0}]
 
-    costDelta = cost.query(r"(not route.str.endswith('Base Case')) and route.str.match(r'.*--.*$')") \
-        .assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)) \
-        .merge(cost.query("route.str.endswith('Base Case')").assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
+    # cost delta of Cases 1-3 in relation to Base Case
+    cost = groupbySumval(costData, ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case'])
+
+    costDelta = cost.query("case.notnull() & case!='Base Case'") \
+        .merge(cost.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'val_year']) \
         .assign(cost=lambda x: x.val_y - x.val_x) \
-        .merge(pd.DataFrame.from_records([{'commodity': 'Steel', 'sh': 0.1}, {'commodity': 'Urea', 'sh': 0.0}])) \
-        .drop(columns=['val_x', 'val_y', 'baseRoute']) \
-        .assign(route=lambda x: x.route.str.get(-1))
+        .merge(pd.DataFrame.from_records(shares)) \
+        .drop(columns=['val_x', 'val_y', 'baseRoute', 'route'])
 
 
     # cost delta of Cases 1-3 in relation to Base Case for reference with recycling
-    costRec = costDataRec \
-        .groupby(['commodity', 'route', 'val_year']) \
-        .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
-        .reset_index(drop=True)
+    costRec = groupbySumval(costDataRec, ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case'])
 
-    costRecDelta = costRec.query(r"(not route.str.endswith('Base Case')) and route.str.match(r'.*--.*$')") \
-        .assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)) \
-        .merge(costRec.query("route.str.endswith('Base Case')").assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
+    costRecDelta = costRec.query("case.notnull() & case!='Base Case'") \
+        .merge(costRec.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'val_year']) \
         .assign(costRef=lambda x: x.val_y - x.val_x) \
-        .merge(pd.DataFrame.from_records([{'commodity': 'Steel', 'shRef': 0.85}, {'commodity': 'Urea', 'shRef': 1.0}])) \
-        .drop(columns=['val_x', 'val_y', 'baseRoute']) \
-        .assign(route=lambda x: x.route.str.get(-1))
-
+        .merge(pd.DataFrame.from_records(sharesRec)) \
+        .drop(columns=['val_x', 'val_y', 'baseRoute', 'route'])
 
 
     # linear interpolation of cost difference as a function of elec price
-    tmp = costRecDelta \
-        .merge(costDelta, on=['commodity', 'route', 'val_year'])
+    tmp = costRecDelta.merge(costDelta, on=['commodity', 'case', 'val_year'])
 
     plotData = pd.concat([
         #tmp.assign(cd=lambda r: r.costRef + ((r.cost-r.costRef)/(r.sh-r.shRef)) * share, share=share)
@@ -63,11 +56,16 @@ def __adjustData(costData: pd.DataFrame, costDataRec: pd.DataFrame, config: dict
     ]).drop(columns=['cost', 'costRef', 'shRef'])
 
 
+    # sort by commodities
+    commodityOrder = costData.commodity.unique().tolist()
+    plotData.sort_values(by='commodity', key=lambda row: [commodityOrder.index(c) for c in row], inplace=True)
+
+
     return plotData
 
 
 def __produceFigure(plotData: dict, config: dict):
-    commodities = plotData.commodity.unique().tolist()+['Ethylene']
+    commodities = plotData.commodity.unique().tolist()
 
 
     # create figure
@@ -85,9 +83,8 @@ def __produceFigure(plotData: dict, config: dict):
         for j, year in enumerate(plotData.val_year.unique()):
             yearData = commData.query(f"val_year=={year}")
 
-            for route in plotData.route.unique():
-                routeID = int(route)
-                thisData = yearData.query(f"route=='{route}'")
+            for case in plotData.case.unique():
+                thisData = yearData.query(f"case=='{case}'")
 
                 fig.add_trace(
                     go.Scatter(
@@ -95,11 +92,11 @@ def __produceFigure(plotData: dict, config: dict):
                         y=thisData.cd,
                         mode='lines',
                         name=int(year),
-                        legendgroup=routeID,
-                        legendgrouptitle=dict(text=f"<b>Case {routeID}</b>"),
-                        line=dict(color=config['line_colour'][routeID], width=config['global']['lw_default'], dash='dot' if j else None),
+                        legendgroup=case,
+                        legendgrouptitle=dict(text=f"<b>{case}</b>"),
+                        line=dict(color=config['line_colour'][case], width=config['global']['lw_default'], dash='dot' if j else None),
                         showlegend=not i,
-                        hovertemplate=f"<b>Case {routeID} in {int(year)}</b><br>Price difference: %{{x:.2f}}<br>Cost difference: %{{y:.2f}}<extra></extra>",
+                        hovertemplate=f"<b>{case} in {int(year)}</b><br>Price difference: %{{x:.2f}}<br>Cost difference: %{{y:.2f}}<extra></extra>",
                     ),
                     col=i+1,
                     row=1,

@@ -3,6 +3,8 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+from src.plotting.helperFuncs import groupbySumval
+
 
 def plotCostDiffH2Transp(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame,
                          costH2Transp: pd.DataFrame, config: dict, subfigs_needed: list, is_webapp: bool = False):
@@ -22,40 +24,27 @@ def plotCostDiffH2Transp(costData: pd.DataFrame, costDataRef: pd.DataFrame, pric
 
 # make adjustments to data before plotting
 def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame, costH2TranspBase: pd.DataFrame, config: dict):
+    queryTransp = "type=='transport' and component=='hydrogen'"
+
     # transportation cost for hydrogen
-    costH2Transp = costData \
-        .query("type=='transport' and component=='hydrogen'") \
-        .groupby(['commodity', 'route', 'val_year']) \
-        .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
-        .reset_index(drop=True) \
-        .assign(costH2Transp=lambda x: x.val) \
-        .drop(columns=['val'])
+    costH2Transp = groupbySumval(costData.query(queryTransp), ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case']) \
+        .rename(columns={'val': 'costH2Transp'})
 
 
     # cost delta of Cases 1-3 in relation to Base Case without H2 transport cost
-    cost = costData \
-        .query("not (type=='transport' and component=='hydrogen')") \
-        .groupby(['commodity', 'route', 'val_year']) \
-        .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
-        .reset_index(drop=True)
+    cost = groupbySumval(costData.query(f"not ({queryTransp})"), ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case'])
 
-    costDelta = cost.query(r"route.str.endswith('Case 1')") \
-        .assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)) \
-        .merge(cost.query("route.str.endswith('Base Case')").assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
+    costDelta = cost.query("case=='Case 1'") \
+        .merge(cost.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'val_year']) \
         .assign(cost=lambda x: x.val_y - x.val_x) \
         .drop(columns=['val_x', 'val_y', 'baseRoute'])
 
 
     # cost delta of Cases 1-3 in relation to Base Case without H2 transport cost for reference with zero elec price difference
-    costRef = costDataRef \
-        .query("not (type=='transport' and component=='hydrogen')") \
-        .groupby(['commodity', 'route', 'val_year']) \
-        .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
-        .reset_index(drop=True)
+    costRef = groupbySumval(costDataRef.query(f"not ({queryTransp})"), ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case'])
 
-    costRefDelta = costRef.query(r"route.str.endswith('Case 1')") \
-        .assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)) \
-        .merge(costRef.query("route.str.endswith('Base Case')").assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
+    costRefDelta = costRef.query("case=='Case 1'") \
+        .merge(costRef.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'val_year']) \
         .assign(costRef=lambda x: x.val_y - x.val_x) \
         .drop(columns=['val_x', 'val_y', 'baseRoute'])
 
@@ -70,14 +59,14 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
 
     # base H2 transportation cost
     costH2TranspBase = costH2TranspBase \
-        .assign(costH2TranspBase=lambda x: x.val) \
-        .filter(['costH2TranspBase', 'val_year'])
+        .filter(['val', 'val_year']) \
+        .rename(columns={'val': 'costH2TranspBase'})
 
 
     # linear interpolation of cost difference as a function of elec price
     tmp = costRefDelta \
-        .merge(costDelta, on=['commodity', 'route', 'val_year']) \
-        .merge(costH2Transp, on=['commodity', 'route', 'val_year']) \
+        .merge(costDelta, on=['commodity', 'route', 'case', 'val_year']) \
+        .merge(costH2Transp, on=['commodity', 'route', 'case', 'val_year']) \
         .merge(costH2TranspBase, on=['val_year']) \
         .merge(elecPriceDiff, on=['val_year'])
 

@@ -3,6 +3,8 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+from src.plotting.helperFuncs import groupbySumval
+
 
 def plotCostDiffElecPrice(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame, config: dict,
                           subfigs_needed: list, is_webapp: bool = False):
@@ -23,27 +25,19 @@ def plotCostDiffElecPrice(costData: pd.DataFrame, costDataRef: pd.DataFrame, pri
 # make adjustments to data before plotting
 def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame, config: dict):
     # cost delta of Cases 1-3 in relation to Base Case
-    cost = costData \
-        .groupby(['commodity', 'route', 'val_year']) \
-        .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
-        .reset_index(drop=True)
+    cost = groupbySumval(costData, ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case'])
 
-    costDelta = cost.query(r"(not route.str.endswith('Base Case')) and route.str.match(r'.*--.*$')") \
-        .assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)) \
-        .merge(cost.query("route.str.endswith('Base Case')").assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
+    costDelta = cost.query("case.notnull() & case!='Base Case'") \
+        .merge(cost.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'val_year']) \
         .assign(cost=lambda x: x.val_y - x.val_x) \
         .drop(columns=['val_x', 'val_y', 'baseRoute'])
 
 
     # cost delta of Cases 1-3 in relation to Base Case for reference with zero elec price difference
-    costRef = costDataRef \
-        .groupby(['commodity', 'route', 'val_year']) \
-        .agg({'commodity': 'first', 'route': 'first', 'val_year': 'first', 'val': 'sum'}) \
-        .reset_index(drop=True)
+    costRef = groupbySumval(costDataRef, ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case'])
 
-    costRefDelta = costRef.query(r"(not route.str.endswith('Base Case')) and route.str.match(r'.*--.*$')") \
-        .assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)) \
-        .merge(costRef.query("route.str.endswith('Base Case')").assign(baseRoute=lambda x: x.route.str.replace(r'--.*$', '', regex=True)).drop(columns=['route']), on=['commodity', 'baseRoute', 'val_year']) \
+    costRefDelta = costRef.query("case.notnull() & case!='Base Case'") \
+        .merge(costRef.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'val_year']) \
         .assign(costRef=lambda x: x.val_y - x.val_x) \
         .drop(columns=['val_x', 'val_y', 'baseRoute'])
 
@@ -58,7 +52,7 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
 
     # linear interpolation of cost difference as a function of elec price
     tmp = costRefDelta \
-        .merge(costDelta, on=['commodity', 'route', 'val_year']) \
+        .merge(costDelta, on=['commodity', 'route', 'case', 'val_year']) \
         .merge(elecPriceDiff, on=['val_year'])
 
     plotData = pd.concat([
@@ -73,7 +67,7 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
 
 
     # benchmark cost
-    benchmarkCost = cost.query("route.str.endswith('Base Case')")
+    benchmarkCost = cost.query("case=='Base Case'")
 
 
     return plotData, elecPriceDiff, benchmarkCost
@@ -98,19 +92,18 @@ def __produceFigure(plotData: pd.DataFrame, elecPriceDiff: pd.DataFrame, benchma
         defaultPriceDiff = elecPriceDiff.query(f"val_year=={config['showYear']}").iloc[0].priceDiff
         baseCaseCost = benchmarkCost.query(f"commodity=='{commodity}' and val_year=={config['showYear']}").iloc[0].val
 
-        for route in plotData.route.unique():
-            routeID = int(route[-1])
-            thisData = commData.query(f"route=='{route}'")
+        for case in plotData.case.unique():
+            thisData = commData.query(f"case=='{case}'")
 
             fig.add_trace(
                 go.Scatter(
                     x=thisData.pd,
                     y=thisData.cd,
                     mode='lines',
-                    name=f"Case {routeID}",
-                    line=dict(color=config['line_colour'][routeID], width=config['global']['lw_default']),
+                    name=case,
+                    line=dict(color=config['line_colour'][case], width=config['global']['lw_default']),
                     showlegend=not i,
-                    hovertemplate=f"<b>Case {routeID}</b><br>{config['xlabelshort']}: %{{x:.2f}}<br>{config['ylabelshort']}: %{{y:.2f}}<extra></extra>",
+                    hovertemplate=f"<b>{case}</b><br>{config['xlabelshort']}: %{{x:.2f}}<br>{config['ylabelshort']}: %{{y:.2f}}<extra></extra>",
                 ),
                 col=i+1,
                 row=1,
