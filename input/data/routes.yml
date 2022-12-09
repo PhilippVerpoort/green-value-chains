@@ -22,9 +22,12 @@ Steel:
     import_cases:
       'Base Case':
       - ore
-      'Case 1':
+      'Case 1a':
       - ore
-      - hydrogen
+      - hydrogen--shipping
+      'Case 1b':
+      - ore
+      - hydrogen--pipeline
       'Case 2':
       - dri
       'Case 3':
@@ -40,9 +43,12 @@ Steel:
     import_cases:
       'Base Case':
       - ore
-      'Case 1':
+      'Case 1a':
       - ore
-      - hydrogen
+      - hydrogen--shipping
+      'Case 1b':
+      - ore
+      - hydrogen--pipeline
       'Case 2':
       - dri
       'Case 3':
@@ -57,9 +63,12 @@ Steel:
     import_cases:
       'Base Case':
       - ore
-      'Case 1':
+      'Case 1a':
       - ore
-      - hydrogen
+      - hydrogen--shipping
+      'Case 1b':
+      - ore
+      - hydrogen--pipeline
       'Case 2':
       - dri
       'Case 3':
@@ -75,9 +84,12 @@ Steel:
     import_cases:
       'Base Case':
       - ore
-      'Case 1':
+      'Case 1a':
       - ore
-      - hydrogen
+      - hydrogen--shipping
+      'Case 1b':
+      - ore
+      - hydrogen--pipeline
       'Case 2':
       - dri
       'Case 3':
@@ -104,8 +116,10 @@ Urea:
     import_cases:
       'Base Case':
       - none
-      'Case 1':
-      - hydrogen
+      'Case 1a':
+      - hydrogen--shipping
+      'Case 1b':
+      - hydrogen--pipeline
       'Case 2':
       - ammonia
       'Case 3':
@@ -121,8 +135,10 @@ Urea:
     import_cases:
       'Base Case':
       - none
-      'Case 1':
-      - hydrogen
+      'Case 1a':
+      - hydrogen--shipping
+      'Case 1b':
+      - hydrogen--pipeline
       'Case 2':
       - ammonia
       'Case 3':
@@ -137,8 +153,10 @@ Urea:
     import_cases:
       'Base Case':
       - none
-      'Case 1':
-      - hydrogen
+      'Case 1a':
+      - hydrogen--shipping
+      'Case 1b':
+      - hydrogen--pipeline
       'Case 2':
       - ammonia
       'Case 3':
@@ -154,8 +172,10 @@ Urea:
     import_cases:
       'Base Case':
       - none
-      'Case 1':
-      - hydrogen
+      'Case 1a':
+      - hydrogen--shipping
+      'Case 1b':
+      - hydrogen--pipeline
       'Case 2':
       - ammonia
       'Case 3':
@@ -173,8 +193,10 @@ Ethylene:
     import_cases:
       'Base Case':
       - none
-      'Case 1':
-      - hydrogen
+      'Case 1a':
+      - hydrogen--shipping
+      'Case 1b':
+      - hydrogen--pipeline
       'Case 2':
       - methanol
       'Case 3':
@@ -189,8 +211,10 @@ Ethylene:
     import_cases:
       'Base Case':
       - none
-      'Case 1':
-      - hydrogen
+      'Case 1a':
+      - hydrogen--shipping
+      'Case 1b':
+      - hydrogen--pipeline
       'Case 2':
       - methanol
       'Case 3':
@@ -204,8 +228,10 @@ Ethylene:
     import_cases:
       'Base Case':
       - none
-      'Case 1':
-      - hydrogen
+      'Case 1a':
+      - hydrogen--shipping
+      'Case 1b':
+      - hydrogen--pipeline
       'Case 2':
       - methanol
       'Case 3':
@@ -220,8 +246,10 @@ Ethylene:
     import_cases:
       'Base Case':
       - none
-      'Case 1':
-      - hydrogen
+      'Case 1a':
+      - hydrogen--shipping
+      'Case 1b':
+      - hydrogen--pipeline
       'Case 2':
       - methanol
       'Case 3':

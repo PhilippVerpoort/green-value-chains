@@ -86,6 +86,9 @@ def __produceFigure(plotData: dict, config: dict):
             for case in plotData.case.unique():
                 thisData = yearData.query(f"case=='{case}'")
 
+                if case == 'Case 1a':
+                    continue
+
                 fig.add_trace(
                     go.Scatter(
                         x=thisData.share*100,

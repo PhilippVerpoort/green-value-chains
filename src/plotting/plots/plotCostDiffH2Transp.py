@@ -34,7 +34,7 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
     # cost delta of Cases 1-3 in relation to Base Case without H2 transport cost
     cost = groupbySumval(costData.query(f"not ({queryTransp})"), ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case'])
 
-    costDelta = cost.query("case=='Case 1'") \
+    costDelta = cost.query("case=='Case 1b'") \
         .merge(cost.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'val_year']) \
         .assign(cost=lambda x: x.val_y - x.val_x) \
         .drop(columns=['val_x', 'val_y', 'baseRoute'])
@@ -43,7 +43,7 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
     # cost delta of Cases 1-3 in relation to Base Case without H2 transport cost for reference with zero elec price difference
     costRef = groupbySumval(costDataRef.query(f"not ({queryTransp})"), ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case'])
 
-    costRefDelta = costRef.query("case=='Case 1'") \
+    costRefDelta = costRef.query("case=='Case 1b'") \
         .merge(costRef.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'val_year']) \
         .assign(costRef=lambda x: x.val_y - x.val_x) \
         .drop(columns=['val_x', 'val_y', 'baseRoute'])

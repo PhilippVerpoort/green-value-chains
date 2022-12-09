@@ -21,7 +21,7 @@ def calcCost(tech_data_full: pd.DataFrame, prices: pd.DataFrame, selectedRoutes:
 
     # loop over routes
     for route_id, route_details in selectedRoutes.items():
-        if route_details['import_cases'] and len(route_details['import_cases']) > 1:
+        if 'import_cases' in route_details and len(route_details['import_cases']) > 1:
             for case_name, case_imports in route_details['import_cases'].items():
                 es_rout = __calcRouteCost(costData, prices, route_details['processes'], case_imports)
                 es_ret.extend([e.assign(route=f"{route_id}--{case_name}", baseRoute=route_id, case=case_name) for e in es_rout])
@@ -73,9 +73,10 @@ def __prepareCostData(techData: pd.DataFrame):
 
     # transport cost
     costTransport = techData.query("type=='transport'")\
-                            .drop(columns=['process', 'subcomponent', 'mode'])\
+                            .drop(columns=['process', 'subcomponent'])\
                             .merge(pd.DataFrame.from_records([{'process': p, 'component': all_processes[p]['output']}
-                                                              for p in techData.process.unique() if pd.notna(p)]), on=['component'], how='left')
+                                                              for p in techData.process.unique() if pd.notna(p)]), on=['component'], how='left')\
+                            .rename(columns={'mode': 'modeTransp'})
 
     costTransport = pd.concat([
         costTransport.dropna(subset=['process']),
@@ -111,10 +112,14 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
 
 
     # condition for using import or export prices
-    processAbroad = __getProcessesAbroad(costData, processes, imports)
+    importTokens = [i.split('--') for i in imports]
+    importComponents = [t[0] for t in importTokens]
+    importModes = {t[0]: t[1] for t in importTokens if len(t)>1}
+    modeQuery = ''.join([f" | (component=='{i}' and modeTransp=='{m}')" for i, m in importModes.items()])
+    processAbroad = __getProcessesAbroad(costData, processes, importComponents)
 
     setLocation = costData['demand']['component'].isin(prices.query("location!='either'").component.unique()) & ~costData['demand']['component'].isin(allOutputs)
-    isImported = costData['demand']['process'].isin(processAbroad) | costData['demand']['component'].isin(imports if imports else [])
+    isImported = costData['demand']['process'].isin(processAbroad) | costData['demand']['component'].isin(importComponents if importComponents else [])
 
     costData['demand'].loc[:, 'location'] = 'either'
     costData['demand'].loc[setLocation & ~isImported, 'location'] = 'importer'
@@ -133,14 +138,14 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
         thisCostData = {key: value.query(queryStr).copy() for key, value in costData.items()}
 
         # remove entries if not needed for this import case
-        if 'dri' not in imports:
+        if 'dri' not in importComponents:
             thisCostData['demand'] = thisCostData['demand'].query("subcomponent!='Heating of CDRI'")
 
         # add all data that does not need further treatment (capital & fixed cost + energy & feedstock cost with fixed prices)
         es_pro.append(thisCostData['capital'])
         es_pro.append(thisCostData['fixed'])
         es_pro.append(thisCostData['energy_feedstock'])
-        es_pro.append(thisCostData['transport'].query(f"component in @imports"))
+        es_pro.append(thisCostData['transport'].query(f"component in @importComponents & (modeTransp.isnull(){modeQuery})"))
 
         # add data for energy and feedstock cost with prices read from route_prices that are not upstream outputs
         es_pro.append(

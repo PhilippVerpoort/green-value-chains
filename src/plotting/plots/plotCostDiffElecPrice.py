@@ -95,6 +95,9 @@ def __produceFigure(plotData: pd.DataFrame, elecPriceDiff: pd.DataFrame, benchma
         for case in plotData.case.unique():
             thisData = commData.query(f"case=='{case}'")
 
+            if case == 'Case 1a':
+                continue
+
             fig.add_trace(
                 go.Scatter(
                     x=thisData.pd,
