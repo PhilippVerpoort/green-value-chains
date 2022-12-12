@@ -226,6 +226,7 @@ def addBars(commodity, config, costData, costDataH2Transp, fig, i, routeorder, s
 def addCostDiff(commodity, config, costData, costDataH2Transp, fig, i, subplot, ymax):
     correction = 0.018
     xshift = 2.5
+    yshift = 35.0
 
     # select data for each subplot
     plotData = pd.concat([costData, costDataH2Transp]).query(
@@ -279,9 +280,10 @@ def addCostDiff(commodity, config, costData, costDataH2Transp, fig, i, subplot, 
             x=j + 1,
             xanchor='left',
             xshift=xshift,
-            y=y,
+            y=baseCost,
             yref=f"y{i + 1 if i else ''}",
             yanchor='middle',
+            yshift=-yshift if costDiff < 0.0 else +yshift,
             row=1,
             col=i + 1,
         )
