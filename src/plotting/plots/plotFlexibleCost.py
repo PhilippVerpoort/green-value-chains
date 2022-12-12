@@ -16,7 +16,7 @@ def plotFlexibleCost(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: 
 
 
     # produce figure
-    ret['fig7'] = __produceFigure(pd_samples, ocf_samples, plotData, config) if 'fig7' in subfigs_needed else None
+    ret['fig6'] = __produceFigure(pd_samples, ocf_samples, plotData, config) if 'fig6' in subfigs_needed else None
 
 
     return ret

@@ -14,6 +14,12 @@ def adjustFontSizes(subfigName: str, plotlyFigure: go.Figure, fs_sm: float, fs_m
         numSubPlots = __countNumbSubplots(plotlyFigure)
         for i in range(numSubPlots):
             subfigLabel = subfigName[-1] if subfigName[-1] in ascii_lowercase else ascii_lowercase[i]
+
+            if subfigName == 'fig5':
+                yref = f"y{2*i+1 if i else ''} domain" if i < 3 else f"y{i+4 if i else ''} domain"
+            else:
+                yref = f"y{i+1 if i else ''} domain"
+
             plotlyFigure.add_annotation(
                 showarrow=False,
                 text=f"<b>{subfigLabel}</b>",
@@ -23,7 +29,7 @@ def adjustFontSizes(subfigName: str, plotlyFigure: go.Figure, fs_sm: float, fs_m
                 xref=f"x{i+1 if i else ''} domain",
                 y=1.0,
                 yanchor='bottom',
-                yref=f"y{i+1 if i else ''} domain",
+                yref=yref,
                 yshift=10.0,
             )
 

@@ -9,11 +9,9 @@ plotLevelisedCost:
     - figS2
 plotValueCreation:
   - fig4
-plotCostDiffElecPrice:
-  - fig5
 plotCostDiffH2Transp:
-  - fig6
+  - fig5
 plotFlexibleCost:
-  - fig7
+  - fig6
 plotRecyclingCost:
-  - fig8
+  - fig7

@@ -5,11 +5,18 @@ xrange:
   - 50.0
 xsamples: 20
 
-yaxislabel: H₂ specific transportation cost (EUR/MWh)
-ylabelshort:  H₂ transp cost
-yrange:
-  - 0.0
-  - 50.0
+top:
+  yaxislabel: Production-cost difference (EUR/t)
+  ylabelshort: Prod-cost diff
+  ymax: 200.0
+
+  yaxis2label: Relative to Base Case production cost (%)
+bottom:
+  yaxislabel: H₂ specific transportation cost (EUR/MWh)
+  ylabelshort:  H₂ transp cost
+  yrange:
+    - 0.0
+    - 50.0
 
 zaxislabel: Production-cost difference (EUR/t)
 zlabelshort: Prod-cost diff
@@ -20,9 +27,9 @@ zrange2:
   - -400.0
   - +400.0
 zdelta:
+  - 10.0
   - 20.0
-  - 20.0
-  - 5.0
+  - 30.0
 zcolours:
   - '#9DA4D2'
   - '#F3DA9C'
@@ -34,5 +41,11 @@ zticks:
   - -100
 
 samples: 51
+
+line_colour:
+  Case 1A: '#db2a1a'
+  Case 1B: '#db2a1a'
+  Case 2: '#00813e'
+  Case 3: '#0000CC'
 
 showYear: 2050

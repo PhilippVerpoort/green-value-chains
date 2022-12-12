@@ -38,27 +38,19 @@ fig5:
   title: Cost difference of scenarios for varying elec. price difference
   width: 100%
 fig6:
-  desc: The difference in production hinges on the transportation cost for hydrogen and the electricity-price difference.
-  display:
-  - /
-  - /advanced
-  name: Figure 6
-  title: Cost difference of scenarios for varying elec. price difference
-  width: 100%
-fig7:
   desc: Showing cost as a function of both operational capacity and electricity price.
   display:
   - /
   - /advanced
-  name: Figure 7
+  name: Figure 6
   title: Cost-effectiveness of flexible operation
   width: 100%
-fig8:
+fig7:
   desc: Showing cost as a function of the recylcing share.
   display:
   - /
   - /advanced
-  name: Figure 8
+  name: Figure 7
   title: Cost-effectiveness of recycling
   width: 100%
 figS1:
