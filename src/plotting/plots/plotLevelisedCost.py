@@ -13,22 +13,22 @@ def plotLevelisedCost(costData: pd.DataFrame, costDataRec: pd.DataFrame, config:
 
 
     # make adjustments to data
-    costDataAggregated, routeorder = __adjustData(costData, config) if any(fName in subfigs_needed for fName in ['fig3', 'figS1a', 'figS1b', 'figS1c', 'figS2']) else (None, None)
-    costDataRecAggregated, _ = __adjustData(costDataRec, config) if 'figS2' in subfigs_needed else (None, None)
+    costDataAggregated, routeorder, costDataH2Transp = __adjustData(costData, config) if any(fName in subfigs_needed for fName in ['fig3', 'figS1a', 'figS1b', 'figS1c', 'figS2']) else (None, None)
+    costDataRecAggregated, _, costDataRecH2Transp = __adjustData(costDataRec, config) if 'figS2' in subfigs_needed else (None, None, None)
 
 
     # produce fig1
-    ret['fig3'] = __produceFigure(costDataAggregated, routeorder, config, show_costdiff=not is_webapp) if 'fig3' in subfigs_needed else None
+    ret['fig3'] = __produceFigure(costDataAggregated, routeorder, costDataH2Transp, config, show_costdiff=not is_webapp) if 'fig3' in subfigs_needed else None
 
 
     # produce figS1
     for k, commodity in enumerate(list(all_routes.keys())):
         subfigName = f"figS1{ascii_lowercase[k]}"
-        ret[subfigName] = __produceFigure(costDataAggregated, routeorder, config, commodity=commodity) if subfigName in subfigs_needed else None
+        ret[subfigName] = __produceFigure(costDataAggregated, routeorder, costDataH2Transp, config, commodity=commodity) if subfigName in subfigs_needed else None
 
 
     # produce figS2
-    ret['figS2'] = __produceFigure(costDataRecAggregated, routeorder, config) if 'figS2' in subfigs_needed else None
+    ret['figS2'] = __produceFigure(costDataRecAggregated, routeorder, costDataRecH2Transp, config) if 'figS2' in subfigs_needed else None
 
 
     return ret
@@ -42,6 +42,12 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     # remove upstream cost entries
     costDataNew = costData.copy().query(f"type!='upstream'")
 
+    # split up hydrogen transport cost
+    q = "type=='transport' and component=='hydrogen'"
+    costDataH2Transp = costDataNew.query(q).reset_index(drop=True)
+    costDataNew = costDataNew.query(f"not ({q})").reset_index(drop=True)
+    costDataH2Transp['hover_label'] = 'Transport'
+
     # rename iron feedstock entries
     costDataNew.loc[(costDataNew['type'] == 'feedstock') & costDataNew['component'].isin(['ore', 'scrap']), 'type'] = 'iron'
 
@@ -52,6 +58,7 @@ def __adjustData(costData: pd.DataFrame, config: dict):
 
     # rename routes into something readable
     costDataNew.replace({'route': route_names}, inplace=True)
+    costDataH2Transp.replace({'route': route_names}, inplace=True)
 
     # determine breakdown level of bars and associated hover labels
     if config['aggregate_by'] == 'none':
@@ -81,15 +88,22 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     commodityOrder = costData.commodity.unique().tolist()
     costDataNew.sort_values(by='commodity', key=lambda row: [commodityOrder.index(c) for c in row], inplace=True)
 
-    return costDataNew, list(route_names.values())
+    # sort routes
+    routeorder = [r.replace('Case 1a', 'Case 1a/b') for r in route_names.values() if r != 'Case 1b']
+
+    return costDataNew, routeorder, costDataH2Transp
 
 
-def __produceFigure(costData: pd.DataFrame, routeorder: list, config: dict, commodity: str = '', show_costdiff: bool = False):
+def __produceFigure(costData: pd.DataFrame, routeorder: list, costDataH2Transp: pd.DataFrame, config: dict, commodity: str = '', show_costdiff: bool = False):
     if commodity:
-        costData = costData.query(f"commodity=='{commodity}'")
+        q = f"commodity=='{commodity}'"
+        costData = costData.query(q)
+        costDataH2Transp = costDataH2Transp.query(q)
         subplots = [int(y) for y in sorted(costData.val_year.unique())]
     else:
-        costData = costData.query(f"val_year=={config['show_year']} & route.str.contains('Case')")
+        q = f"val_year=={config['show_year']} & case.notnull()"
+        costData = costData.query(q)
+        costDataH2Transp = costDataH2Transp.query(q)
         subplots = costData.commodity.unique().tolist()
 
 
@@ -102,110 +116,11 @@ def __produceFigure(costData: pd.DataFrame, routeorder: list, config: dict, comm
 
     # add bars for each subplot
     for i, subplot in enumerate(subplots):
-        # select data for each subplot
-        plotData = costData.query(f"val_year=={subplot}" if commodity else f"commodity=='{subplot}'")
-
-
-        # determine ymax
-        if config['ymaxcalc']:
-            ymax = 1.1 * plotData.query("route=='Base Case'").val.sum()
-        else:
-            ymax = config['ymax'][commodity] if commodity else config['ymax'][subplot]
-
-
-        # add traces for all cost types
-        for type, display in config['types'].items():
-            thisData = plotData.query(f"type=='{type}'")
-            hoverLabel = 'hover_label' in thisData.columns and any(thisData.hover_label.unique())
-
-            fig.add_trace(
-                go.Bar(
-                    x=thisData.route,
-                    y=thisData.val,
-                    marker_color=display['colour'],
-                    name=display['label'],
-                    customdata=thisData.hover_label if hoverLabel else None,
-                    showlegend=not i,
-                    hovertemplate=f"<b>{display['label']}</b>{'<br>%{customdata}' if hoverLabel else ''}<br>Cost: %{{y}} EUR/t<extra></extra>",
-                ),
-                row=1,
-                col=i+1,
-            )
-
-
-        # add annotations
-        fig.add_annotation(
-            text=f"<b>{subplot}</b>",
-            x=0.0,
-            xref='x domain',
-            xanchor='left',
-            y=1.0,
-            yref='y domain',
-            yanchor='top',
-            showarrow=False,
-            bordercolor='black',
-            borderwidth=2,
-            borderpad=3,
-            bgcolor='white',
-            row=1,
-            col=i+1,
-        )
-
-
-        # update layout of subplot
-        fig.update_layout(
-            **{
-                f"xaxis{i+1 if i else ''}": dict(title='', categoryorder='array', categoryarray=[r for r in routeorder if r in plotData.route.unique()]),
-                f"yaxis{i+1 if i else ''}": dict(title='', range=[0.0, ymax]),
-            },
-        )
-
+        ymax = addBars(commodity, config, costData, costDataH2Transp, fig, i, routeorder, subplot)
 
         # add cost differences from Base Case
         if show_costdiff:
-            correction = 0.018
-            xshift = 2.5
-
-            baseCost = plotData.query("route=='Base Case'").val.sum()
-            fig.add_hline(
-                baseCost,
-                line_color='black',
-                line_width=config['global']['lw_thin'],
-                row=1,
-                col=i+1,
-            )
-
-            for j, route in enumerate(sorted(plotData.route.unique().tolist())[1:]):
-                thisCost = plotData.query(f"route=='{route}'").val.sum()
-
-                fig.add_annotation(
-                    x=j+1,
-                    y=thisCost,
-                    yref=f"y{i+1 if i else ''}",
-                    ax=j+1,
-                    ay=baseCost+correction*ymax,
-                    ayref=f"y{i+1 if i else ''}",
-                    arrowcolor='black',
-                    arrowwidth=config['global']['lw_thin'],
-                    arrowhead=2,
-                    row=1,
-                    col=i+1,
-                )
-
-                fig.add_annotation(
-                    text=f"{baseCost-thisCost: .2f}<br>({(baseCost-thisCost)/baseCost*100:.2f}%)",
-                    align='left',
-                    showarrow=False,
-                    x=j+1,
-                    xanchor='left',
-                    xshift=xshift,
-                    y=thisCost+(baseCost-thisCost)/2,
-                    yref=f"y{i+1 if i else ''}",
-                    yanchor='middle',
-                    row=1,
-                    col=i+1,
-                )
-
+            addCostDiff(commodity, config, costData, costDataH2Transp, fig, i, subplot, ymax)
 
     # update layout of all plots
     fig.update_layout(
@@ -216,3 +131,157 @@ def __produceFigure(costData: pd.DataFrame, routeorder: list, config: dict, comm
 
 
     return fig
+
+
+def addBars(commodity, config, costData, costDataH2Transp, fig, i, routeorder, subplot):
+    # select data for each subplot
+    plotData = costData \
+        .query(f"val_year=={subplot}" if commodity else f"commodity=='{subplot}'") \
+        .query("case!='Case 1b'") \
+        .replace({'route': 'Case 1a'}, 'Case 1a/b')
+    plotDataH2Transp = costDataH2Transp.query(f"val_year=={subplot}" if commodity else f"commodity=='{subplot}'") \
+        .replace({'route': ['Case 1a', 'Case 1b']}, 'Case 1a/b')
+
+    # determine ymax
+    if config['ymaxcalc']:
+        ymax = 1.15 * plotData.query("route=='Base Case'").val.sum()
+    else:
+        ymax = config['ymax'][commodity] if commodity else config['ymax'][subplot]
+
+    # whether a hover label should be set
+    hoverLabel = 'hover_label' in plotData.columns and any(plotData.hover_label.unique())
+
+    # add traces for all cost types
+    for type, display in config['types'].items():
+        thisData = plotData.query(f"type=='{type}'")
+
+        fig.add_trace(
+            go.Bar(
+                x=thisData.route,
+                y=thisData.val,
+                marker_color=display['colour'],
+                name=display['label'],
+                customdata=thisData.hover_label if hoverLabel else None,
+                showlegend=not i,
+                hovertemplate=f"<b>{display['label']}</b>{'<br>%{customdata}' if hoverLabel else ''}<br>Cost: %{{y}} EUR/t<extra></extra>",
+                width=0.8,
+            ),
+            row=1,
+            col=i + 1,
+        )
+
+    display = config['types']['transport']
+    baseVal = plotData.query(f"route=='Case 1a/b'").val.sum()
+
+    for m, c in enumerate(plotDataH2Transp.case.unique()):
+        p = plotDataH2Transp.query(f"case=='{c}'")
+
+        fig.add_trace(
+            go.Bar(
+                x=p.route,
+                y=p.val,
+                base=baseVal,
+                marker_color=display['colour'],
+                name=display['label'],
+                customdata=p.hover_label if hoverLabel else None,
+                showlegend=False,
+                hovertemplate=f"<b>{display['label']}</b>{'<br>%{customdata}' if hoverLabel else ''}<br>Cost: %{{y}} EUR/t<extra></extra>",
+                width=0.4,
+                offset=-0.4 + 0.4 * m,
+            ),
+            row=1,
+            col=i + 1,
+        )
+
+    # add annotations
+    fig.add_annotation(
+        text=f"<b>{subplot}</b>",
+        x=0.0,
+        xref='x domain',
+        xanchor='left',
+        y=1.0,
+        yref='y domain',
+        yanchor='top',
+        showarrow=False,
+        bordercolor='black',
+        borderwidth=2,
+        borderpad=3,
+        bgcolor='white',
+        row=1,
+        col=i + 1,
+    )
+
+    # update layout of subplot
+    fig.update_layout(
+        **{
+            f"xaxis{i + 1 if i else ''}": dict(title='', categoryorder='array',
+                                               categoryarray=[r for r in routeorder if r in plotData.route.unique()]),
+            f"yaxis{i + 1 if i else ''}": dict(title='', range=[0.0, ymax]),
+        },
+    )
+
+    return ymax
+
+
+def addCostDiff(commodity, config, costData, costDataH2Transp, fig, i, subplot, ymax):
+    correction = 0.018
+    xshift = 2.5
+
+    # select data for each subplot
+    plotData = pd.concat([costData, costDataH2Transp]).query(
+        f"val_year=={subplot}" if commodity else f"commodity=='{subplot}'")
+    baseCost = plotData.query("route=='Base Case'").val.sum()
+
+    fig.add_hline(
+        baseCost,
+        line_color='black',
+        line_width=config['global']['lw_thin'],
+        row=1,
+        col=i + 1,
+    )
+
+    for j, route in enumerate(sorted(plotData.route.unique().tolist())[1:]):
+        thisCost = plotData.query(f"route=='{route}'").val.sum()
+
+        costDiff = thisCost - baseCost
+        costDiffAbs = abs(costDiff)
+        costDiffSign = '+' if costDiff > 0.0 else '-'
+
+        if route == 'Case 1a':
+            j -= 0.2
+        elif route == 'Case 1b':
+            j += 0.2
+            j -= 1
+        if j > 1:
+            j -= 1
+
+        fig.add_annotation(
+            x=j + 1,
+            y=min(thisCost, ymax),
+            yref=f"y{i + 1 if i else ''}",
+            ax=j + 1,
+            ay=baseCost + (correction * ymax if costDiff < 0.0 else -correction * ymax),
+            ayref=f"y{i + 1 if i else ''}",
+            arrowcolor='black',
+            arrowwidth=config['global']['lw_thin'],
+            arrowhead=2,
+            row=1,
+            col=i + 1,
+        )
+
+        y = thisCost + (costDiffAbs / 2 if costDiff < 0.0 else -costDiffAbs / 2)
+        if i==1 and route == 'Case 1a':
+            y = thisCost - 3/4*costDiffAbs
+        fig.add_annotation(
+            text=f" {costDiffSign}{costDiffAbs:.2f}<br>({costDiffSign}{costDiffAbs / baseCost * 100:.2f}%)",
+            align='left',
+            showarrow=False,
+            x=j + 1,
+            xanchor='left',
+            xshift=xshift,
+            y=y,
+            yref=f"y{i + 1 if i else ''}",
+            yanchor='middle',
+            row=1,
+            col=i + 1,
+        )
