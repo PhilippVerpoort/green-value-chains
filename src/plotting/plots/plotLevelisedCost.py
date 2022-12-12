@@ -89,7 +89,7 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     costDataNew.sort_values(by='commodity', key=lambda row: [commodityOrder.index(c) for c in row], inplace=True)
 
     # sort routes
-    routeorder = [r.replace('Case 1a', 'Case 1a/b') for r in route_names.values() if r != 'Case 1b']
+    routeorder = [r.replace('Case 1A', 'Case 1A/B') for r in route_names.values() if r != 'Case 1B']
 
     return costDataNew, routeorder, costDataH2Transp
 
@@ -137,10 +137,10 @@ def addBars(commodity, config, costData, costDataH2Transp, fig, i, routeorder, s
     # select data for each subplot
     plotData = costData \
         .query(f"val_year=={subplot}" if commodity else f"commodity=='{subplot}'") \
-        .query("case!='Case 1b'") \
-        .replace({'route': 'Case 1a'}, 'Case 1a/b')
+        .query("case!='Case 1B'") \
+        .replace({'route': 'Case 1A'}, 'Case 1A/B')
     plotDataH2Transp = costDataH2Transp.query(f"val_year=={subplot}" if commodity else f"commodity=='{subplot}'") \
-        .replace({'route': ['Case 1a', 'Case 1b']}, 'Case 1a/b')
+        .replace({'route': ['Case 1A', 'Case 1B']}, 'Case 1A/B')
 
     # determine ymax
     if config['ymaxcalc']:
@@ -171,7 +171,7 @@ def addBars(commodity, config, costData, costDataH2Transp, fig, i, routeorder, s
         )
 
     display = config['types']['transport']
-    baseVal = plotData.query(f"route=='Case 1a/b'").val.sum()
+    baseVal = plotData.query(f"route=='Case 1A/B'").val.sum()
 
     for m, c in enumerate(plotDataH2Transp.case.unique()):
         p = plotDataH2Transp.query(f"case=='{c}'")
@@ -247,9 +247,9 @@ def addCostDiff(commodity, config, costData, costDataH2Transp, fig, i, subplot, 
         costDiffAbs = abs(costDiff)
         costDiffSign = '+' if costDiff > 0.0 else '-'
 
-        if route == 'Case 1a':
+        if route == 'Case 1A':
             j -= 0.2
-        elif route == 'Case 1b':
+        elif route == 'Case 1B':
             j += 0.2
             j -= 1
         if j > 1:
@@ -270,7 +270,7 @@ def addCostDiff(commodity, config, costData, costDataH2Transp, fig, i, subplot, 
         )
 
         y = thisCost + (costDiffAbs / 2 if costDiff < 0.0 else -costDiffAbs / 2)
-        if i==1 and route == 'Case 1a':
+        if i==1 and route == 'Case 1A':
             y = thisCost - 3/4*costDiffAbs
         fig.add_annotation(
             text=f" {costDiffSign}{costDiffAbs:.2f}<br>({costDiffSign}{costDiffAbs / baseCost * 100:.2f}%)",

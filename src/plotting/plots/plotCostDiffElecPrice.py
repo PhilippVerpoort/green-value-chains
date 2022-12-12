@@ -95,7 +95,7 @@ def __produceFigure(plotData: pd.DataFrame, elecPriceDiff: pd.DataFrame, benchma
         for case in plotData.case.unique():
             thisData = commData.query(f"case=='{case}'")
 
-            if case == 'Case 1a':
+            if case == 'Case 1A':
                 continue
 
             fig.add_trace(

@@ -86,7 +86,7 @@ def __produceFigure(plotData: dict, config: dict):
             for case in plotData.case.unique():
                 thisData = yearData.query(f"case=='{case}'")
 
-                if case == 'Case 1a':
+                if case == 'Case 1A':
                     continue
 
                 fig.add_trace(
