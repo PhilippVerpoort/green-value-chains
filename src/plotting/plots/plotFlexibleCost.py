@@ -97,15 +97,15 @@ def __produceFigure(pd_samples: np.ndarray, ocf_samples: np.ndarray, plotData: d
                 zmin=config['zrange'][0],
                 zmax=config['zrange'][1],
                 colorscale=[
-                    [0.0, '#c6dbef'],
-                    [1.0, '#f7bba1'],
+                    [0.0, config['zcolours'][0]],
+                    [1.0, config['zcolours'][1]],
                 ],
                 colorbar=dict(
-                    x=1.05,
-                    y=0.25,
-                    len=0.5,
+                    x=1.02,
+                    y=0.5,
+                    len=1.0,
                     title='Cost difference (EUR/t)',
-                    titleside='top',
+                    titleside='right',
                     tickvals=tickvals,
                     ticktext=ticktext,
                 ),
@@ -165,9 +165,10 @@ def __produceFigure(pd_samples: np.ndarray, ocf_samples: np.ndarray, plotData: d
         legend_title='',
         yaxis=dict(title=config['yaxislabel'], range=config['yrange']),
         **{
-            f"xaxis{i+1 if i else ''}": dict(title=f"{config['xaxislabel']}", range=config['xrange'])
+            f"xaxis{i+1 if i else ''}": dict(range=config['xrange'])
             for i, commodity in enumerate(plotData)
-        }
+        },
+        xaxis2_title=config['xaxislabel'],
     )
 
 

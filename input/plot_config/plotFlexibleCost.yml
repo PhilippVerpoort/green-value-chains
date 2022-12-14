@@ -12,6 +12,9 @@ zrange:
   - 0.0
   - 200.0
 zdelta: 10.0
+zcolours:
+  - '#9DA4D2'
+  - '#F3DA9C'
 
 samples: 51
 
