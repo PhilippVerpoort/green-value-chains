@@ -40,13 +40,13 @@ def getFullData(input_data: dict):
         routesWithRecycling = {k: v for k, v in routes.items() if any(t in k for t in recyclingTokens)}
 
         # calculate cost from tech data
-        costDataList.append(calcCost(techDataFull, prices, routesWORecycling, commodity))
+        costDataList.append(calcCost(techDataFull, prices, routesWORecycling, commodity, options))
 
         # calculate reference cost without price differences for Fig. 3
-        costDataListRef.append(calcCost(techDataFull, pricesRef, routesWORecycling, commodity))
+        costDataListRef.append(calcCost(techDataFull, pricesRef, routesWORecycling, commodity, options))
 
         # calculate recycling cost for Fig. 5
-        costDataListRec.append(calcCost(techDataFull, prices, routesWithRecycling, commodity))
+        costDataListRec.append(calcCost(techDataFull, prices, routesWithRecycling, commodity, options))
 
 
     return {

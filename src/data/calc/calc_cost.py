@@ -1,9 +1,11 @@
+from copy import deepcopy
+
 import pandas as pd
 
 from src.load.load_default_data import all_processes
 
 
-def calcCost(tech_data_full: pd.DataFrame, prices: pd.DataFrame, selectedRoutes: dict, commodity: str):
+def calcCost(tech_data_full: pd.DataFrame, prices: pd.DataFrame, selectedRoutes: dict, commodity: str, options: dict):
     # technology data
     selectedProcesses = list(set([p for route in selectedRoutes.values() for p in route['processes']]))
     selectedComponents = [all_processes[p]['output'] for p in selectedProcesses] + list(tech_data_full.query(f"process in @selectedProcesses").component.unique())
@@ -23,10 +25,11 @@ def calcCost(tech_data_full: pd.DataFrame, prices: pd.DataFrame, selectedRoutes:
     for route_id, route_details in selectedRoutes.items():
         if 'import_cases' in route_details and len(route_details['import_cases']) > 1:
             for case_name, case_imports in route_details['import_cases'].items():
-                es_rout = __calcRouteCost(costData, prices, route_details['processes'], case_imports)
+                es_rout = __calcRouteCost(deepcopy(costData), prices, route_details['processes'], case_imports, options)
                 es_ret.extend([e.assign(route=f"{route_id}--{case_name}", baseRoute=route_id, case=case_name) for e in es_rout])
         else:
-            es_rout = __calcRouteCost(costData, prices, route_details['processes'], next(c for c in route_details['import_cases'].values()) if route_details['import_cases'] else None)
+            case_imports = next(c for c in route_details['import_cases'].values()) if route_details['import_cases'] else None
+            es_rout = __calcRouteCost(deepcopy(costData), prices, route_details['processes'], case_imports, options)
             es_ret.extend([e.assign(route=route_id, baseRoute=route_id) for e in es_rout])
 
 
@@ -38,14 +41,8 @@ def calcCost(tech_data_full: pd.DataFrame, prices: pd.DataFrame, selectedRoutes:
 
 
 def __prepareCostData(techData: pd.DataFrame):
-    # for calculating annualised capital cost
-    i = 0.08
-    n = 18
-    FCR = i * (1 + i) ** n / ((1 + i) ** n - 1)
-
-
     # capital cost
-    costCapital = techData.query("type=='capex'").assign(val=lambda x: FCR * x.val, type='capital')
+    costCapital = techData.query("type=='capex'").assign(type='capital')
     costCapital.loc[costCapital['process'] == 'ELEC', 'val'] /= 8760.0 # convert MW to MWh_pa
 
 
@@ -103,7 +100,11 @@ def __prepareCostData(techData: pd.DataFrame):
     }
 
 
-def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, imports: list):
+def __calcFCR(i: float, n: int):
+    return i * (1 + i) ** n / ((1 + i) ** n - 1)
+
+
+def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, imports: list, options: dict):
     es_rout = {}
 
 
@@ -126,6 +127,25 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
     costData['demand'].loc[setLocation & isImported, 'location'] = 'exporter'
 
 
+    # country-specific fixed-charge rates
+    costData['capital'].loc[:, 'location'] = 'importer'
+    costData['capital'].loc[costData['capital']['process'].isin(processAbroad), 'location'] = 'exporter'
+
+    fcr = pd.DataFrame.from_records([
+        {
+            'location': location,
+            'fcr': __calcFCR(options['irate'][location]/100.0, options['ltime']),
+        }
+        for location in ['importer', 'exporter']
+    ])
+
+    costData['capital'] = costData['capital'] \
+        .merge(fcr, on=['location']) \
+        .assign(val=lambda x: x.val * x.fcr) \
+        .drop(columns=['fcr'])
+
+
+    # individual process steps
     for process in processes:
         output = all_processes[process]['output']
         mode = processes[process]['mode'] if 'mode' in processes[process] else None
@@ -141,7 +161,7 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
         if 'dri' not in importComponents:
             thisCostData['demand'] = thisCostData['demand'].query("subcomponent!='Heating of CDRI'")
 
-        # add all data that does not need further treatment (capital & fixed cost + energy & feedstock cost with fixed prices)
+        # add all data that does not need further treatment (capital and fixed cost + energy & feedstock cost with fixed prices)
         es_pro.append(thisCostData['capital'])
         es_pro.append(thisCostData['fixed'])
         es_pro.append(thisCostData['energy_feedstock'])
