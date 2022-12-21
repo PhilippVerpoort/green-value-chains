@@ -1,8 +1,8 @@
 fig3:
   desc:
     "The levelised cost of production is shown for (panels left to right) steel, urea, and ethylene for four different 
-    import cases (as defined in Fig. 2) in year 2050. The cost is calculated using techno-economic data, as well as an 
-    assumption of an electricity price of 50 EUR/MWh in the importing and 15 EUR/MWh in the exporting region, and some 
+    import cases (as defined in Fig. 2) in year 2050. The cost is calculated using techno-economic data as well as an 
+    assumption of an electricity price of 50 EUR/MWh in the importing and 15 EUR/MWh in the exporting region and some 
     cost reduction of CAPEX compared to today's values due to learning effects, with further details outlined in 
     Methods. Moreover, Case 1A shows high transportation cost of 90 EUR/MWh, whereas Case 1B shows moderate cost for 
     hydrogen transportation of 20 EUR/MWh. The result shows clear and substantial cost-reduction for relocating 
@@ -29,13 +29,18 @@ fig4:
   title: Share of energy cost in value creation.
   width: 100%
 fig5:
-  desc: The cost difference between scenarios changes based on the price difference
-    of renewable electricity.
+  desc:
+    "Top: The cost difference between Cases 1–3 and the Base Case increases linearly with the electricity-price 
+    difference. The secondary Y-Axes show the production-cost difference relative to the total production cost in the 
+    Base Case. Bottom: Heatmap show the production cost difference as a function of both electricity-price difference 
+    and H₂ transportation cost for Case 1, with the red line showing the default assumption for Case 1B from the top. 
+    The dashed line indicates the electricity-price difference for the default assumptions used to produce the data in 
+    Fig. 1."
   display:
   - /
   - /advanced
   name: Figure 5
-  title: Cost difference of scenarios for varying elec. price difference
+  title: Dependence of the production-cost difference on the electricity-price difference and the H₂ transportation cost.
   width: 100%
 figS1:
   desc: 'Based on hydrogen direct reduction (H-DR) as well as fossil references using
