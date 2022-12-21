@@ -13,8 +13,8 @@ def plotLevelisedCost(costData: pd.DataFrame, costDataRec: pd.DataFrame, config:
 
 
     # make adjustments to data
-    costDataAggregated, routeorder, costDataH2Transp = __adjustData(costData, config) if any(fName in subfigs_needed for fName in ['fig3', 'figS1a', 'figS1b', 'figS1c', 'figS2']) else (None, None)
-    costDataRecAggregated, _, costDataRecH2Transp = __adjustData(costDataRec, config) if 'figS2' in subfigs_needed else (None, None, None)
+    costDataAggregated, routeorder, costDataH2Transp = __adjustData(costData, config) if any(fName in subfigs_needed for fName in ['fig3', 'figS1a', 'figS1b', 'figS1c', 'figS3']) else (None, None, None)
+    costDataRecAggregated, _, costDataRecH2Transp = __adjustData(costDataRec, config) if 'figS3' in subfigs_needed else (None, None, None)
 
 
     # produce fig1
@@ -28,7 +28,7 @@ def plotLevelisedCost(costData: pd.DataFrame, costDataRec: pd.DataFrame, config:
 
 
     # produce figS2
-    ret['figS2'] = __produceFigure(costDataRecAggregated, routeorder, costDataRecH2Transp, config) if 'figS2' in subfigs_needed else None
+    ret['figS3'] = __produceFigure(costDataRecAggregated, routeorder, costDataRecH2Transp, config) if 'figS3' in subfigs_needed else None
 
 
     return ret

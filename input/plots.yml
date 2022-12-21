@@ -5,13 +5,13 @@ plotLevelisedCost:
     - figS1a
     - figS1b
     - figS1c
-  figS2:
-    - figS2
+  figS3:
+    - figS3
 plotValueCreation:
   - fig4
 plotCostDiffH2Transp:
   - fig5
 plotFlexibleCost:
-  - fig6
+  - figS2
 plotRecyclingCost:
-  - fig7
+  - figS4

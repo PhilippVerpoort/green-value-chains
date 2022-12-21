@@ -15,7 +15,7 @@ def plotRecyclingCost(costData: pd.DataFrame, costDataRec: pd.DataFrame, config:
 
 
     # produce figure
-    ret['fig7'] = __produceFigure(plotData, config) if 'fig7' in subfigs_needed else None
+    ret['figS4'] = __produceFigure(plotData, config) if 'figS4' in subfigs_needed else None
 
 
     return ret

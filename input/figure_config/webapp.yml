@@ -37,22 +37,6 @@ fig5:
   name: Figure 5
   title: Cost difference of scenarios for varying elec. price difference
   width: 100%
-fig6:
-  desc: Showing cost as a function of both operational capacity and electricity price.
-  display:
-  - /
-  - /advanced
-  name: Figure 6
-  title: Cost-effectiveness of flexible operation
-  width: 100%
-fig7:
-  desc: Showing cost as a function of the recylcing share.
-  display:
-  - /
-  - /advanced
-  name: Figure 7
-  title: Cost-effectiveness of recycling
-  width: 100%
 figS1:
   desc: 'Based on hydrogen direct reduction (H-DR) as well as fossil references using
     coal in blast furnace/basic-oxygen furance (BF-BOF) and natural-gas direct reduction
@@ -68,12 +52,28 @@ figS1:
   title: Levelised cost for multiple years
   width: 100%
 figS2:
+  desc: Showing cost as a function of both operational capacity and electricity price.
+  display:
+  - /
+  - /advanced
+  name: Figure S2
+  title: Cost-effectiveness of flexible operation
+  width: 100%
+figS3:
   desc: Using higher shares of recycling.
   display:
   - /
   - /advanced
   height: 600px
-  name: Figure S2
+  name: Figure S3
   nosettings: true
   title: Levelised cost for recycled routes
+  width: 100%
+figS4:
+  desc: Showing cost as a function of the recylcing share.
+  display:
+  - /
+  - /advanced
+  name: Figure S4
+  title: Cost-effectiveness of recycling
   width: 100%
