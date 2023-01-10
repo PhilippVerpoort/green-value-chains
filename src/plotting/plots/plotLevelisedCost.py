@@ -116,11 +116,11 @@ def __produceFigure(costData: pd.DataFrame, routeorder: list, costDataH2Transp: 
 
     # add bars for each subplot
     for i, subplot in enumerate(subplots):
-        ymax = addBars(commodity, config, costData, costDataH2Transp, fig, i, routeorder, subplot)
+        ymax = __addBars(commodity, config, costData, costDataH2Transp, fig, i, routeorder, subplot)
 
         # add cost differences from Base Case
         if show_costdiff:
-            addCostDiff(commodity, config, costData, costDataH2Transp, fig, i, subplot, ymax)
+            __addCostDiff(commodity, config, costData, costDataH2Transp, fig, i, subplot, ymax)
 
     # update layout of all plots
     fig.update_layout(
@@ -133,7 +133,7 @@ def __produceFigure(costData: pd.DataFrame, routeorder: list, costDataH2Transp: 
     return fig
 
 
-def addBars(commodity, config, costData, costDataH2Transp, fig, i, routeorder, subplot):
+def __addBars(commodity, config, costData, costDataH2Transp, fig, i, routeorder, subplot):
     # select data for each subplot
     plotData = costData \
         .query(f"val_year=={subplot}" if commodity else f"commodity=='{subplot}'") \
@@ -223,7 +223,7 @@ def addBars(commodity, config, costData, costDataH2Transp, fig, i, routeorder, s
     return ymax
 
 
-def addCostDiff(commodity, config, costData, costDataH2Transp, fig, i, subplot, ymax):
+def __addCostDiff(commodity, config, costData, costDataH2Transp, fig, i, subplot, ymax):
     correction = 0.018
     xshift = 2.5
     yshift = 35.0
@@ -274,7 +274,7 @@ def addCostDiff(commodity, config, costData, costDataH2Transp, fig, i, subplot, 
         if i==1 and route == 'Case 1A':
             y = thisCost - 3/4*costDiffAbs
         fig.add_annotation(
-            text=f" {costDiffSign}{costDiffAbs:.2f}<br>({costDiffSign}{costDiffAbs / baseCost * 100:.2f}%)",
+            text=f" {costDiffSign}{costDiffAbs:.1f}<br>({costDiffSign}{costDiffAbs / baseCost * 100:.1f}%)",
             align='left',
             showarrow=False,
             x=j + 1,
