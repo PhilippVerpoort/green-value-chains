@@ -8,8 +8,8 @@ BOF,BOF,Basic-oxygen furnace,steel,t
 HB,Haber-Bosch,Haber-Bosch process,ammonia,t
 UREA,Urea prod.,Urea production,urea,t
 SMR_HB,Integrated ammonia plant,Integrated ammonia plant,ammonia,t
+HP,Heat pump,Low-temperature industrial heat pump,heat,MWh
 DAC,DAC,Direct-air capture,co2,t
 CCU,CCU,Carbon-capture and storage,co2,t
-ASU,ASU,Air separation for nitrogen,nitrogen,t
 MEOH,MeOH prod.,Methanol production,methanol,t
 MTO,MtO,Methanol-to-Ethylene,ethylene,t

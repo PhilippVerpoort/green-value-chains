@@ -1,23 +1,4 @@
 Steel:
-  BF_BOF:
-    import_cases:
-      'Base Case':
-      - ore
-    name: BF-BOF
-    processes:
-      BF: {}
-      BOF:
-        mode: primary
-  NGDR_EAF:
-    import_cases:
-      'Base Case':
-      - ore
-    name: NG-DR
-    processes:
-      DR:
-        mode: NG
-      EAF:
-        mode: primary
   ELEC_H2DR_PRIMARY_EAF:
     import_cases:
       'Base Case':
@@ -103,15 +84,6 @@ Steel:
 
 
 Urea:
-  SMR_HB_UREA:
-    import_cases:
-      'Base Case':
-      - none
-    name: SMR
-    processes:
-      ASU: {}
-      SMR_HB: {}
-      UREA: {}
   ELEC_HB_DAC_UREA:
     import_cases:
       'Base Case':
@@ -127,8 +99,8 @@ Urea:
     name: ELEC
     processes:
       ELEC: {}
-      ASU: {}
       HB: {}
+      HP: {}
       DAC: {}
       UREA: {}
   HB_DAC_UREA:
@@ -145,8 +117,8 @@ Urea:
       - urea
     name: ELEC
     processes:
-      ASU: {}
       HB: {}
+      HP: {}
       DAC: {}
       UREA: {}
   ELEC_HB_CCU_UREA:
@@ -164,7 +136,6 @@ Urea:
     name: ELEC
     processes:
       ELEC: {}
-      ASU: {}
       HB: {}
       CCU: {}
       UREA: {}
@@ -182,7 +153,6 @@ Urea:
       - urea
     name: ELEC
     processes:
-      ASU: {}
       HB: {}
       CCU: {}
       UREA: {}
@@ -204,6 +174,7 @@ Ethylene:
     name: ELEC
     processes:
       ELEC: {}
+      HP: {}
       DAC: {}
       MEOH: {}
       MTO: {}
@@ -221,6 +192,7 @@ Ethylene:
       - ethylene
     name: ELEC
     processes:
+      HP: {}
       DAC: {}
       MEOH: {}
       MTO: {}
@@ -239,6 +211,7 @@ Ethylene:
     name: ELEC
     processes:
       ELEC: {}
+      HP: {}
       DAC: {}
       MEOH: {}
       MTO: {}
@@ -256,6 +229,7 @@ Ethylene:
       - ethylene
     name: ELEC
     processes:
+      HP: {}
       DAC: {}
       MEOH: {}
       MTO: {}

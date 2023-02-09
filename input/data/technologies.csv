@@ -1,93 +1,75 @@
-process,type,component,subcomponent,mode,unit,val,val_uncertainty,val_year,source,comment
-ELEC,capex,,,,EUR/MW,650000,,2025,,
-ELEC,capex,,,,EUR/MW,250000,,2050,,
-ELEC,energy_demand,electricity,,,1,1.47,,2025,,
-ELEC,energy_demand,electricity,,,1,1.33,,2050,,
-ELEC,fixed_opex,onm,,,1,0.03,,,,
-DAC,capex,,,,EUR/t,400,high_uncertainty,2025,,
-DAC,capex,,,,EUR/t,200,high_uncertainty,2050,,
-DAC,energy_demand,electricity,,,MWh/t,2.778,,,,
-CCU,capex,,,,EUR/t,200,high_uncertainty,2025,,
-CCU,capex,,,,EUR/t,100,high_uncertainty,2050,,
-CCU,energy_demand,electricity,,,MWh/t,1.667,,,,
-BF,capex,,,,EUR/t,106,,,,
-BF,energy_demand,coal,,,1,0.17,,,,
-BF,energy_demand,coke,,,1,0.4,,,,
-BF,energy_demand,natural gas,,,MWh/t,0.17,,,,
-BF,energy_prices,coal,,,EUR/t,110,,,,
-BF,energy_prices,coke,,,EUR/t,143,,,,
-BF,feedstock_demand,lime,,,1,0.278,,,,
-BF,feedstock_demand,ore,,,1,1.5,,,,
-BF,fixed_opex,labour,,,EUR/t,38,,,,
-BF,fixed_opex,onm,,,1,0.03,,,,
-BOF,capex,,,,EUR/t,64,,,,
-BOF,feedstock_demand,alloys,,,1,0.011,,,,
-BOF,feedstock_demand,oxygen,,,1,0.18,,,,
-BOF,feedstock_demand,pig iron,,primary,1,0.85,,,,
-BOF,feedstock_demand,pig iron,,secondary,1,0.35,,,,
-BOF,feedstock_demand,scrap,,primary,1,0.1,,,,
-BOF,feedstock_demand,scrap,,secondary,1,0.6,,,,
-BOF,feedstock_prices,oxygen,,,EUR/t,60.8,,,,
-BOF,fixed_opex,onm,,,1,0.03,,,,
-DR,capex,,,,EUR/t,414,,,,
-DR,energy_demand,electricity,,,MWh/t,0.329,,,,
-DR,energy_demand,hydrogen,,H2,MWh/t,1.647,,,,
-DR,energy_demand,natural gas,,H2,MWh/t,0.480,,,,
-DR,energy_demand,natural gas,,NG,MWh/t,2.79,,,,
-DR,feedstock_demand,ore,,,1,1.371,,,,
-DR,feedstock_prices,ore,,,EUR/t,130,,,,
-DR,fixed_opex,onm,,,1,0.03,,,,
-EAF,capex,,,,EUR/t,331.2,,,,
-EAF,energy_demand,electricity,For CDRI w/o heating,primary,MWh/t,0.665,,,,
-EAF,energy_demand,electricity,For using scrap,secondary,MWh/t,0.519,,,,
-EAF,energy_demand,electricity,Heating of CDRI,,MWh/t,0.159,,,,
-EAF,feedstock_demand,alloys,,,1,0.011,,,,
-EAF,feedstock_demand,dri,,primary,1,1.1,,,,
-EAF,feedstock_demand,dri,,secondary,1,0.170,,,,
-EAF,feedstock_demand,graphite,,,1,0.0025,,,,
-EAF,feedstock_demand,lime,,,1,0.05,,,,
-EAF,feedstock_demand,scrap,,primary,1,0.17,,,,
-EAF,feedstock_demand,scrap,,secondary,1,1.09,,,,
-EAF,feedstock_prices,alloys,,,EUR/t,1777,,,,
-EAF,feedstock_prices,graphite,,,EUR/t,4000,,,,
-EAF,feedstock_prices,lime,,,EUR/t,100,,,,
-EAF,feedstock_prices,scrap,,,EUR/t,180,,,,
-EAF,fixed_opex,labour,,,EUR/t,35,,,,
-EAF,fixed_opex,onm,,,1,0.03,,,,
-SMR_HB,capex,,,,EUR/t,670,,,"VCI, 2019","up to 817 €/t in VCI, IEA (2018), Boulamanti and Moya (2017)"
-SMR_HB,energy_demand,electricity,,,MWh/t,,,,,
-SMR_HB,energy_demand,natural gas,,,t/t,0.65,,,Boulamanti and Moya (2017),
-SMR_HB,fixed_opex,,,,EUR/t,33.5,,,"VCI, 2019, Own calculation with 5% O&M cost",
-ASU,energy_demand,electricity,,,MWh/t,0.639,,,(Assuming 2.3 GJ/t heat demand.),
-HB,capex,,,,EUR/t,400,,,"VCI, IEA (2018), Boulamanti and Moya (2017)",
-HB,energy_demand,hydrogen,,,MWh/t,5.93,,,Boulamanti and Moya (2017),Wert geprüft; UBA
-HB,energy_demand,natural gas,,,t/t,0.17,,,PIK Data Documentation (avg. from three sources),Natural gas is required for providing process heat; can be replaced with electric heat in 2050; approximately 6.8 GJ/t-7.65GJ/t heat (correct for boiler and heatpump efficiencies)
-HB,feedstock_demand,nitrogen,,,t/t,0.85,low_uncertainty,,UBA (2019),Value from stoichiometric equation
-HB,fixed_opex,,,,EUR/t,72.8,,,"VCI, IEA (2018), Boulamanti and Moya (2017)",without hydrogen
-UREA,capex,,,,EUR/t,232,,,Calculated from https://www.sciencedirect.com/science/article/pii/S1364032118300078,348 M for 1.5 Mt/yr = 232€/t; muss für korrekte Berechnung ggf. annuisiert werden mit erwarteter Lebensdauer;
-UREA,energy_demand,electricity,,,MWh/t,0.173,,,https://iopscience.iop.org/article/10.1088/1755-1315/472/1/012034/pdf,Quelle prüfen; hat keine Wärme GJ/t
-UREA,feedstock_demand,ammonia,,,t/t,0.58,,,"James A. Kent (Hrsg.): Riegel’s Handbook of Industrial Chemistry. Van Nostrand Reinhold, 1974",Prozess-Output: Wasser (0.34 t/t); CO2 und Ammonia werden teilweise im Kreis geführt (überstöchiometrischer Bedarf)
-UREA,feedstock_demand,co2,,,t/t,0.76,,,"James A. Kent (Hrsg.): Riegel’s Handbook of Industrial Chemistry. Van Nostrand Reinhold, 1974",Prozess-Output: Wasser (0.34 t/t); CO2 und Ammonia werden teilweise im Kreis geführt (überstöchiometrischer Bedarf)
-UREA,fixed_opex,,,,EUR/t,11.6,,,Own calculation with 5% O&M cost,
-MEOH,capex,,,,EUR/t,600,,2050,Assumption for low-cost scenario,
-MEOH,capex,,,,EUR/t,1450,Value seems to be very high,,Dechema (2017); Tabelle 35; year 2015,
-MEOH,energy_demand,electricity,,,MWh/t,1.5,,,Dechema (2017),
-MEOH,feedstock_demand,co2,,,1,1.373,,,Dechema (2017),
-MEOH,feedstock_demand,hydrogen,,,1,0.189,,,Dechema (2017),
-MEOH,fixed_opex,,,,EUR/t,20,,2050,Assumption for low-cost scenario,Overall OPEX are reported as 290€ in Dechema (2017)
-MEOH,fixed_opex,,,,EUR/t,290,Value seems to be very high,,Dechema (2017); Tabelle 35; year 2015,
-MTO,capex,,,,EUR/t,760,,,https://energy.nl/media/data/Technology-Factsheet-Advanced-methanol-to-olefins.pdf,"Wie werden die annuisierten CAPEX berechnet, wenn keine expected lifetime vorhanden ist?"
-MTO,capex,,,,EUR/t,300,,,https://energy.nl/media/data/Technology-Factsheet-Advanced-methanol-to-olefins.pdf,"Wie werden die annuisierten CAPEX berechnet, wenn keine expected lifetime vorhanden ist?"
-MTO,energy_demand,electricity,,,MWh/t,1.38,,,Dechema (2017),"5 GJ/tHVC for process Dechema (2017), assuming 100% electrification"
-MTO,feedstock_demand,methanol,,,1,2.28,,,Dechema (2017),add: carbon dioxide output 0.4 kg/kgEthylene
-MTO,fixed_opex,,,,EUR/t,20,,,https://energy.nl/media/data/Technology-Factsheet-Advanced-methanol-to-olefins.pdf,
-MTO,fixed_opex,,,,EUR/t,45,,,Dechema (2017),
-,transport,hydrogen,,pipeline,EUR/MWh,30,,2025,Acatech Daten,Anke?
-,transport,hydrogen,,pipeline,EUR/MWh,20,,2050,Acatech Daten,Anke?
-,transport,hydrogen,,shipping,EUR/MWh,110,,2025,Acatech Daten,Anke?
-,transport,hydrogen,,shipping,EUR/MWh,90,,2050,Acatech Daten,Anke?
-,transport,ore,,,EUR/t,14,,,,Anke?
-,transport,dri,,,EUR/t,20,,,,Anke?
-,transport,steel,,,EUR/t,30,,,,Anke?
-,transport,ammonia,,,EUR/t,35,,,https://www.heise.de/select/tr/2021/5/2115413182032992195; https://www.frontier-economics.com/media/4979/frontier-ptx-business-cases-studie_teil-1-hauptstudie.pdf,Calculated with 0.7 ct/kWh * 5 kWh/kg = 350€/t; find better data; Check future costs of transport
-,transport,urea,,,EUR/t,35,,,https://www.heise.de/select/tr/2021/5/2115413182032992195; https://www.frontier-economics.com/media/4979/frontier-ptx-business-cases-studie_teil-1-hauptstudie.pdf,Calculated with 0.7 ct/kWh * 5 kWh/kg = 350€/t; find better data; Check
+process,type,component,subcomponent,mode,unit,val,val_year
+ELEC,capex,,,,EUR/(MWh/a),67.0,2030
+ELEC,capex,,,,EUR/(MWh/a),25.0,2050
+ELEC,fixed_opex,onm,,,1,0.03,
+ELEC,energy_demand,electricity,,,1,1.47,2030
+ELEC,energy_demand,electricity,,,1,1.35,2050
+DAC,capex,,,,EUR/t,338,2030
+DAC,capex,,,,EUR/t,199,2050
+DAC,fixed_opex,onm,,,1,0.04,
+DAC,energy_demand,electricity,,,MWh/t,0.42,2030
+DAC,energy_demand,electricity,,,MWh/t,0.3,2050
+DAC,energy_demand,heat,,,MWh/t,0.3,
+HP,capex,,,,EUR/t,338,2030
+HP,capex,,,,EUR/t,199,2050
+HP,fixed_opex,onm,,,1,0.02,
+HP,energy_demand,electricity,,,1,0.31,2030
+HP,energy_demand,electricity,,,1,0.28,2050
+CCU,capex,,,,EUR/t,200,2030
+CCU,capex,,,,EUR/t,100,2050
+CCU,energy_demand,electricity,,,MWh/t,1.667,
+DR,capex,,,,EUR/t,350,
+DR,energy_demand,electricity,,,MWh/t,0.1,
+DR,energy_demand,hydrogen,,H2,MWh/t,1.8,
+DR,energy_demand,natural gas,,H2,MWh/t,0.480,
+DR,energy_demand,natural gas,,NG,MWh/t,2.694,
+DR,feedstock_demand,ore,,,1,1.51,
+DR,feedstock_prices,ore,,,EUR/t,130,
+DR,fixed_opex,onm,,,1,0.03,
+EAF,capex,,,,EUR/t,260.0,
+EAF,energy_demand,electricity,For CDRI w/o heating,primary,MWh/t,0.580,
+EAF,energy_demand,electricity,For using scrap,secondary,MWh/t,0.474,
+EAF,energy_demand,electricity,Heating of CDRI,,MWh/t,0.159,
+EAF,feedstock_demand,alloys,,,1,0.011,
+EAF,feedstock_demand,dri,,primary,1,1.065,
+EAF,feedstock_demand,dri,,secondary,1,0.0,
+EAF,feedstock_demand,graphite,,,1,0.0025,
+EAF,feedstock_demand,lime,,,1,0.05,
+EAF,feedstock_demand,scrap,,primary,1,0.17,
+EAF,feedstock_demand,scrap,,secondary,1,1.09,
+EAF,feedstock_prices,alloys,,,EUR/t,1720.0,
+EAF,feedstock_prices,graphite,,,EUR/t,4000,
+EAF,feedstock_prices,lime,,,EUR/t,100,
+EAF,feedstock_prices,scrap,,,EUR/t,180,
+EAF,fixed_opex,onm,,,1,0.03,
+HB,capex,,,,EUR/t,379.2,
+HB,energy_demand,hydrogen,,,MWh/t,5.883,
+HB,energy_demand,electricity,air-separation unit,,MWh/t,0.723,
+HB,energy_demand,electricity,Haber-Bosch process,,MWh/t,2.06,
+HB,fixed_opex,,,,EUR/t,100.0,
+UREA,capex,,,,EUR/t,213.5,
+UREA,energy_demand,electricity,heat,,MWh/t,0.914,
+UREA,energy_demand,electricity,elec,,MWh/t,0.133,
+UREA,feedstock_demand,ammonia,,,t/t,0.575,
+UREA,feedstock_demand,co2,,,t/t,0.744,
+UREA,fixed_opex,onm,,,EUR/t,0.03,
+MEOH,capex,,,,EUR/t,496.5,
+MEOH,energy_demand,electricity,,,MWh/t,1.5,
+MEOH,feedstock_demand,co2,,,1,1.373,
+MEOH,feedstock_demand,hydrogen,,,MWh/t,6.466,
+MEOH,fixed_opex,,,,EUR/t,25,
+MTO,capex,,,,EUR/t,395.1,
+MTO,energy_demand,electricity,,,MWh/t,1.389,
+MTO,feedstock_demand,methanol,,,1,2.28,
+MTO,fixed_opex,,,,EUR/t,45,
+,transport,hydrogen,,pipeline,EUR/MWh,30,2030
+,transport,hydrogen,,pipeline,EUR/MWh,20,2050
+,transport,hydrogen,,shipping,EUR/MWh,110,2030
+,transport,hydrogen,,shipping,EUR/MWh,90,2050
+,transport,ore,,,EUR/t,14,
+,transport,dri,,,EUR/t,20,
+,transport,steel,,,EUR/t,30,
+,transport,ammonia,,,EUR/t,35,
+,transport,urea,,,EUR/t,35,
+,transport,methanol,,,EUR/t,35,
+,transport,ethylene,,,EUR/t,35,
