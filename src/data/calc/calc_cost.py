@@ -43,7 +43,6 @@ def calcCost(tech_data_full: pd.DataFrame, prices: pd.DataFrame, selectedRoutes:
 def __prepareCostData(techData: pd.DataFrame):
     # capital cost
     costCapital = techData.query("type=='capex'").assign(type='capital')
-    costCapital.loc[costCapital['process'] == 'ELEC', 'val'] /= 8760.0 # convert MW to MWh_pa
 
 
     # fixed cost
