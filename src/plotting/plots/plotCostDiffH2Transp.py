@@ -26,48 +26,48 @@ def plotCostDiffH2Transp(costData: pd.DataFrame, costDataRef: pd.DataFrame, pric
 def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame, costH2TranspParams: pd.DataFrame, config: dict):
     # electricity price difference from prices object
     elecPriceDiff = prices \
-        .query("component=='electricity' and location=='importer'").filter(['val_year', 'val']) \
-        .merge(prices.query("component=='electricity' and location=='exporter'").filter(['val_year', 'val']), on=['val_year']) \
+        .query("component=='electricity' and location=='importer'").filter(['period', 'val']) \
+        .merge(prices.query("component=='electricity' and location=='exporter'").filter(['period', 'val']), on=['period']) \
         .assign(priceDiff=lambda x: x.val_x - x.val_y) \
         .drop(columns=['val_x', 'val_y'])
 
 
     # transportation cost for hydrogen
-    costH2Transp = groupbySumval(costData.query("type=='transport' and component=='hydrogen'"), ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case']) \
+    costH2Transp = groupbySumval(costData.query("type=='transport' and component=='hydrogen'"), ['commodity', 'route', 'period'], keep=['baseRoute', 'case']) \
         .rename(columns={'val': 'costH2Transp'})
 
 
     # cost delta of Cases 1-3 in relation to Base Case without H2 transport cost
-    cost = groupbySumval(costData, ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case'])
+    cost = groupbySumval(costData, ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
 
     costDelta = cost.query("case.notnull() & case!='Base Case'") \
-        .merge(cost.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'val_year']) \
+        .merge(cost.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'period']) \
         .assign(cost=lambda x: x.val_y - x.val_x) \
         .drop(columns=['val_x', 'val_y', 'baseRoute'])
 
 
     # cost delta of Cases 1-3 in relation to Base Case without H2 transport cost for reference with zero elec price difference
-    costRef = groupbySumval(costDataRef, ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case'])
+    costRef = groupbySumval(costDataRef, ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
 
     costRefDelta = costRef.query("case.notnull() & case!='Base Case'") \
-        .merge(costRef.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'val_year']) \
+        .merge(costRef.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'period']) \
         .assign(costRef=lambda x: x.val_y - x.val_x) \
         .drop(columns=['val_x', 'val_y', 'baseRoute'])
 
 
     # base H2 transportation cost
     costH2TranspBase = costH2TranspParams \
-        .filter(['mode', 'val', 'val_year']) \
+        .filter(['mode', 'val', 'period']) \
         .rename(columns={'val': 'costH2TranspBase', 'mode': 'case'}) \
         .replace({'case': {'shipping': 'Case 1A', 'pipeline': 'Case 1B'}})
 
 
     # linear interpolation of cost difference as a function of elec price
     merge = costRefDelta \
-        .merge(costDelta, on=['commodity', 'route', 'case', 'val_year']) \
-        .merge(costH2Transp, on=['commodity', 'route', 'case', 'val_year'], how='left') \
-        .merge(costH2TranspBase, on=['val_year', 'case'], how='left') \
-        .merge(elecPriceDiff, on=['val_year'])
+        .merge(costDelta, on=['commodity', 'route', 'case', 'period']) \
+        .merge(costH2Transp, on=['commodity', 'route', 'case', 'period'], how='left') \
+        .merge(costH2TranspBase, on=['period', 'case'], how='left') \
+        .merge(elecPriceDiff, on=['period'])
 
     pd_samples = np.linspace(config['xrange'][0], config['xrange'][1], config['samples'])
     tc_samples = np.linspace(config['bottom']['yrange'][0], config['bottom']['yrange'][1], config['samples'])
@@ -82,7 +82,7 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
     }
     for comm in commodities:
         for case in cases:
-            r = merge.query(f"commodity=='{comm}' & case=='{case}' & val_year=={config['showYear']}").iloc[0]
+            r = merge.query(f"commodity=='{comm}' & case=='{case}' & period=={config['showYear']}").iloc[0]
 
             plotData['top'][comm][case] = r.costRef + (r.cost - r.costRef) / r.priceDiff * pd_samples
 
@@ -96,7 +96,7 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
 
 
     # default price difference
-    defaultPriceDiff = elecPriceDiff.query(f"val_year=={config['showYear']}").iloc[0].priceDiff
+    defaultPriceDiff = elecPriceDiff.query(f"period=={config['showYear']}").iloc[0].priceDiff
 
 
     return pd_samples, tc_samples, plotData, defaultPriceDiff, benchmarkCost, costH2TranspBase
@@ -126,7 +126,7 @@ def __produceFigure(pd_samples: np.ndarray, tc_samples: np.ndarray, plotData: di
 
         # add top to bottom
         for case in ['Case 1A', 'Case 1B']:
-            y = costH2TranspBase.query(f"case=='{case}' & val_year=={config['showYear']}").costH2TranspBase.iloc[0]
+            y = costH2TranspBase.query(f"case=='{case}' & period=={config['showYear']}").costH2TranspBase.iloc[0]
             fig.add_trace(
                 go.Scatter(
                     x=pd_samples,
@@ -157,7 +157,7 @@ def __produceFigure(pd_samples: np.ndarray, tc_samples: np.ndarray, plotData: di
 
 
     # set axes labels and ranges
-    baseCaseCost = benchmarkCost.query(f"commodity=='{commodity}' and val_year=={config['showYear']}").iloc[0].val
+    baseCaseCost = benchmarkCost.query(f"commodity=='{commodity}' and period=={config['showYear']}").iloc[0].val
 
     fig.update_layout(
         legend_title='',

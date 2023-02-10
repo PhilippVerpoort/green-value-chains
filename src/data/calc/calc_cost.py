@@ -9,7 +9,7 @@ def calcCost(tech_data_full: pd.DataFrame, prices: pd.DataFrame, selectedRoutes:
     # technology data
     selectedProcesses = list(set([p for route in selectedRoutes.values() for p in route['processes']]))
     selectedComponents = [all_processes[p]['output'] for p in selectedProcesses] + list(tech_data_full.query(f"process in @selectedProcesses").component.unique())
-    techData = tech_data_full.filter(['process', 'type', 'component', 'subcomponent', 'val', 'val_year', 'mode'])\
+    techData = tech_data_full.filter(['process', 'type', 'component', 'subcomponent', 'val', 'period', 'mode'])\
                              .query(f"process in @selectedProcesses or (type=='transport' and component in @selectedComponents)")
 
 
@@ -37,7 +37,7 @@ def calcCost(tech_data_full: pd.DataFrame, prices: pd.DataFrame, selectedRoutes:
 
     r['component'] = r['component'].str.replace(' exporter', '')
 
-    return r[['commodity', 'route', 'baseRoute', 'case', 'process', 'type', 'component', 'val', 'val_year']]
+    return r[['commodity', 'route', 'baseRoute', 'case', 'process', 'type', 'component', 'val', 'period']]
 
 
 def __prepareCostData(techData: pd.DataFrame):
@@ -46,13 +46,11 @@ def __prepareCostData(techData: pd.DataFrame):
 
 
     # fixed cost
-    fopexData = techData.query("type=='fixed_opex'")
-    fopexDataOnM = fopexData.query("component=='onm'")\
-                            .merge(costCapital.filter(['process', 'val', 'val_year']), on=['process', 'val_year'])\
-                            .assign(val=lambda x: x.val_x * x.val_y, type='fonmco')\
-                            .drop(columns=['val_x', 'val_y'])
-    fopexDataLabour = fopexData.query("component=='labour'").assign(val=lambda x: x.val, type='fonmco')
-    costFixed = pd.concat([fopexDataOnM, fopexDataLabour])
+    costFixed = techData\
+        .query("type=='fixed_opex_rel'")\
+        .merge(costCapital.filter(['process', 'val', 'period']), on=['process', 'period'])\
+        .assign(val=lambda x: x.val_x * x.val_y, type='fonmco')\
+        .drop(columns=['val_x', 'val_y'])
 
 
     # energy and feedstock cost
@@ -63,7 +61,7 @@ def __prepareCostData(techData: pd.DataFrame):
 
 
     costEnergyFeedstock = energyFeedstockPrices.drop(columns=['process', 'type', 'mode'])\
-                                               .merge(energyFeedstockDemand.filter(['process', 'type', 'component', 'val', 'val_year', 'mode']), on=['component', 'val_year'])\
+                                               .merge(energyFeedstockDemand.filter(['process', 'type', 'component', 'val', 'period', 'mode']), on=['component', 'period'])\
                                                .assign(val=lambda x: x.val_x * x.val_y)\
                                                .drop(columns=['val_x', 'val_y'])
 
@@ -78,15 +76,15 @@ def __prepareCostData(techData: pd.DataFrame):
         costTransport.dropna(subset=['process']),
         costTransport.query('process.isnull()', engine='python')
                      .drop(columns=['process'])
-                     .merge(energyFeedstockDemand.filter(['process', 'component', 'subcomponent', 'val', 'val_year', 'mode']), on=['component', 'val_year'], how='left')\
+                     .merge(energyFeedstockDemand.filter(['process', 'component', 'subcomponent', 'val', 'period', 'mode']), on=['component', 'period'], how='left')\
                      .assign(val=lambda x: x.val_x * x.val_y)
                      .drop(columns=['val_x', 'val_y'])
     ])
 
 
     # remaining energy and feedstock demand
-    mergeDummy = energyFeedstockPrices.filter(['process', 'component', 'val_year']).assign(remove=True)
-    energyFeedstockDemand = energyFeedstockDemand.merge(mergeDummy, on=['process', 'component', 'val_year'], how='outer')
+    mergeDummy = energyFeedstockPrices.filter(['process', 'component', 'period']).assign(remove=True)
+    energyFeedstockDemand = energyFeedstockDemand.merge(mergeDummy, on=['process', 'component', 'period'], how='outer')
     energyFeedstockDemand = energyFeedstockDemand[pd.isnull(energyFeedstockDemand['remove'])].drop(columns=['remove'])
 
 
@@ -169,17 +167,17 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
         # add data for energy and feedstock cost with prices read from route_prices that are not upstream outputs
         es_pro.append(
             thisCostData['demand'].query('component not in @allOutputs') \
-                                  .merge(prices.filter(['component', 'location', 'val', 'val_year']), on=['component', 'location', 'val_year']) \
+                                  .merge(prices.filter(['component', 'location', 'val', 'period']), on=['component', 'location', 'period']) \
                                   .assign(val=lambda x: x.val_x * x.val_y) \
                                   .drop(columns=['val_x', 'val_y'])
         )
 
         # rescale cost components of upstream processes by demand of output commodity and append
         for output_upstream in es_rout:
-            d = thisCostData['demand'].query(f"component=='{output_upstream}'").filter(['val', 'val_year'])
+            d = thisCostData['demand'].query(f"component=='{output_upstream}'").filter(['val', 'period'])
             for e in es_rout[output_upstream]:
                 es_pro.append(
-                    e.merge(d, on=['val_year']) \
+                    e.merge(d, on=['period']) \
                      .assign(val=lambda x: x.val_x * x.val_y) \
                      .drop(columns=['val_x', 'val_y'])
                 )

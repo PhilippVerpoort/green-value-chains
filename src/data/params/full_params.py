@@ -24,7 +24,7 @@ def __convertUnits(techdata: pd.DataFrame):
 
 
 def __aggregate(techdata: pd.DataFrame):
-    return techdata.groupby(['process', 'type', 'component', 'subcomponent', 'mode', 'val_year'], as_index=False, dropna=False)\
+    return techdata.groupby(['process', 'type', 'component', 'subcomponent', 'mode', 'period'], as_index=False, dropna=False)\
                    .agg({'unit': 'first', 'val': lambda x: sum(x)/len(x) if len(x)>0 else 0.0})
 
 
@@ -33,7 +33,7 @@ def __imputeYears(techdata: pd.DataFrame, times: list):
     # for every process and variable type there is either exactly one entry with no year or an entry for every year
     techdataGrouped = techdata.groupby(['process', 'type', 'component'])
     for key, item in techdataGrouped:
-        years = techdataGrouped.get_group(key)['val_year'].unique()
+        years = techdataGrouped.get_group(key)['period'].unique()
         if not (
             (len(years) == 1 and all(np.isnan(years)))
          or (not any(np.isnan(years)) and all(t in years for t in times))
@@ -44,11 +44,11 @@ def __imputeYears(techdata: pd.DataFrame, times: list):
     r = []
 
     # create entry for every year for every line not containing year info
-    paramsWOYear = techdata.query('val_year.isna()')
+    paramsWOYear = techdata.query('period.isna()')
     for t in times:
-        r.append(paramsWOYear.assign(val_year = t))
+        r.append(paramsWOYear.assign(period = t))
 
     # append data containing year info
-    r.append(techdata.query('val_year.notna()'))
+    r.append(techdata.query('period.notna()'))
 
     return pd.concat(r)

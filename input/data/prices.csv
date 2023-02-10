@@ -1,13 +1,13 @@
-component,location,label,unit,val,val_year
-electricity,importer,Elec. Price (Importer),EUR/MWh,60,2025
-electricity,exporter,Elec. Price (Exporter),EUR/MWh,30,2025
-electricity,importer,Elec. Price (Importer),EUR/MWh,50,2050
-electricity,exporter,Elec. Price (Exporter),EUR/MWh,15,2050
-hydrogen,importer,H₂ price (Importer),EUR/MWh,100,2025
-hydrogen,exporter,H₂ price (Exporter),EUR/MWh,60,2025
-hydrogen,importer,H₂ price (Importer),EUR/MWh,60,2050
-hydrogen,exporter,H₂ price (Exporter),EUR/MWh,40,2050
-natural gas,either,Natural-gas price,EUR/MWh,50,2025
-natural gas,either,Natural-gas price,EUR/MWh,45,2050
-co2,either,CO₂ feedstock price,EUR/t,100,2025
-co2,either,CO₂ feedstock price,EUR/t,200,2050
+component,location,label,period,val,unit
+electricity,importer,Elec. Price (Importer),2025,60,EUR/MWh
+electricity,exporter,Elec. Price (Exporter),2025,30,EUR/MWh
+electricity,importer,Elec. Price (Importer),2050,50,EUR/MWh
+electricity,exporter,Elec. Price (Exporter),2050,15,EUR/MWh
+hydrogen,importer,H₂ price (Importer),2025,100,EUR/MWh
+hydrogen,exporter,H₂ price (Exporter),2025,60,EUR/MWh
+hydrogen,importer,H₂ price (Importer),2050,60,EUR/MWh
+hydrogen,exporter,H₂ price (Exporter),2050,40,EUR/MWh
+natural gas,either,Natural-gas price,2025,50,EUR/MWh
+natural gas,either,Natural-gas price,2050,45,EUR/MWh
+co2,either,CO₂ feedstock price,2025,100,EUR/t
+co2,either,CO₂ feedstock price,2050,200,EUR/t

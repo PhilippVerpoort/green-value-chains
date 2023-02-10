@@ -37,7 +37,7 @@ def plotLevelisedCost(costData: pd.DataFrame, costDataRec: pd.DataFrame, config:
 # make adjustments to data (route names, component labels)
 def __adjustData(costData: pd.DataFrame, config: dict):
     showRoutes = costData['route'].unique()
-    showYears = costData['val_year'].unique()
+    showYears = costData['period'].unique()
 
     # remove upstream cost entries
     costDataNew = costData.copy().query(f"type!='upstream'")
@@ -66,20 +66,20 @@ def __adjustData(costData: pd.DataFrame, config: dict):
         costDataNew.loc[costDataNew['component']!='empty', 'hover_label'] = [f"{row['component'].capitalize()} ({row['hover_label']})" for index, row in costDataNew.loc[costDataNew['component']!='empty',:].iterrows()]
     elif config['aggregate_by'] == 'subcomponent':
         costDataNew = groupbySumval(costDataNew.fillna({'component': 'empty'}),
-                                    ['type', 'val_year', 'commodity', 'route', 'process', 'component'], keep=['case'])
+                                    ['type', 'period', 'commodity', 'route', 'process', 'component'], keep=['case'])
         costDataNew['hover_label'] = [all_processes[p]['label'] for p in costDataNew['process']]
         costDataNew.loc[costDataNew['component']!='empty', 'hover_label'] = [f"{row['component'].capitalize()} ({row['hover_label']})" for index, row in costDataNew.loc[costDataNew['component']!='empty',:].iterrows()]
     elif config['aggregate_by'] == 'component':
         costDataNew = groupbySumval(costDataNew.fillna({'component': 'empty'}),
-                                    ['type', 'val_year', 'commodity', 'route', 'process'], keep=['case'])
+                                    ['type', 'period', 'commodity', 'route', 'process'], keep=['case'])
         costDataNew['hover_label'] = [all_processes[p]['label'] for p in costDataNew['process']]
     elif config['aggregate_by'] == 'process':
         costDataNew = groupbySumval(costDataNew.fillna({'component': 'empty'}),
-                                    ['type', 'val_year', 'commodity', 'route', 'component'], keep=['case'])
+                                    ['type', 'period', 'commodity', 'route', 'component'], keep=['case'])
         costDataNew['hover_label'] = [config['components'][c] if c!='empty' else None for c in costDataNew['component']]
     elif config['aggregate_by'] == 'all':
         costDataNew = groupbySumval(costDataNew.fillna({'component': 'empty'}),
-                                    ['type', 'val_year', 'commodity', 'route'], keep=['case'])
+                                    ['type', 'period', 'commodity', 'route'], keep=['case'])
         costDataNew['hover_label'] = [config['types'][t]['label'] for t in costDataNew['type']]
     else:
         raise Exception('Value of aggregate_by in the plot config is invalid.')
@@ -99,9 +99,9 @@ def __produceFigure(costData: pd.DataFrame, routeorder: list, costDataH2Transp: 
         q = f"commodity=='{commodity}'"
         costData = costData.query(q)
         costDataH2Transp = costDataH2Transp.query(q)
-        subplots = [int(y) for y in sorted(costData.val_year.unique())]
+        subplots = [int(y) for y in sorted(costData.period.unique())]
     else:
-        q = f"val_year=={config['show_year']} & case.notnull()"
+        q = f"period=={config['show_year']} & case.notnull()"
         costData = costData.query(q)
         costDataH2Transp = costDataH2Transp.query(q)
         subplots = costData.commodity.unique().tolist()
@@ -136,10 +136,10 @@ def __produceFigure(costData: pd.DataFrame, routeorder: list, costDataH2Transp: 
 def __addBars(commodity, config, costData, costDataH2Transp, fig, i, routeorder, subplot):
     # select data for each subplot
     plotData = costData \
-        .query(f"val_year=={subplot}" if commodity else f"commodity=='{subplot}'") \
+        .query(f"period=={subplot}" if commodity else f"commodity=='{subplot}'") \
         .query("case!='Case 1B'") \
         .replace({'route': 'Case 1A'}, 'Case 1A/B')
-    plotDataH2Transp = costDataH2Transp.query(f"val_year=={subplot}" if commodity else f"commodity=='{subplot}'") \
+    plotDataH2Transp = costDataH2Transp.query(f"period=={subplot}" if commodity else f"commodity=='{subplot}'") \
         .replace({'route': ['Case 1A', 'Case 1B']}, 'Case 1A/B')
 
     # determine ymax
@@ -230,7 +230,7 @@ def __addCostDiff(commodity, config, costData, costDataH2Transp, fig, i, subplot
 
     # select data for each subplot
     plotData = pd.concat([costData, costDataH2Transp]).query(
-        f"val_year=={subplot}" if commodity else f"commodity=='{subplot}'")
+        f"period=={subplot}" if commodity else f"commodity=='{subplot}'")
     baseCost = plotData.query("route=='Base Case'").val.sum()
 
     fig.add_hline(

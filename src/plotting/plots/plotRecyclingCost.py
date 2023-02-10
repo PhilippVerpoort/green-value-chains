@@ -27,27 +27,27 @@ def __adjustData(costData: pd.DataFrame, costDataRec: pd.DataFrame, config: dict
     sharesRec = [{'commodity': 'Steel', 'shRef': 0.85}, {'commodity': 'Urea', 'shRef': 1.0}, {'commodity': 'Ethylene', 'shRef': 1.0}]
 
     # cost delta of Cases 1-3 in relation to Base Case
-    cost = groupbySumval(costData, ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case'])
+    cost = groupbySumval(costData, ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
 
     costDelta = cost.query("case.notnull() & case!='Base Case'") \
-        .merge(cost.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'val_year']) \
+        .merge(cost.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'period']) \
         .assign(cost=lambda x: x.val_y - x.val_x) \
         .merge(pd.DataFrame.from_records(shares)) \
         .drop(columns=['val_x', 'val_y', 'baseRoute', 'route'])
 
 
     # cost delta of Cases 1-3 in relation to Base Case for reference with recycling
-    costRec = groupbySumval(costDataRec, ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case'])
+    costRec = groupbySumval(costDataRec, ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
 
     costRecDelta = costRec.query("case.notnull() & case!='Base Case'") \
-        .merge(costRec.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'val_year']) \
+        .merge(costRec.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'period']) \
         .assign(costRef=lambda x: x.val_y - x.val_x) \
         .merge(pd.DataFrame.from_records(sharesRec)) \
         .drop(columns=['val_x', 'val_y', 'baseRoute', 'route'])
 
 
     # linear interpolation of cost difference as a function of elec price
-    tmp = costRecDelta.merge(costDelta, on=['commodity', 'case', 'val_year'])
+    tmp = costRecDelta.merge(costDelta, on=['commodity', 'case', 'period'])
 
     plotData = pd.concat([
         #tmp.assign(cd=lambda r: r.costRef + ((r.cost-r.costRef)/(r.sh-r.shRef)) * share, share=share)
@@ -80,8 +80,8 @@ def __produceFigure(plotData: dict, config: dict):
     for i, commodity in enumerate(commodities):
         commData = plotData.query(f"commodity=='{commodity}'")
 
-        for j, year in enumerate(plotData.val_year.unique()):
-            yearData = commData.query(f"val_year=={year}")
+        for j, year in enumerate(plotData.period.unique()):
+            yearData = commData.query(f"period=={year}")
 
             for case in plotData.case.unique():
                 thisData = yearData.query(f"case=='{case}'")

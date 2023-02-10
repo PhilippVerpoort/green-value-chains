@@ -44,8 +44,8 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     retOrder = {}
     for commodity, showRoute in plottedRoutes.items():
         # query relevant commodity data for given route
-        costDataNewComm = costDataNew.query(f"route=='{showRoute}' & val_year=={config['show_year']}")\
-                                     .drop(columns=['component', 'route', 'case', 'val_year'])
+        costDataNewComm = costDataNew.query(f"route=='{showRoute}' & period=={config['show_year']}")\
+                                     .drop(columns=['component', 'route', 'case', 'period'])
 
         # get processes in the route
         processes = all_routes[commodity][re.sub('--.*', '', showRoute)]['processes']

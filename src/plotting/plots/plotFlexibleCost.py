@@ -25,41 +25,41 @@ def plotFlexibleCost(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: 
 # make adjustments to data before plotting
 def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame, config: dict):
     # cost delta of Cases 1-3 in relation to Base Case
-    cost = groupbySumval(costData.query("type!='capital'"), ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case'])
+    cost = groupbySumval(costData.query("type!='capital'"), ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
 
     costDelta = cost.query("case=='Case 3'") \
-        .merge(cost.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'val_year']) \
+        .merge(cost.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'period']) \
         .assign(cost=lambda x: x.val_y - x.val_x) \
         .drop(columns=['val_x', 'val_y', 'baseRoute'])
 
 
     # cost delta of Cases 1-3 in relation to Base Case for reference with zero elec price difference
-    costRef = groupbySumval(costDataRef.query("type!='capital'"), ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case'])
+    costRef = groupbySumval(costDataRef.query("type!='capital'"), ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
 
     costRefDelta = costRef.query("case=='Case 3'") \
-        .merge(costRef.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'val_year']) \
+        .merge(costRef.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'period']) \
         .assign(costRef=lambda x: x.val_y - x.val_x) \
         .drop(columns=['val_x', 'val_y', 'baseRoute'])
 
 
     # capital cost data
-    costCap = groupbySumval(costData.query("type=='capital' & case=='Case 3'"), ['commodity', 'route', 'val_year'], keep=['baseRoute', 'case']) \
+    costCap = groupbySumval(costData.query("type=='capital' & case=='Case 3'"), ['commodity', 'route', 'period'], keep=['baseRoute', 'case']) \
         .rename(columns={'val': 'costCap'})
 
 
     # electricity price difference from prices object
     elecPriceDiff = prices \
-        .query("component=='electricity' and location=='importer'").filter(['val_year', 'val']) \
-        .merge(prices.query("component=='electricity' and location=='exporter'").filter(['val_year', 'val']), on=['val_year']) \
+        .query("component=='electricity' and location=='importer'").filter(['period', 'val']) \
+        .merge(prices.query("component=='electricity' and location=='exporter'").filter(['period', 'val']), on=['period']) \
         .assign(priceDiff=lambda x: x.val_x - x.val_y) \
         .drop(columns=['val_x', 'val_y'])
 
 
     # linear interpolation of cost difference as a function of elec price
     tmp = costRefDelta \
-        .merge(costDelta, on=['commodity', 'route', 'case', 'val_year']) \
-        .merge(costCap, on=['commodity', 'route', 'case', 'val_year']) \
-        .merge(elecPriceDiff, on=['val_year'])
+        .merge(costDelta, on=['commodity', 'route', 'case', 'period']) \
+        .merge(costCap, on=['commodity', 'route', 'case', 'period']) \
+        .merge(elecPriceDiff, on=['period'])
 
     pd_samples = np.linspace(config['xrange'][0], config['xrange'][1], config['samples'])
     ocf_samples = np.linspace(config['yrange'][0], config['yrange'][1], config['samples'])
@@ -67,7 +67,7 @@ def __adjustData(costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.D
 
     plotData = {c: 0.0 for c in costData.commodity.unique().tolist()}
     for index, r in tmp.iterrows():
-        if r.val_year != config['showYear']: continue
+        if r.period != config['showYear']: continue
         plotData[r.commodity] = r.costCap * (100.0/ocf - 1.0) + r.costRef + (r.cost - r.costRef) / r.priceDiff * pd
 
 
