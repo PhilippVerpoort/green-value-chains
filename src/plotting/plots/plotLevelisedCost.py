@@ -49,7 +49,8 @@ def __adjustData(costData: pd.DataFrame, config: dict):
     costDataH2Transp['hover_label'] = 'Transport'
 
     # rename iron feedstock entries
-    costDataNew.loc[(costDataNew['type'] == 'feedstock') & costDataNew['component'].isin(['ore', 'scrap']), 'type'] = 'iron'
+    if config['separate_iron']:
+        costDataNew.loc[(costDataNew['type'] == 'feedstock') & costDataNew['component'].isin(['ore', 'scrap']), 'type'] = 'iron'
 
     # define route names and ordering
     route_names_woimp = {route_id: route_vals['name'] for route_details in all_routes.values() for route_id, route_vals in sorted(route_details.items()) if route_id in costDataNew['route'].unique()}

@@ -2,33 +2,33 @@ types:
   upstream:
     label: Upstream
     colour: '#cccccc'
-  direct:
-    label: Total direct production cost
-    colour: '#8a4c39'
   capital:
-    label: Capital cost
+    label: Capital
     colour: '#f36f21'
   fonmco:
-    label: Fixed operation<br>and maintenance cost
+    label: Operation and maintenance
     colour: '#00813e'
   feedstock:
-    label: Feedstock cost<br>(non-energy, non-iron)
-    colour: '#3745a3'
+    label: Non-energy feedstock
+    colour: '#cccccc'
   iron:
-    label: Iron feedstock cost
+    label: Iron feedstock
     colour: '#cccccc'
   energy:
-    label: Energy cost
+    label: Energy
     colour: '#e6af2e'
   transport:
-    label: Transport cost
+    label: Transport
     colour: '#7c1f8a'
-  carbon:
-    label: Carbon cost from carbon pricing
-    colour: '#db2a1a'
-  non-energy:
-    label: Non-energy cost
-    colour: '#3745a3'
+#  carbon:
+#    label: Carbon cost from carbon pricing
+#    colour: '#db2a1a'
+#  direct:
+#    label: Total direct production cost
+#    colour: '#8a4c39'
+#  non-energy:
+#    label: Non-energy cost
+#    colour: '#3745a3'
 
 components:
   alloys: Alloys
