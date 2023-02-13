@@ -16,7 +16,7 @@ def plotCostDiffH2Transp(costData: pd.DataFrame, costDataRef: pd.DataFrame, pric
 
 
     # produce figure
-    ret['fig5'] = __produceFigure(pd_samples, tc_samples, plotData, defaultPriceDiff, benchmarkCost, costH2TranspBase, config) if 'fig5' in subfigs_needed else None
+    ret['fig6'] = __produceFigure(pd_samples, tc_samples, plotData, defaultPriceDiff, benchmarkCost, costH2TranspBase, config) if 'fig6' in subfigs_needed else None
 
 
     return ret

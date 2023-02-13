@@ -13,12 +13,12 @@ def plotLevelisedCost(costData: pd.DataFrame, costDataRec: pd.DataFrame, config:
 
 
     # make adjustments to data
-    costDataAggregated, routeorder, costDataH2Transp = __adjustData(costData, config) if any(fName in subfigs_needed for fName in ['fig3', 'figS1a', 'figS1b', 'figS1c', 'figS3']) else (None, None, None)
+    costDataAggregated, routeorder, costDataH2Transp = __adjustData(costData, config) if any(fName in subfigs_needed for fName in ['fig4', 'figS1a', 'figS1b', 'figS1c', 'figS3']) else (None, None, None)
     costDataRecAggregated, _, costDataRecH2Transp = __adjustData(costDataRec, config) if 'figS3' in subfigs_needed else (None, None, None)
 
 
-    # produce fig1
-    ret['fig3'] = __produceFigure(costDataAggregated, routeorder, costDataH2Transp, config, show_costdiff=not is_webapp) if 'fig3' in subfigs_needed else None
+    # produce fig4
+    ret['fig4'] = __produceFigure(costDataAggregated, routeorder, costDataH2Transp, config, show_costdiff=not is_webapp) if 'fig4' in subfigs_needed else None
 
 
     # produce figS1
@@ -27,7 +27,7 @@ def plotLevelisedCost(costData: pd.DataFrame, costDataRec: pd.DataFrame, config:
         ret[subfigName] = __produceFigure(costDataAggregated, routeorder, costDataH2Transp, config, commodity=commodity) if subfigName in subfigs_needed else None
 
 
-    # produce figS2
+    # produce figS3
     ret['figS3'] = __produceFigure(costDataRecAggregated, routeorder, costDataRecH2Transp, config) if 'figS3' in subfigs_needed else None
 
 

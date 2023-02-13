@@ -1,6 +1,9 @@
-plotLevelisedCost:
+plotTotalCost:
   fig3:
     - fig3
+plotLevelisedCost:
+  fig4:
+    - fig4
   figS1:
     - figS1a
     - figS1b
@@ -8,9 +11,9 @@ plotLevelisedCost:
   figS3:
     - figS3
 plotValueCreation:
-  - fig4
-plotCostDiffH2Transp:
   - fig5
+plotCostDiffH2Transp:
+  - fig6
 plotFlexibleCost:
   - figS2
 plotRecyclingCost:

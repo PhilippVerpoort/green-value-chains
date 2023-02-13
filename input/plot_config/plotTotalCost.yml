@@ -1,0 +1,14 @@
+yaxislabel: Relative cost reduction (%)
+
+colour:
+  Steel: '#aaaaaa'
+  Urea: '#db2a1a'
+  Ethylene: '#8a4c39'
+symbol: x-thin
+
+#symbol:
+#  Steel: x-thin
+#  Urea: cross-thin
+#  Ethylene: circle-open-dot #triangle-up-open
+
+show_year: 2050

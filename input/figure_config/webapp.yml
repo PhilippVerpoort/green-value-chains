@@ -1,5 +1,15 @@
 fig3:
   desc:
+    "The total production cost of materials is reduced with an increasing degree of relocation."
+  display:
+  - /
+  - /advanced
+  height: 600px
+  name: Figure 3
+  title: Levelised production cost of selected commodities.
+  width: 100%
+fig4:
+  desc:
     "The levelised cost of production is shown for (panels left to right) steel, urea, and ethylene for four different 
     import cases (as defined in Fig. 2) in year 2050. The cost is calculated using techno-economic data as well as an 
     assumption of an electricity price of 50 EUR/MWh in the importing and 15 EUR/MWh in the exporting region and some 
@@ -12,10 +22,10 @@ fig3:
   - /
   - /advanced
   height: 600px
-  name: Figure 3
+  name: Figure 4
   title: Levelised production cost of selected commodities.
   width: 100%
-fig4:
+fig5:
   desc:
     "Shown is the levelised cost of production of individual process steps along the value chain of the studied 
     energy-intensive goods for the Base Case. Clearly, electrolysis for the production of H₂ and DAC for the winning of 
@@ -25,10 +35,10 @@ fig4:
   - /
   - /advanced
   height: 600px
-  name: Figure 4
+  name: Figure 5
   title: Share of energy cost in value creation.
   width: 100%
-fig5:
+fig6:
   desc:
     "Top: The cost difference between Cases 1–3 and the Base Case increases linearly with the electricity-price 
     difference. The secondary Y-Axes show the production-cost difference relative to the total production cost in the 
@@ -39,7 +49,7 @@ fig5:
   display:
   - /
   - /advanced
-  name: Figure 5
+  name: Figure 6
   title: Dependence of the production-cost difference on the electricity-price difference and the H₂ transportation cost.
   width: 100%
 figS1:

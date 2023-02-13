@@ -42,10 +42,10 @@ def getFullData(input_data: dict):
         # calculate cost from tech data
         costDataList.append(calcCost(techDataFull, prices, routesWORecycling, commodity, options))
 
-        # calculate reference cost without price differences for Fig. 3
+        # calculate reference cost without price differences for fig5
         costDataListRef.append(calcCost(techDataFull, pricesRef, routesWORecycling, commodity, options))
 
-        # calculate recycling cost for Fig. 5
+        # calculate recycling cost for figS4
         costDataListRec.append(calcCost(techDataFull, prices, routesWithRecycling, commodity, options))
 
 
