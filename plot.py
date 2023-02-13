@@ -1,10 +1,10 @@
 import sys
 
-from src.load.load_default_data import default_prices, default_options
-from src.load.load_config_plot import plots_cfg
-from src.data.data import getFullData
-from src.plotting.export_file import exportFigsToFiles
-from src.plotting.plot_all import plotAllFigs
+from src.scaffolding.file.load_default_data import default_prices, default_options
+from src.scaffolding.file.load_config_plot import plots_cfg
+from src.scaffolding.data.data import getFullData
+from src.scaffolding.plotting.export_file import exportFigsToFiles
+from src.scaffolding.plotting.plot_all import plotAllFigs
 
 
 # get list of figs to plot from command line args.
