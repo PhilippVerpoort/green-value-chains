@@ -1,19 +1,22 @@
+from importlib import import_module
+from pathlib import Path
+from pkgutil import iter_modules
+
 from src.scaffolding.file.file_path import pathOfConfigFile
-from src.scaffolding.file.file_load import loadYAMLConfigFile
+from src.scaffolding.plotting.AbstractPlot import AbstractPlot
 
 
-# load config data for plots and figures
-plots = loadYAMLConfigFile('plots')
-for plotName in plots:
-    if isinstance(plots[plotName], list):
-        plots[plotName] = {f: [f] for f in plots[plotName]}
+# load global
+AbstractPlot.loadGlobal()
 
-figure_print = loadYAMLConfigFile('figure_config/print')
 
-plots_cfg = {}
-for plotName in plots:
-    __filePath = pathOfConfigFile(f"plot_config/{plotName}.yml")
-    plots_cfg[plotName] = open(__filePath, 'r').read()
+# import all plot classes and collect them in a dict
+for (module_loader, name, ispkg) in iter_modules(['src/custom/plots']):
+    import_module('src.custom.plots.' + name)
+plots = {c.__name__: c for c in AbstractPlot.__subclasses__()}
 
-plots_cfg_global = loadYAMLConfigFile('plot_config/globalConfig')
-plots_cfg_styling = loadYAMLConfigFile('plot_config/globalStyling')
+plot_cfgs = {}
+for plotName, plot in plots.items():
+    plot.loadSpecs()
+    __filePath = pathOfConfigFile(f"plot_configs/{plotName}.yml")
+    plot_cfgs[plotName] = open(__filePath, 'r').read()

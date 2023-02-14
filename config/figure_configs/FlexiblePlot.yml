@@ -1,0 +1,15 @@
+figS2:
+  name: Figure S2
+  title: Cost-effectiveness of flexible operation
+  desc:
+    'Showing cost as a function of both operational capacity and electricity price.'
+  display:
+  - /advanced
+  nosettings: true
+  sizes:
+    print:
+      height: 65.0  # unit mm
+      width: 180.0  # unit mm
+    webapp:
+      height: 500.0  # unit px
+      width: 100.0  # unit %

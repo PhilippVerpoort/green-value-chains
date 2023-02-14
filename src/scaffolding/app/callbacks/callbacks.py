@@ -37,7 +37,7 @@ def callbackUpdate(n1, route: str, plots_cfg: dict, simple_important_params: lis
             raise Exception(f"Unknown button pressed: {btnPressed}")
 
     figsNeeded = [fig for fig, routes in app_cfg['figures'].items() if route in routes]
-    figs = plotAllFigs(outputData, inputDataUpdated, plots_cfg, global_cfg='webapp', figs_needed=figsNeeded)
+    figs = plotAllFigs(outputData, inputDataUpdated, plots_cfg, target='webapp', required_figs=figsNeeded)
 
     addWebappSpecificStyling(figs)
 

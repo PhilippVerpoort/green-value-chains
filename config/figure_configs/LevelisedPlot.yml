@@ -1,0 +1,72 @@
+fig4:
+  name: Figure 4
+  title: Levelised production cost of selected commodities.
+  desc:
+    'The levelised cost of production is shown for (panels left to right) steel, urea, and ethylene for 
+    four different import cases (as defined in Fig. 2) in year 2050. The cost is calculated using 
+    techno-economic data as well as an assumption of an electricity price of 50 EUR/MWh in the 
+    importing and 15 EUR/MWh in the exporting region and some cost reduction of CAPEX compared to 
+    Methods. Moreover, Case 1A shows high transportation cost of 90 EUR/MWh, whereas Case 1B shows 
+    moderate cost for hydrogen transportation of 20 EUR/MWh. The result shows clear and substantial 
+    cost-reduction for relocating production to regions with cheap RE for all cases except Case 1A, as 
+    indicated by the arrows showing the relative and absolute cost differences of Cases 1–3 compared to 
+    the Base Case.'
+  display:
+  - /
+  - /advanced
+  sizes:
+    print:
+      height: 81.0  # unit mm
+      width: 180.0  # unit mm
+    webapp:
+      height: 600.0  # unit px
+      width: 100.0  # unit %
+figS1:
+  name: Figure S1
+  title: Levelised cost for multiple years
+  desc:
+    'Based on hydrogen direct reduction (H-DR) as well as fossil references using
+    coal in blast furnace/basic-oxygen furance (BF-BOF) and natural-gas direct reduction
+    (NG-DR). Cases 1-4 represent the four different import routes for H-DR (1: importing
+    iron ore only, 2: importing iron ore and hydrogen, 3: importing directly reduced
+    iron, 4: importing a finished steel product).'
+  display:
+  - /advanced
+  nosettings: true
+  subfigs:
+    figS1a:
+      print:
+        height: 81.0  # unit mm
+        width: 180.0  # unit mm
+      webapp:
+        height: 600.0  # unit px
+        width: 100.0  # unit %
+    figS1b:
+      print:
+        height: 81.0  # unit mm
+        width: 180.0  # unit mm
+      webapp:
+        height: 600.0  # unit px
+        width: 100.0  # unit %
+    figS1c:
+      print:
+        height: 81.0  # unit mm
+        width: 180.0  # unit mm
+      webapp:
+        height: 600.0  # unit px
+        width: 100.0  # unit %
+figS3:
+  name: Figure S3
+  title: Levelised cost for recycled routes
+  desc:
+    'Using higher shares of recycling.'
+  display:
+  - /advanced
+  nosettings: true
+  sizes:
+    print:
+      height: 81.0  # unit mm
+      width: 180.0  # unit mm
+    webapp:
+      height: 600.0  # unit px
+      width: 100.0  # unit %

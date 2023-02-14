@@ -22,5 +22,5 @@ outputData = getFullData(inputData)
 
 
 # run plotting routines to generate figures
-figsDefault = plotAllFigs(outputData, inputData, plots_cfg, global_cfg='webapp', figs_needed=figsNeeded)
+figsDefault = plotAllFigs(outputData, inputData, plots_cfg, target='webapp', required_figs=figsNeeded)
 addWebappSpecificStyling(figsDefault)
