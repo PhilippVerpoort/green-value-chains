@@ -3,11 +3,12 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from src.custom.plots.helperFuncs import groupbySumval
-from src.scaffolding.plotting.AbstractPlot import AbstractPlot
+from src.custom.plots.BasePlot import BasePlot
 
 
-class RecyclingPlot(AbstractPlot):
+class RecyclingPlot(BasePlot):
+    _complete = True
+
     def _prepare(self):
         if self.anyRequired('figS4'):
             self._prep = self.__makePrep(
@@ -22,7 +23,7 @@ class RecyclingPlot(AbstractPlot):
         sharesRec = [{'commodity': 'Steel', 'shRef': 0.85}, {'commodity': 'Urea', 'shRef': 1.0}, {'commodity': 'Ethylene', 'shRef': 1.0}]
 
         # cost delta of Cases 1-3 in relation to Base Case
-        cost = groupbySumval(costData, ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
+        cost = self._groupbySumval(costData, ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
 
         costDelta = cost.query("case.notnull() & case!='Base Case'") \
             .merge(cost.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'period']) \
@@ -32,7 +33,7 @@ class RecyclingPlot(AbstractPlot):
 
 
         # cost delta of Cases 1-3 in relation to Base Case for reference with recycling
-        costRec = groupbySumval(costDataRec, ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
+        costRec = self._groupbySumval(costDataRec, ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
 
         costRecDelta = costRec.query("case.notnull() & case!='Base Case'") \
             .merge(costRec.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'period']) \

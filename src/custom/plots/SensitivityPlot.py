@@ -3,11 +3,12 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from src.custom.plots.helperFuncs import groupbySumval
-from src.scaffolding.plotting.AbstractPlot import AbstractPlot
+from src.custom.plots.BasePlot import BasePlot
 
 
-class SensitivityPlot(AbstractPlot):
+class SensitivityPlot(BasePlot):
+    _complete = True
+
     def _prepare(self):
         if self.anyRequired('fig6'):
             self._prep = self.__makePrep(
@@ -29,12 +30,12 @@ class SensitivityPlot(AbstractPlot):
 
 
         # transportation cost for hydrogen
-        costH2Transp = groupbySumval(costData.query("type=='transport' and component=='hydrogen'"), ['commodity', 'route', 'period'], keep=['baseRoute', 'case']) \
+        costH2Transp = self._groupbySumval(costData.query("type=='transport' and component=='hydrogen'"), ['commodity', 'route', 'period'], keep=['baseRoute', 'case']) \
             .rename(columns={'val': 'costH2Transp'})
 
 
         # cost delta of Cases 1-3 in relation to Base Case without H2 transport cost
-        cost = groupbySumval(costData, ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
+        cost = self._groupbySumval(costData, ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
 
         costDelta = cost.query("case.notnull() & case!='Base Case'") \
             .merge(cost.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'period']) \
@@ -43,7 +44,7 @@ class SensitivityPlot(AbstractPlot):
 
 
         # cost delta of Cases 1-3 in relation to Base Case without H2 transport cost for reference with zero elec price difference
-        costRef = groupbySumval(costDataRef, ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
+        costRef = self._groupbySumval(costDataRef, ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
 
         costRefDelta = costRef.query("case.notnull() & case!='Base Case'") \
             .merge(costRef.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'period']) \

@@ -4,12 +4,13 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+from src.custom.plots.BasePlot import BasePlot
 from src.scaffolding.file.load_default_data import all_processes, all_routes
-from src.scaffolding.plotting.AbstractPlot import AbstractPlot
-from src.custom.plots.helperFuncs import groupbySumval
 
 
-class LevelisedPlot(AbstractPlot):
+class LevelisedPlot(BasePlot):
+    _complete = True
+
     def _prepare(self):
         if self.anyRequired('fig4', 'figS1a', 'figS1b', 'figS1c', 'figS3'):
             self._prep['default'] = self.__makePrep(self._finalData['costData'])
@@ -50,20 +51,20 @@ class LevelisedPlot(AbstractPlot):
             costDataNew['hover_label'] = [all_processes[p]['label'] for p in costDataNew['process']]
             costDataNew.loc[costDataNew['component']!='empty', 'hover_label'] = [f"{row['component'].capitalize()} ({row['hover_label']})" for index, row in costDataNew.loc[costDataNew['component']!='empty',:].iterrows()]
         elif self._config['aggregate_by'] == 'subcomponent':
-            costDataNew = groupbySumval(costDataNew.fillna({'component': 'empty'}),
+            costDataNew = self._groupbySumval(costDataNew.fillna({'component': 'empty'}),
                                         ['type', 'period', 'commodity', 'route', 'process', 'component'], keep=['case'])
             costDataNew['hover_label'] = [all_processes[p]['label'] for p in costDataNew['process']]
             costDataNew.loc[costDataNew['component']!='empty', 'hover_label'] = [f"{row['component'].capitalize()} ({row['hover_label']})" for index, row in costDataNew.loc[costDataNew['component']!='empty',:].iterrows()]
         elif self._config['aggregate_by'] == 'component':
-            costDataNew = groupbySumval(costDataNew.fillna({'component': 'empty'}),
+            costDataNew = self._groupbySumval(costDataNew.fillna({'component': 'empty'}),
                                         ['type', 'period', 'commodity', 'route', 'process'], keep=['case'])
             costDataNew['hover_label'] = [all_processes[p]['label'] for p in costDataNew['process']]
         elif self._config['aggregate_by'] == 'process':
-            costDataNew = groupbySumval(costDataNew.fillna({'component': 'empty'}),
+            costDataNew = self._groupbySumval(costDataNew.fillna({'component': 'empty'}),
                                         ['type', 'period', 'commodity', 'route', 'component'], keep=['case'])
             costDataNew['hover_label'] = [self._config['components'][c] if c!='empty' else None for c in costDataNew['component']]
         elif self._config['aggregate_by'] == 'all':
-            costDataNew = groupbySumval(costDataNew.fillna({'component': 'empty'}),
+            costDataNew = self._groupbySumval(costDataNew.fillna({'component': 'empty'}),
                                         ['type', 'period', 'commodity', 'route'], keep=['case'])
             costDataNew['hover_label'] = [self._config['types'][t]['label'] for t in costDataNew['type']]
         else:

@@ -3,11 +3,12 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from src.custom.plots.helperFuncs import groupbySumval
-from src.scaffolding.plotting.AbstractPlot import AbstractPlot
+from src.custom.plots.BasePlot import BasePlot
 
 
-class FlexiblePlot(AbstractPlot):
+class FlexiblePlot(BasePlot):
+    _complete = True
+
     def _prepare(self):
         if self.anyRequired('figS2'):
             self._prep = self.__makePrep(
@@ -20,7 +21,7 @@ class FlexiblePlot(AbstractPlot):
     # make adjustments to data
     def __makePrep(self, costData: pd.DataFrame, costDataRef: pd.DataFrame, prices: pd.DataFrame):
         # cost delta of Cases 1-3 in relation to Base Case
-        cost = groupbySumval(costData.query("type!='capital'"), ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
+        cost = self._groupbySumval(costData.query("type!='capital'"), ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
 
         costDelta = cost.query("case=='Case 3'") \
             .merge(cost.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'period']) \
@@ -29,7 +30,7 @@ class FlexiblePlot(AbstractPlot):
 
 
         # cost delta of Cases 1-3 in relation to Base Case for reference with zero elec price difference
-        costRef = groupbySumval(costDataRef.query("type!='capital'"), ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
+        costRef = self._groupbySumval(costDataRef.query("type!='capital'"), ['commodity', 'route', 'period'], keep=['baseRoute', 'case'])
 
         costRefDelta = costRef.query("case=='Case 3'") \
             .merge(costRef.query("case=='Base Case'").drop(columns=['route', 'case']), on=['commodity', 'baseRoute', 'period']) \
@@ -38,7 +39,7 @@ class FlexiblePlot(AbstractPlot):
 
 
         # capital cost data
-        costCap = groupbySumval(costData.query("type=='capital' & case=='Case 3'"), ['commodity', 'route', 'period'], keep=['baseRoute', 'case']) \
+        costCap = self._groupbySumval(costData.query("type=='capital' & case=='Case 3'"), ['commodity', 'route', 'period'], keep=['baseRoute', 'case']) \
             .rename(columns={'val': 'costCap'})
 
 

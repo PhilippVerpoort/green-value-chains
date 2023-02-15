@@ -1,15 +1,16 @@
 import re
-from string import ascii_lowercase
 
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+from src.custom.plots.BasePlot import BasePlot
 from src.scaffolding.file.load_default_data import all_processes, all_routes
-from src.scaffolding.plotting.AbstractPlot import AbstractPlot
 
 
-class EnergySharePlot(AbstractPlot):
+class EnergySharePlot(BasePlot):
+    _complete = True
+
     def _prepare(self):
         if self.anyRequired('fig5'):
             self._prep = self.__makePrep(self._finalData['costData'])

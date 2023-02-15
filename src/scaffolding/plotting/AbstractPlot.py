@@ -9,6 +9,8 @@ from src.scaffolding.file.file_path import pathOfOutputFile
 
 
 class AbstractPlot(ABC):
+    _complete = False
+
     def __init__(self, final_data: dict, required_figs: list, target: str, plot_cfg: dict):
         self._requiredFigs = required_figs
         self._finalData = final_data
@@ -24,6 +26,10 @@ class AbstractPlot(ABC):
 
         self._prep = {}
         self._ret = {}
+
+    @classmethod
+    def isComplete(cls):
+        return cls._complete
 
     @classmethod
     def loadGlobal(cls):

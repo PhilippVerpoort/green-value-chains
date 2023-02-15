@@ -1,4 +1,7 @@
 yaxislabel: Relative cost reduction (%)
+yrange:
+  - 0.0
+  - 140.0
 
 colour:
   Steel: '#aaaaaa'
