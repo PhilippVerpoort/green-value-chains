@@ -160,22 +160,7 @@ class EnergySharePlot(BasePlot):
                         hasLegend.append(type)
 
             # add annotations
-            fig.add_annotation(
-                text=f"<b>{comm}</b>",
-                x=0.0,
-                xref='x domain',
-                xanchor='left',
-                y=1.0,
-                yref='y domain',
-                yanchor='top',
-                showarrow=False,
-                bordercolor='black',
-                borderwidth=2,
-                borderpad=3,
-                bgcolor='white',
-                row=1,
-                col=c + 1,
-            )
+            self._addAnnotationComm(fig, c, comm)
 
             # update layout of subplot
             fig.update_layout(
