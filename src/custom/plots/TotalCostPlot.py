@@ -157,11 +157,10 @@ class TotalCostPlot(BasePlot):
 
 
     def __addTop(self, fig: go.Figure, c: int, comm: str, costDataComm: pd.DataFrame):
-        # display cases 1A and 1B as same route
-        costDataComm['displayCase'] = costDataComm['case']
+        # display cases 1A and 1B as same x
         costDataComm = costDataComm \
-            .replace({'displayCase': 'Case 1A'}, 'Case 1A/B') \
-            .replace({'displayCase': 'Case 1B'}, 'Case 1A/B')
+            .assign(displayCase=lambda r: r.case) \
+            .replace({'displayCase': ['Case 1A', 'Case 1B']}, 'Case 1A/B')
 
 
         # middle line
