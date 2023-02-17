@@ -12,7 +12,7 @@ class LevelisedPlot(BasePlot):
     _complete = True
 
     def _prepare(self):
-        if self.anyRequired('fig4', 'figS1a', 'figS1b', 'figS1c', 'figS3'):
+        if self.anyRequired('fig4', 'figS1', 'figS3'):
             self._prep['default'] = self.__makePrep(self._finalData['costData'])
 
         if self.anyRequired('figS3'):
