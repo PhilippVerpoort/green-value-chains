@@ -1,17 +1,34 @@
-yaxislabel: Relative cost reduction (%)
-yrange:
-  - 0.0
-  - 140.0
+top:
+  yaxislabel: Relocation savings relative to the Base Case (%)
+  yrange:
+    - 35.0
+    - 150.0
+bottom:
+  xaxislabel: Production-cost savings (EUR/t)
+  yaxislabel: Transportation penalty (EUR/t)
+  zaxislabel: Relocation savings relative<br>to the Base Case (%)
+  zrange:
+    - -100.0
+    - +100.0
+  zdelta: 20.0
+  zcolours:
+    - '#3745a3'
+    - '#ffffff'
+    - '#e6af2e'
+  zticks:
+    - 100
+    - 50
+    - 0
+    - -50
+    - -100
+  samples: 10
 
-colour:
-  Steel: '#aaaaaa'
-  Urea: '#db2a1a'
-  Ethylene: '#8a4c39'
 symbol: x-thin
+contourLines: False
 
 #symbol:
 #  Steel: x-thin
 #  Urea: cross-thin
 #  Ethylene: circle-open-dot #triangle-up-open
 
-show_year: 2050
+select_period: 2050

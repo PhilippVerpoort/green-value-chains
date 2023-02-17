@@ -1,7 +1,7 @@
 from src.scaffolding.data.data import getFullData
 from src.scaffolding.file.load_config_app import app_cfg
 from src.scaffolding.file.load_config_plot import plots_cfg
-from src.scaffolding.file.load_default_data import default_prices, default_options
+from src.scaffolding.file.load_default_data import default_other_prices, default_options
 from src.scaffolding.plotting.plot_all import plotAllFigs
 from src.scaffolding.plotting.styling.webapp import addWebappSpecificStyling
 
@@ -12,7 +12,7 @@ figsNeeded = [fig for fig, routes in app_cfg['figures'].items() if '/' in routes
 
 # collect input data for calculations
 inputData = {
-    'prices': default_prices,
+    'prices': default_other_prices,
     'options': default_options,
 }
 

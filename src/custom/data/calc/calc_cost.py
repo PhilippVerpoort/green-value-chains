@@ -5,7 +5,7 @@ import pandas as pd
 from src.scaffolding.file.load_default_data import all_processes
 
 
-def calcCost(tech_data_full: pd.DataFrame, prices: pd.DataFrame, selectedRoutes: dict, commodity: str, options: dict):
+def calcCost(tech_data_full: pd.DataFrame, other_prices: pd.DataFrame, selectedRoutes: dict, commodity: str, options: dict):
     # technology data
     selectedProcesses = list(set([p for route in selectedRoutes.values() for p in route['processes']]))
     selectedComponents = [all_processes[p]['output'] for p in selectedProcesses] + list(tech_data_full.query(f"process in @selectedProcesses").component.unique())
@@ -25,11 +25,11 @@ def calcCost(tech_data_full: pd.DataFrame, prices: pd.DataFrame, selectedRoutes:
     for route_id, route_details in selectedRoutes.items():
         if 'import_cases' in route_details and len(route_details['import_cases']) > 1:
             for case_name, case_imports in route_details['import_cases'].items():
-                es_rout = __calcRouteCost(deepcopy(costData), prices, route_details['processes'], case_imports, options)
+                es_rout = __calcRouteCost(deepcopy(costData), other_prices, route_details['processes'], case_imports, options)
                 es_ret.extend([e.assign(route=f"{route_id}--{case_name}", baseRoute=route_id, case=case_name) for e in es_rout])
         else:
             case_imports = next(c for c in route_details['import_cases'].values()) if route_details['import_cases'] else None
-            es_rout = __calcRouteCost(deepcopy(costData), prices, route_details['processes'], case_imports, options)
+            es_rout = __calcRouteCost(deepcopy(costData), other_prices, route_details['processes'], case_imports, options)
             es_ret.extend([e.assign(route=route_id, baseRoute=route_id) for e in es_rout])
 
 
@@ -37,7 +37,7 @@ def calcCost(tech_data_full: pd.DataFrame, prices: pd.DataFrame, selectedRoutes:
 
     r['component'] = r['component'].str.replace(' exporter', '')
 
-    return r[['commodity', 'route', 'baseRoute', 'case', 'process', 'type', 'component', 'val', 'period']]
+    return r[['commodity', 'route', 'baseRoute', 'case', 'process', 'type', 'component', 'val', 'period', 'location']]
 
 
 def __prepareCostData(techData: pd.DataFrame):
@@ -116,7 +116,8 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
     modeQuery = ''.join([f" | (component=='{i}' and modeTransp=='{m}')" for i, m in importModes.items()])
     processAbroad = __getProcessesAbroad(costData, processes, importComponents)
 
-    setLocation = costData['demand']['component'].isin(prices.query("location!='either'").component.unique()) & ~costData['demand']['component'].isin(allOutputs)
+    setLocation = (costData['demand']['component'].isin(prices.query("location!='either'").component.unique())
+                   & ~costData['demand']['component'].isin(allOutputs)) | (costData['demand']['component']=='electricity')
     isImported = costData['demand']['process'].isin(processAbroad) | costData['demand']['component'].isin(importComponents if importComponents else [])
 
     costData['demand'].loc[:, 'location'] = 'either'
@@ -130,10 +131,10 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
 
     fcr = pd.DataFrame.from_records([
         {
-            'location': location,
-            'fcr': __calcFCR(options['irate'][location]/100.0, options['ltime']),
+            'location': l,
+            'fcr': __calcFCR(options['irate'][l]/100.0, options['ltime']),
         }
-        for location in ['importer', 'exporter']
+        for l in ['importer', 'exporter']
     ])
 
     costData['capital'] = costData['capital'] \
@@ -166,10 +167,15 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
 
         # add data for energy and feedstock cost with prices read from route_prices that are not upstream outputs
         es_pro.append(
-            thisCostData['demand'].query('component not in @allOutputs') \
+            thisCostData['demand'].query("component not in @allOutputs and component!='electricity'") \
                                   .merge(prices.filter(['component', 'location', 'val', 'period']), on=['component', 'location', 'period']) \
                                   .assign(val=lambda x: x.val_x * x.val_y) \
                                   .drop(columns=['val_x', 'val_y'])
+        )
+
+        # add electricity demand separately
+        es_pro.append(
+            thisCostData['demand'].query("component=='electricity'")
         )
 
         # rescale cost components of upstream processes by demand of output commodity and append

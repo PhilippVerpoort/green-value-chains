@@ -1,8 +1,10 @@
 yaxislabel: Levelised Cost of Commodities (EUR/t)
 
 simplify_types: True
+map_processes: True
 
-show_year: 2050
+select_period: 2050
+epdcase: default
 
 import_route:
   Steel: Base Case
@@ -10,5 +12,5 @@ import_route:
   Ethylene: Base Case
 
 skip_upstream:
-  - ASU
+  - HP
   - DAC

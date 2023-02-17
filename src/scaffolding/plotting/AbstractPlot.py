@@ -10,10 +10,12 @@ from src.scaffolding.file.file_path import pathOfOutputFile
 
 class AbstractPlot(ABC):
     _complete = False
+    _dpi = 300.0
 
-    def __init__(self, final_data: dict, required_figs: list, target: str, plot_cfg: dict):
-        self._requiredFigs = required_figs
+    def __init__(self, input_data: dict, final_data: dict, required_figs: list, target: str, plot_cfg: dict):
+        self._inputData = input_data
         self._finalData = final_data
+        self._requiredFigs = required_figs
         self._target = target
         self._isWebapp = target=='webapp'
 
@@ -102,9 +104,9 @@ class AbstractPlot(ABC):
         for subfigName, subfigPlot in self._ret.items():
             if subfigPlot is None: continue
 
-            fs_sm = self.__getFontSize(5.0)
-            fs_md = self.__getFontSize(6.0)
-            fs_lg = self.__getFontSize(7.0)
+            fs_sm = self._getFontSize('fs_sm')
+            fs_md = self._getFontSize('fs_md')
+            fs_lg = self._getFontSize('fs_lg')
 
             self.__adjustFontSizes(subfigName, subfigPlot, fs_sm, fs_md, fs_lg)
 
@@ -125,7 +127,7 @@ class AbstractPlot(ABC):
         subfigPlot.update_annotations(font_size=fs_sm)
 
         # subplot labels
-        if subfigName not in ['fig1', 'fig2']:
+        if subfigName not in []:
             numSubPlots = cls.__countNumbSubplots(subfigPlot)
             for i in range(numSubPlots):
                 subfigLabel = subfigName[-1] if subfigName[-1] in ascii_lowercase else ascii_lowercase[i]
@@ -154,20 +156,16 @@ class AbstractPlot(ABC):
                    if figure._grid_ref[row][col] is not None) \
             if figure._grid_ref is not None else 1
 
-
-    dpi = 300.0
-
-    inch_per_mm = 0.03937
-    inch_per_pt = 1 / 72
-
-    @classmethod
-    def __getFontSize(cls, size_pt: float):
-        return cls.dpi * cls.inch_per_pt * size_pt
+    def _getFontSize(self, size: str):
+        inch_per_pt = 1 / 72
+        return self._dpi * inch_per_pt * self.__globalStyling[self._target][size]
 
     @classmethod
     def __getImageSize(cls, height_mm: float, width_mm: float):
-        height_px = int(cls.dpi * cls.inch_per_mm * height_mm)
-        width_px = int(cls.dpi * cls.inch_per_mm * width_mm)
+        inch_per_mm = 0.03937
+
+        height_px = int(cls._dpi * inch_per_mm * height_mm)
+        width_px = int(cls._dpi * inch_per_mm * width_mm)
 
         return dict(
             height=height_px,

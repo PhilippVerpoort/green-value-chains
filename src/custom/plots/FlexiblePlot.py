@@ -63,7 +63,7 @@ class FlexiblePlot(BasePlot):
 
         plotData = {c: 0.0 for c in costData.commodity.unique().tolist()}
         for index, r in tmp.iterrows():
-            if r.period != self._config['showYear']: continue
+            if r.period != self._config['select_period']: continue
             plotData[r.commodity] = r.costCap * (100.0/ocf - 1.0) + r.costRef + (r.cost - r.costRef) / r.priceDiff * pd
 
 

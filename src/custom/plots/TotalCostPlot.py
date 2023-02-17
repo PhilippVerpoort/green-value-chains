@@ -1,9 +1,11 @@
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from plotly.colors import hex_to_rgb
 
 from src.custom.plots.BasePlot import BasePlot
-from src.scaffolding.file.load_default_data import all_routes
+from src.scaffolding.file.load_default_data import commodities
 
 
 class TotalCostPlot(BasePlot):
@@ -11,49 +13,89 @@ class TotalCostPlot(BasePlot):
 
     def _prepare(self):
         if self.anyRequired('fig3'):
-            self._prep = self.__makePrep(self._finalData['costData'])
+            self._prep = {}
+            self._prep |= self.__prepareData(self._finalData['costData'])
+            self._prep |= self.__prepareHeatmap(self._prep['costDataCases'])
 
 
     # make adjustments to data (route names, component labels)
-    def __makePrep(self, costData: pd.DataFrame):
-        showRoutes = costData['route'].unique()
-        showYears = costData['period'].unique()
+    def __prepareData(self, costData: pd.DataFrame):
+        # remove upstream cost entries and drop non-case routes
+        costDataNew = costData \
+            .query(f"type!='upstream' and case.notnull()") \
+            .reset_index(drop=True)
 
-        # remove upstream cost entries
-        costDataNew = costData.copy().query(f"type!='upstream'")
-
-        # define route names and ordering
-        route_names_woimp = {route_id: route_vals['name'] for route_details in all_routes.values() for route_id, route_vals in sorted(route_details.items()) if route_id in costDataNew['route'].unique()}
-        route_names_wiimp = {route_id: route_id.split('--')[-1] for route_id in costDataNew['route'].unique() if route_id not in route_names_woimp}
-        route_names = {**route_names_woimp, **route_names_wiimp}
-
-        # rename routes into something readable
-        costDataNew.replace({'route': route_names}, inplace=True)
-
-        # aggregate
-        costDataNew = self._groupbySumval(costDataNew.fillna({'component': 'empty'}),
-                                    ['period', 'commodity', 'route'], keep=['case'])
-
-        # sort by commodities
-        commodityOrder = costData.commodity.unique().tolist()
-        costDataNew.sort_values(by='commodity', key=lambda row: [commodityOrder.index(c) for c in row], inplace=True)
-
-        # add relative data
-        costDataNewBase = self._groupbySumval(costDataNew.query(f"case=='Base Case'"), ['period', 'commodity'])
+        # select period and drop column
         costDataNew = costDataNew \
-            .merge(costDataNewBase, on=['period', 'commodity']) \
-            .assign(val=lambda x: x.val_x, val_rel=lambda x: x.val_x / x.val_y) \
-            .drop(columns=['val_x', 'val_y'])
+            .query(f"period=={self._config['select_period']}") \
+            .drop(columns=['period'])
 
+        # insert final electricity prices
+        costDataCases = self._finaliseCostData(costDataNew, epdcases=['upper', 'default', 'lower'], epperiod=self._config['select_period'])
 
-        # replace
-        costDataNew = costDataNew \
-            .replace({'route': 'Case 1A'}, 'Case 1A/B') \
-            .replace({'route': 'Case 1B'}, 'Case 1A/B')
+        # aggregate cost data split by transport part and other parts
+        costDataCases = pd.merge(
+                self._groupbySumval(costDataCases.query("type=='transport'"), ['commodity', 'case', 'epdcase'], keep=['epdiff']),
+                self._groupbySumval(costDataCases.query("type!='transport'").fillna({'component': 'empty'}), ['commodity', 'case', 'epdcase'], keep=['epdiff']),
+                on=['commodity', 'case', 'epdcase', 'epdiff'],
+                how='outer',
+                suffixes=('_transp', '_other'),
+            )\
+            .fillna(0.0) \
+            .assign(val=lambda x: x.val_transp + x.val_other)
 
+        # add differences to Base Case
+        costDataCases = costDataCases \
+            .merge(costDataCases.query(f"case=='Base Case'").filter(['commodity', 'epdcase', 'val', 'val_transp', 'val_other']), on=['commodity', 'epdcase'], suffixes=('', '_base')) \
+            .assign(
+                val_rel=lambda x: x.val / x.val_base,
+                val_transp_penalty=lambda x: x.val_transp - x.val_transp_base,
+                val_cost_saving=lambda x: x.val_other_base - x.val_other,
+            ) \
+            .drop(columns=['val_other', 'val_transp', 'val_base', 'val_other_base', 'val_transp_base'])
+
+        # sort by commodity
+        costDataCases = costDataCases.sort_values(by='commodity', key=lambda row: [commodities.index(c) for c in row])
 
         return {
-            'costData': costDataNew
+            'costDataCases': costDataCases,
+        }
+
+
+    def __prepareHeatmap(self, costDataCases: pd.DataFrame):
+        heatmap = {}
+        axes = {}
+
+        for c, comm in enumerate(commodities):
+            costDataComm = costDataCases.query(f"commodity=='{comm}'").reset_index(drop=True)
+
+            dataRange = {
+                'xmin': costDataComm.val_cost_saving.min(), 'xmax': costDataComm.val_cost_saving.max(),
+                'ymin': costDataComm.val_transp_penalty.min(), 'ymax': costDataComm.val_transp_penalty.max(),
+            }
+
+            xRange = [0.0, 1.1 * dataRange['xmax']]
+            yRange = [-10.0 if comm=='Steel' else 0.0, 1.1 * dataRange['ymax']]
+
+            x = np.linspace(*xRange, self._config['bottom']['samples'])
+            y = np.linspace(*yRange, self._config['bottom']['samples'])
+            vx, vy = np.meshgrid(x, y)
+            z = (vx - vy) / costDataComm.query(f"case=='Base Case' and epdcase=='default'").iloc[0].val * 100
+
+            heatmap[comm] = {
+                'x': x,
+                'y': y,
+                'z': z,
+            }
+
+            axes[comm] = {
+                'xaxis': dict(range=xRange),
+                'yaxis': dict(range=yRange),
+            }
+
+        return {
+            'axes': axes,
+            'heatmap': heatmap,
         }
 
 
@@ -65,72 +107,293 @@ class TotalCostPlot(BasePlot):
         return self._ret
 
 
-    def __makePlot(self, costData: pd.DataFrame):
-        q = f"period=={self._config['show_year']} & case.notnull()"
-        costData = costData.query(q)
-        commodities = costData.commodity.unique()
-
-
+    def __makePlot(self, costDataCases: pd.DataFrame, axes: dict, heatmap: dict):
         # create figure
         fig = make_subplots(
             cols=len(commodities),
             rows=2,
-            horizontal_spacing=0.05,
+            horizontal_spacing=0.035,
         )
 
 
         # loop over commodities (three columns)
-        for i, comm in enumerate(costData.commodity.unique()):
-            costDataComm = costData\
-                .query(f"commodity=='{comm}'") \
-                .sort_values(by='route')
+        for c, comm in enumerate(commodities):
+            costDataComm = costDataCases\
+                .query(f"commodity=='{comm}'")\
+                .reset_index(drop=True)
 
-            # add top plots
-            self.__addTop(fig, i, comm, costDataComm)
+            # add plots to top row
+            self.__addTop(fig, c, comm, costDataComm)
 
-            # add annotations
-            self._addAnnotationComm(fig, i, comm)
+            # add dashed hline top
+            fig.add_hline(100.0, row=1, col=c+1, line_dash='dash', line_color='black')
 
-            # add axis layout
+            # update top axes layout
             self._updateAxisLayout(
-                fig, i,
+                fig, c,
                 xaxis=dict(categoryorder='category ascending'),
-                yaxis=dict(title=self._config['yaxislabel'], range=self._config['yrange']),
+                yaxis=dict(range=self._config['top']['yrange'], showticklabels=False),
             )
+
+            # add plots to bottom row
+            self.__addBottom(fig, c, comm, costDataComm, heatmap[comm])
+
+            # update bottom axes layout
+            self._updateAxisLayout(fig, c + 3, **axes[comm])
+
+            # add commodity annotations above subplot
+            self._addAnnotationComm(fig, c, comm)
 
 
         # update layout
         fig.update_layout(
-            barmode='stack',
+            showlegend=False,
             legend_title='',
+            yaxis_title=self._config['top']['yaxislabel'],
+            yaxis_showticklabels=True,
+            xaxis5_title=self._config['bottom']['xaxislabel'],
+            yaxis4_title=self._config['bottom']['yaxislabel'],
         )
 
 
         return fig
 
 
-    def __addTop(self, fig, i, comm, costDataComm):
-        costDataComm = costDataComm.query(f"case!='Case 1A'")
+    def __addTop(self, fig: go.Figure, c: int, comm: str, costDataComm: pd.DataFrame):
+        # display cases 1A and 1B as same route
+        costDataComm['displayCase'] = costDataComm['case']
+        costDataComm = costDataComm \
+            .replace({'displayCase': 'Case 1A'}, 'Case 1A/B') \
+            .replace({'displayCase': 'Case 1B'}, 'Case 1A/B')
 
+
+        # middle line
+        costDataCorridor = {
+            epdcase: costDataComm.query(f"epdcase=='{epdcase}' and case!='Case 1A'").sort_values(by='case')
+            for epdcase in costDataComm.epdcase.unique()
+        }
         fig.add_trace(
             go.Scatter(
-                x=costDataComm.route,
-                y=100.0 * costDataComm.val_rel,
+                x=costDataCorridor['default'].displayCase,
+                y=costDataCorridor['default'].val_rel * 100,
                 name=comm,
-                marker=dict(
-                    color=self._config['colour'][comm],
-                    symbol=self._config['symbol'],
-                    size=self._config['global']['marker_def'],
-                    line_width=self._config['global']['lw_thin'],
-                    line_color=self._config['colour'][comm],
-                ),
+                mode='lines',
                 line=dict(
                     shape='spline',
-                    # width=0.0 if not i else None,
-                    dash='dash' if not i else 'solid',
+                    color=self._config['commodity_colours'][comm],
                 ),
-                showlegend=True,
+                showlegend=False,
+                legendgroup=comm,
             ),
             row=1,
-            col=i + 1,
+            col=c + 1,
+        )
+
+        # outside corridor
+        fig.add_trace(
+            go.Scatter(
+                x=np.concatenate((costDataCorridor['upper'].displayCase[::-1], costDataCorridor['lower'].displayCase)),
+                y=np.concatenate((costDataCorridor['upper'].val_rel[::-1], costDataCorridor['lower'].val_rel)) * 100,
+                mode='lines',
+                line=dict(
+                    shape='spline',
+                    width=0.0,
+                ),
+                fillcolor=("rgba({}, {}, {}, {})".format(*hex_to_rgb(self._config['commodity_colours'][comm]), .3)),
+                fill='toself',
+                showlegend=False,
+                legendgroup=comm,
+                hoverinfo='none',
+            ),
+            row=1,
+            col=c + 1
+        )
+
+        # points
+        costDataComm = costDataComm.query(f"case!='Base Case' or epdcase=='default'")
+        for case in costDataComm.case.unique():
+            thisData = costDataComm.query(f"case=='{case}'")
+            fig.add_trace(
+                go.Scatter(
+                    x=thisData.displayCase,
+                    y=thisData.val_rel * 100,
+                    name=comm,
+                    mode='markers+lines',
+                    marker=dict(
+                        color=self._config['commodity_colours'][comm],
+                        symbol=self._config['symbol'],
+                        size=self._config['global']['marker_sm'],
+                        line_width=self._config['global']['lw_thin'],
+                        line_color=self._config['commodity_colours'][comm],
+                    ),
+                    showlegend=(case=='Base Case'),
+                    legendgroup=comm,
+                ),
+                row=1,
+                col=c + 1,
+            )
+
+        # annotations
+        costDataComm = costDataComm.query(f"case=='Case 3'")
+        fig.add_trace(
+            go.Scatter(
+                x=costDataComm.displayCase,
+                y=costDataComm.val_rel * 100,
+                text=costDataComm.epdiff,
+                name=comm,
+                mode='markers+text',
+                textposition='middle right',
+                textfont_size=self._getFontSize('fs_tn'),
+                textfont_color=self._config['commodity_colours'][comm],
+                marker_size=self._config['global']['marker_sm'],
+                marker_color='rgba(0,0,0,0)',
+                showlegend=False,
+                legendgroup=comm,
+            ),
+            row=1,
+            col=c + 1,
+        )
+
+
+    def __addBottom(self, fig: go.Figure, c: int, comm: str, costDataComm: pd.DataFrame, heatmapLinspaces: dict):
+        # points
+        for case in costDataComm.case.unique():
+            if case == 'Base Case': continue
+            thisData = costDataComm.query(f"case=='{case}'")
+
+            # add points
+            fig.add_trace(
+                go.Scatter(
+                    x=thisData.val_cost_saving,
+                    y=thisData.val_transp_penalty,
+                    text=thisData.case,
+                    name=comm,
+                    mode='markers+lines',
+                    marker=dict(
+                        color=self._config['commodity_colours'][comm],
+                        symbol=self._config['symbol'],
+                        size=self._config['global']['marker_sm'],
+                        line_width=self._config['global']['lw_thin'],
+                        line_color=self._config['commodity_colours'][comm],
+                    ),
+                    showlegend=False,
+                    legendgroup=comm,
+                ),
+                row=2,
+                col=c + 1,
+            )
+
+            # epd annotations
+            epdcaseDiff = thisData.query(f"case in ['Case 1A', 'Case 1B', 'Case 2']")
+            fig.add_trace(
+                go.Scatter(
+                    x=epdcaseDiff.val_cost_saving,
+                    y=epdcaseDiff.val_transp_penalty,
+                    text=epdcaseDiff.epdiff,
+                    name=comm,
+                    mode='markers+text',
+                    textposition='bottom center',
+                    textfont_size=self._getFontSize('fs_tn'),
+                    textfont_color=self._config['commodity_colours'][comm],
+                    marker_size=self._config['global']['marker_sm'],
+                    marker_color='rgba(0,0,0,0)',
+                    showlegend=False,
+                    legendgroup=comm,
+                ),
+                row=2,
+                col=c + 1,
+            )
+
+            # case annotations
+            caseName = thisData.query(f"epdcase=='default'")
+            fig.add_trace(
+                go.Scatter(
+                    x=caseName.val_cost_saving,
+                    y=caseName.val_transp_penalty,
+                    text=caseName.case,
+                    name=comm,
+                    mode='markers+text',
+                    textposition='top center',
+                    textfont_size=self._getFontSize('fs_sm'),
+                    textfont_color=self._config['commodity_colours'][comm],
+                    marker_size=self._config['global']['marker_sm'],
+                    marker_color='rgba(0,0,0,0)',
+                    showlegend=False,
+                    legendgroup=comm,
+                ),
+                row=2,
+                col=c + 1,
+            )
+
+        # heatmap
+        fig.add_trace(
+            go.Heatmap(
+                x=heatmapLinspaces['x'],
+                y=heatmapLinspaces['y'],
+                z=heatmapLinspaces['z'],
+                zsmooth='best',
+                zmin=self._config['bottom']['zrange'][0],
+                zmax=self._config['bottom']['zrange'][1],
+                colorscale=[
+                    [i/(len(self._config['bottom']['zcolours'])-1), colour]
+                    for i, colour in enumerate(self._config['bottom']['zcolours'])
+                ],
+                colorbar=dict(
+                    x=1.01,
+                    y=(0.5-0.05)/2,
+                    yanchor='middle',
+                    len=(0.5-0.025/2),
+                    title=self._config['bottom']['zaxislabel'],
+                    titleside='right',
+                    tickvals=[float(t) for t in self._config['bottom']['zticks']],
+                    ticktext=self._config['bottom']['zticks'],
+                ),
+                showscale=not c,
+                hoverinfo='skip',
+            ),
+            row=2,
+            col=c + 1,
+        )
+
+        # contour
+        if self._config['contourLines']:
+            fig.add_trace(
+                go.Contour(
+                    x=heatmapLinspaces['x'],
+                    y=heatmapLinspaces['y'],
+                    z=heatmapLinspaces['z'],
+                    contours_coloring='lines',
+                    colorscale=[
+                        [0.0, '#000000'],
+                        [1.0, '#000000'],
+                    ],
+                    line_width=self._config['global']['lw_ultrathin']/2,
+                    contours=dict(
+                        showlabels=False,
+                        start=self._config['bottom']['zrange'][0],
+                        end=self._config['bottom']['zrange'][1],
+                        size=10.0,
+                    ),
+                    showscale=False,
+                    hoverinfo='skip',
+                ),
+                row=2,
+                col=c + 1,
+            )
+
+        # add center line
+        fig.add_trace(
+            go.Scatter(
+                x=[-1000.0, +2000.0],
+                y=[-1000.0, +2000.0],
+                mode='lines',
+                line=dict(
+                    color='black',
+                    width=self._config['global']['lw_thin'],
+                    dash='dash',
+                ),
+                showlegend=False,
+            ),
+            row=2,
+            col=c + 1,
         )

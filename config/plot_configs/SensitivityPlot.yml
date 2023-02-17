@@ -1,14 +1,10 @@
 xaxislabel: Electricity-price difference (EUR/MWh)
 xlabelshort: Elec-price diff
-xrange:
-  - 0.0
-  - 50.0
 xsamples: 20
 
 top:
   yaxislabel: Production-cost difference (EUR/t)
   ylabelshort: Prod-cost diff
-  ymax: 200.0
 
   yaxis2label: Relative to Base Case production cost (%)
 bottom:
@@ -17,30 +13,25 @@ bottom:
   yrange:
     - 0.0
     - 50.0
-
-zaxislabel: Production-cost difference (EUR/t)
-zlabelshort: Prod-cost diff
-zrange:
-  - -100.0
-  - +100.0
-zrange2:
-  - -400.0
-  - +400.0
-zdelta:
-  - 10.0
-  - 20.0
-  - 30.0
-zcolours:
-  - '#9DA4D2'
-  - '#F3DA9C'
-zticks:
-  - 100
-  - 50
-  - 0
-  - -50
-  - -100
+  zaxislabel: Relocation savings relative<br>to the Base Case (%)
+  zrange:
+    - -100.0
+    - +100.0
+  zdelta: 10.0
+  zcolours:
+    - '#e6af2e'
+    - '#ffffff'
+    - '#3745a3'
+  zticks:
+    - 100
+    - 50
+    - 0
+    - -50
+    - -100
 
 samples: 51
+
+symbol: x-thin
 
 line_colour:
   Case 1A: '#db2a1a'
@@ -48,4 +39,4 @@ line_colour:
   Case 2: '#00813e'
   Case 3: '#0000CC'
 
-showYear: 2050
+select_period: 2050

@@ -10,11 +10,11 @@ pio.templates['pik'] = defineTemplate()
 pio.templates.default = "pik"
 
 
-def plotAllFigs(final_data: dict, plots_cfg: dict, required_figs: Union[list, None] = None, target: str = 'print'):
+def plotAllFigs(input_data: dict, final_data: dict, plots_cfg: dict, required_figs: Union[list, None] = None, target: str = 'print'):
     producedPlots = {}
 
     for plotName, plotClass in plots.items():
-        plot = plotClass(final_data, required_figs, target, plots_cfg[plotName])
+        plot = plotClass(input_data, final_data, required_figs, target, plots_cfg[plotName])
         plot.produce()
 
         producedPlots[plotName] = plot

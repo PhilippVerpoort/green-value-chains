@@ -1,4 +1,10 @@
-types:
+commodity_colours:
+  Steel: '#aaaaaa'
+  Urea: '#db2a1a'
+  Ethylene: '#8a4c39'
+
+
+cost_types:
   upstream:
     label: Upstream
     colour: '#cccccc'
@@ -20,15 +26,16 @@ types:
   transport:
     label: Transport
     colour: '#7c1f8a'
+  non-energy:
+    label: Non-energy cost
+    colour: '#3745a3'
 #  carbon:
 #    label: Carbon cost from carbon pricing
 #    colour: '#db2a1a'
 #  direct:
 #    label: Total direct production cost
 #    colour: '#8a4c39'
-#  non-energy:
-#    label: Non-energy cost
-#    colour: '#3745a3'
+
 
 components:
   alloys: Alloys

@@ -2,7 +2,7 @@ from dash import dcc, html, dash_table
 import dash_bootstrap_components as dbc
 
 from src.scaffolding.app.callbacks.simple_params import convertPricesDF2T
-from src.scaffolding.file.load_default_data import default_prices, default_options
+from src.scaffolding.file.load_default_data import default_other_prices, default_options
 
 
 def getElementSimpleControlsCard():
@@ -24,7 +24,7 @@ def getElementSimpleControlsCard():
                             {'id': 'unit', 'name': 'Unit', 'editable': False,},
                             *({'id': f"val_{year}", 'name': f"Value {year}", 'type': 'numeric'} for year in default_options['times']),
                         ],
-                        data=convertPricesDF2T(default_prices),
+                        data=convertPricesDF2T(default_other_prices),
                         editable=True,
                         style_cell={'whiteSpace': 'pre-line'},
                         style_cell_conditional=[

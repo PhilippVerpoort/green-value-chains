@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from src.custom.plots.BasePlot import BasePlot
-from src.scaffolding.file.load_default_data import all_processes, all_routes
+from src.scaffolding.file.load_default_data import all_processes, all_routes, commodities
 
 
 class EnergySharePlot(BasePlot):
@@ -16,53 +16,56 @@ class EnergySharePlot(BasePlot):
             self._prep = self.__makePrep(self._finalData['costData'])
 
 
-# make adjustments to data before plotting
+    # make adjustments to data before plotting
     def __makePrep(self, costData: pd.DataFrame):
+        # drop non-case routes
+        costDataNew = costData \
+            .query(f"case.notnull()") \
+            .reset_index(drop=True)
+
+        # multiply by electricity prices
+        costDataNew = self._finaliseCostData(costDataNew, epdcases=[self._config['epdcase']])
+
+        # map DAC and heat pump to their associated main processes
+        if self._config['map_processes']:
+            for comm, main_proc in [('Urea', 'UREA'), ('Ethylene', 'MEOH')]:
+                mapping = {p: main_proc for p in ['HP', 'DAC']}
+                rows = costDataNew['commodity']==comm
+                costDataNew.loc[rows, 'process'] = costDataNew.loc[rows, 'process'].replace(mapping)
+
         # replace non-energy types with generic label
         if self._config['simplify_types']:
             mapping = {t: 'non-energy' for t in costData['type'] if t!='energy'}
-            costDataNew = costData.replace({'type': mapping})
-        else:
-            costDataNew = costData
-
-
-        # determine the route to plot for each commodity
-        plottedRoutes = {
-            c: costDataNew.query(f"commodity=='{c}' & case=='{self._config['import_route'][c]}'").route.iloc[0]
-            for c in all_routes
-        }
-
+            costDataNew = costDataNew.replace({'type': mapping})
 
         # modify data for each commodity
         retData = []
         processesOrdered = {}
-        for commodity, showRoute in plottedRoutes.items():
+        for comm in commodities:
             # query relevant commodity data for given route
-            costDataNewComm = costDataNew.query(f"route=='{showRoute}' & period=={self._config['show_year']}")\
-                                         .drop(columns=['component', 'route', 'case', 'period'])
+            costDataComm = costDataNew\
+                .query(f"commodity=='{comm}' & case=='{self._config['import_route'][comm]}' & period=={self._config['select_period']}")\
+                .drop(columns=['route', 'case', 'period'])
 
             # get processes in the route
-            processes = all_routes[commodity][re.sub('--.*', '', showRoute)]['processes']
-            processes_keys = list(processes.keys())
+            processes = [p for p in all_routes[comm][costDataComm.baseRoute.iloc[0]]['processes'].keys() if p in costDataComm.process.unique()]
 
             # add upstream data for plotting
-            for i, p in enumerate(processes_keys[:-1]):
-                upstreamCostData = costDataNewComm.query(f"process=='{p}'").assign(type='upstream')
-                costDataNewComm = pd.concat([costDataNewComm, upstreamCostData.assign(process=processes_keys[i+1])], ignore_index=True)
+            for i, p in enumerate(processes[:-1]):
+                upstreamCostData = costDataComm.query(f"process=='{p}'").assign(type='upstream')
+                costDataComm = pd.concat([costDataComm, upstreamCostData.assign(process=processes[i+1])], ignore_index=True)
 
             # aggregate data over processes and types
-            costDataNewComm = costDataNewComm.groupby(['commodity', 'process', 'type'])\
-                                     .agg({'commodity': 'first', 'process': 'first', 'type': 'first', 'val': 'sum'})\
-                                     .reset_index(drop=True)
+            costDataComm = self._groupbySumval(costDataComm, ['commodity', 'process', 'type'])
 
             # add process labels
-            costDataNewComm['process_label'] = [all_processes[p]['short'] for p in costDataNewComm['process']]
+            costDataComm['process_label'] = [all_processes[p]['short'] for p in costDataComm['process']]
 
             # append data
-            retData.append(costDataNewComm)
+            retData.append(costDataComm)
 
             # save list of processes, so they display in the correct order
-            processesOrdered[commodity] = processes_keys
+            processesOrdered[comm] = processes
 
 
         return {
@@ -88,28 +91,28 @@ class EnergySharePlot(BasePlot):
         )
 
         # add bars for each subplot
-        showTypes = [(t, d) for t, d in self._config['types'].items() if t in costData.type.unique()]
+        showTypes = [(t, d) for t, d in self._config['cost_types'].items() if t in costData.type.unique()]
         hasLegend = []
-        for i, c in enumerate(commodities):
+        for c, comm in enumerate(commodities):
             # plot data for commodity
-            plotData = costData.query(f"commodity=='{c}'")
+            plotData = costData.query(f"commodity=='{comm}'")
 
             # determine ymax
             ymax = 1.2 * plotData.query("type!='upstream'").val.sum()
 
-            for j, p in enumerate(processesOrdered[c]):
+            for i, p in enumerate(processesOrdered[comm]):
                 # plot data for individual process
                 plotDataProc = plotData.query(f"process=='{p}'")
 
                 # determine spacing of pie charts
                 w1 = (1.0 - hspcng * (len(commodities) - 1)) / len(commodities)
-                w2 = w1 / len(processesOrdered[c])
+                w2 = w1 / len(processesOrdered[comm])
 
                 size = 0.10
                 spacing = 0.04
 
-                xstart = i * (w1 + hspcng) + j * w2
-                xend = i * (w1 + hspcng) + (j + 1) * w2
+                xstart = c * (w1 + hspcng) + i * w2
+                xend = c * (w1 + hspcng) + (i + 1) * w2
                 ypos = plotDataProc.val.sum() / ymax + size / 2 + spacing
 
                 # add pie charts
@@ -148,17 +151,17 @@ class EnergySharePlot(BasePlot):
                             legendgroup=type,
                         ),
                         row=1,
-                        col=i + 1,
+                        col=c + 1,
                     )
 
                     base += addHeight
 
-                    if type not in hasLegend:
+                    if type not in hasLegend and not plotDataProcType.empty:
                         hasLegend.append(type)
 
             # add annotations
             fig.add_annotation(
-                text=f"<b>{c}</b>",
+                text=f"<b>{comm}</b>",
                 x=0.0,
                 xref='x domain',
                 xanchor='left',
@@ -171,17 +174,17 @@ class EnergySharePlot(BasePlot):
                 borderpad=3,
                 bgcolor='white',
                 row=1,
-                col=i + 1,
+                col=c + 1,
             )
 
             # update layout of subplot
             fig.update_layout(
                 **{
-                    f"xaxis{i + 1 if i else ''}": dict(title='', categoryorder='array',
+                    f"xaxis{c + 1 if c else ''}": dict(title='', categoryorder='array',
                                                        categoryarray=[all_processes[p]['short'] for p in
-                                                                      processesOrdered[c] if
+                                                                      processesOrdered[comm] if
                                                                       p in plotData.process.unique()]),
-                    f"yaxis{i + 1 if i else ''}": dict(title='', range=[0.0, ymax]),
+                    f"yaxis{c + 1 if c else ''}": dict(title='', range=[0.0, ymax]),
                 },
             )
 

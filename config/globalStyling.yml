@@ -2,13 +2,21 @@ print:
     lw_default: 5
     lw_thin: 3
     lw_ultrathin: 0.6
-    marker_big: 24
-    marker_def: 18
-    marker_small: 12
+    marker_lg: 24
+    marker_md: 18
+    marker_sm: 12
+    fs_lg: 7
+    fs_md: 6
+    fs_sm: 5
+    fs_tn: 4
 webapp:
     lw_default: 2.5
     lw_thin: 1.5
     lw_ultrathin: 0.4
-    marker_big: 16
-    marker_def: 12
-    marker_small: 8
+    marker_lg: 16
+    marker_md: 12
+    marker_sm: 8
+    fs_lg: 6
+    fs_md: 5
+    fs_sm: 4
+    fs_tn: 3

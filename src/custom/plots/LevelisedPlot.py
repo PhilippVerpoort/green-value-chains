@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from src.custom.plots.BasePlot import BasePlot
-from src.scaffolding.file.load_default_data import all_processes, all_routes
+from src.scaffolding.file.load_default_data import all_processes, all_routes, commodities
 
 
 class LevelisedPlot(BasePlot):
@@ -21,11 +21,13 @@ class LevelisedPlot(BasePlot):
 
     # make adjustments to data (route names, component labels)
     def __makePrep(self, costData: pd.DataFrame):
-        showRoutes = costData['route'].unique()
-        showYears = costData['period'].unique()
-
         # remove upstream cost entries
-        costDataNew = costData.copy().query(f"type!='upstream'")
+        costDataNew = costData \
+            .query(f"type!='upstream'") \
+            .reset_index(drop=True)
+
+        # multiply by electricity prices
+        costDataNew = self._finaliseCostData(costDataNew, epdcases=[self._config['epdcase']])
 
         # split up hydrogen transport cost
         q = "type=='transport' and component=='hydrogen'"
@@ -71,16 +73,15 @@ class LevelisedPlot(BasePlot):
             raise Exception('Value of aggregate_by in the plot config is invalid.')
 
         # sort by commodities
-        commodityOrder = costData.commodity.unique().tolist()
-        costDataNew.sort_values(by='commodity', key=lambda row: [commodityOrder.index(c) for c in row], inplace=True)
+        costDataNew.sort_values(by='commodity', key=lambda row: [commodities.index(c) for c in row], inplace=True)
 
         # sort routes
-        routeorder = [r.replace('Case 1A', 'Case 1A/B') for r in route_names.values() if r != 'Case 1B']
+        routeOrder = [r.replace('Case 1A', 'Case 1A/B') for r in route_names.values() if r != 'Case 1B']
 
         return {
             'costDataAgg': costDataNew,
             'costDataH2Transp': costDataH2Transp,
-            'routeOrder': routeorder,
+            'routeOrder': routeOrder,
         }
 
 
@@ -93,7 +94,7 @@ class LevelisedPlot(BasePlot):
         if self.anyRequired('figS1'):
             for k, commodity in enumerate(list(all_routes.keys())):
                 subfigName = f"figS1{ascii_lowercase[k]}"
-                self._ret[subfigName] = self.__makePlot(**self._prep['default'], commodity=commodity)
+                self._ret[subfigName] = self.__makePlot(**self._prep['default'], mode=commodity)
 
         # produce figS3
         if self.anyRequired('figS3'):
@@ -102,18 +103,17 @@ class LevelisedPlot(BasePlot):
         return self._ret
 
 
-    def __makePlot(self, costDataAgg: pd.DataFrame, costDataH2Transp: pd.DataFrame, routeOrder: list, commodity: str = ''):
-        if commodity:
-            q = f"commodity=='{commodity}'"
+    def __makePlot(self, costDataAgg: pd.DataFrame, costDataH2Transp: pd.DataFrame, routeOrder: list, mode: str = ''):
+        if mode:
+            q = f"commodity=='{mode}'"
             costDataAgg = costDataAgg.query(q)
             costDataH2Transp = costDataH2Transp.query(q)
             subplots = [int(y) for y in sorted(costDataAgg.period.unique())]
         else:
-            q = f"period=={self._config['show_year']} & case.notnull()"
+            q = f"period=={self._config['select_period']} & case.notnull()"
             costDataAgg = costDataAgg.query(q)
             costDataH2Transp = costDataH2Transp.query(q)
             subplots = costDataAgg.commodity.unique().tolist()
-
 
         # create figure
         fig = make_subplots(
@@ -121,14 +121,19 @@ class LevelisedPlot(BasePlot):
             horizontal_spacing=0.05,
         )
 
-
         # add bars for each subplot
-        for i, subplot in enumerate(subplots):
-            ymax = self.__addBars(commodity, costDataAgg, costDataH2Transp, fig, i, routeOrder, subplot)
+        for c, subplot in enumerate(subplots):
+            ymax = self.__addBars(fig, c, subplot, mode, costDataAgg, costDataH2Transp, routeOrder)
 
             # add cost differences from Base Case
             if not self._isWebapp:
-                self.__addCostDiff(commodity, costDataAgg, costDataH2Transp, fig, i, subplot, ymax)
+                self.__addCostDiff(fig, c, subplot, mode, costDataAgg, costDataH2Transp, ymax)
+
+            # add annotations above subplot
+            if mode:
+                self._addAnnotation(fig, c, subplot)
+            else:
+                self._addAnnotationComm(fig, c, subplot)
 
         # update layout of all plots
         fig.update_layout(
@@ -137,30 +142,30 @@ class LevelisedPlot(BasePlot):
             legend_title='',
         )
 
-
         return fig
 
 
-    def __addBars(self, commodity, costData, costDataH2Transp, fig, i, routeorder, subplot):
+    def __addBars(self, fig: go.Figure, c: int, subplot: str, mode: str,
+                  costData: pd.DataFrame, costDataH2Transp: pd.DataFrame, routeOrder: list):
         # select data for each subplot
         plotData = costData \
-            .query(f"period=={subplot}" if commodity else f"commodity=='{subplot}'") \
+            .query(f"period=={subplot}" if mode else f"commodity=='{subplot}'") \
             .query("case!='Case 1B'") \
             .replace({'route': 'Case 1A'}, 'Case 1A/B')
-        plotDataH2Transp = costDataH2Transp.query(f"period=={subplot}" if commodity else f"commodity=='{subplot}'") \
+        plotDataH2Transp = costDataH2Transp.query(f"period=={subplot}" if mode else f"commodity=='{subplot}'") \
             .replace({'route': ['Case 1A', 'Case 1B']}, 'Case 1A/B')
 
         # determine ymax
         if self._config['ymaxcalc']:
             ymax = 1.15 * plotData.query("route=='Base Case'").val.sum()
         else:
-            ymax = self._config['ymax'][commodity] if commodity else self._config['ymax'][subplot]
+            ymax = self._config['ymax'][mode] if mode else self._config['ymax'][subplot]
 
         # whether a hover label should be set
         hoverLabel = 'hover_label' in plotData.columns and any(plotData.hover_label.unique())
 
         # add traces for all cost types
-        for type, display in self._config['types'].items():
+        for type, display in self._config['cost_types'].items():
             thisData = plotData.query(f"type=='{type}'")
 
             fig.add_trace(
@@ -170,19 +175,19 @@ class LevelisedPlot(BasePlot):
                     marker_color=display['colour'],
                     name=display['label'],
                     customdata=thisData.hover_label if hoverLabel else None,
-                    showlegend=not i,
+                    showlegend=not c,
                     hovertemplate=f"<b>{display['label']}</b>{'<br>%{customdata}' if hoverLabel else ''}<br>Cost: %{{y}} EUR/t<extra></extra>",
                     width=0.8,
                 ),
                 row=1,
-                col=i + 1,
+                col=c + 1,
             )
 
-        display = self._config['types']['transport']
+        display = self._config['cost_types']['transport']
         baseVal = plotData.query(f"route=='Case 1A/B'").val.sum()
 
-        for m, c in enumerate(plotDataH2Transp.case.unique()):
-            p = plotDataH2Transp.query(f"case=='{c}'")
+        for m, case in enumerate(plotDataH2Transp.case.unique()):
+            p = plotDataH2Transp.query(f"case=='{case}'")
 
             fig.add_trace(
                 go.Bar(
@@ -198,47 +203,29 @@ class LevelisedPlot(BasePlot):
                     offset=-0.4 + 0.4 * m,
                 ),
                 row=1,
-                col=i + 1,
+                col=c + 1,
             )
-
-        # add annotations
-        fig.add_annotation(
-            text=f"<b>{subplot}</b>",
-            x=0.0,
-            xref='x domain',
-            xanchor='left',
-            y=1.0,
-            yref='y domain',
-            yanchor='top',
-            showarrow=False,
-            bordercolor='black',
-            borderwidth=2,
-            borderpad=3,
-            bgcolor='white',
-            row=1,
-            col=i + 1,
-        )
 
         # update layout of subplot
         fig.update_layout(
             **{
-                f"xaxis{i + 1 if i else ''}": dict(title='', categoryorder='array',
-                                                   categoryarray=[r for r in routeorder if r in plotData.route.unique()]),
-                f"yaxis{i + 1 if i else ''}": dict(title='', range=[0.0, ymax]),
+                f"xaxis{c + 1 if c else ''}": dict(title='', categoryorder='array',
+                                                   categoryarray=[r for r in routeOrder if r in plotData.route.unique()]),
+                f"yaxis{c + 1 if c else ''}": dict(title='', range=[0.0, ymax]),
             },
         )
 
         return ymax
 
 
-    def __addCostDiff(self, commodity, costData, costDataH2Transp, fig, i, subplot, ymax):
+    def __addCostDiff(self, fig, c, subplot, mode, costData, costDataH2Transp, ymax):
         correction = 0.018
         xshift = 2.5
         yshift = 35.0
 
         # select data for each subplot
         plotData = pd.concat([costData, costDataH2Transp]).query(
-            f"period=={subplot}" if commodity else f"commodity=='{subplot}'")
+            f"period=={subplot}" if mode else f"commodity=='{subplot}'")
         baseCost = plotData.query("route=='Base Case'").val.sum()
 
         fig.add_hline(
@@ -246,7 +233,7 @@ class LevelisedPlot(BasePlot):
             line_color='black',
             line_width=self._config['global']['lw_thin'],
             row=1,
-            col=i + 1,
+            col=c + 1,
         )
 
         for j, route in enumerate(sorted(plotData.route.unique().tolist())[1:]):
@@ -267,19 +254,19 @@ class LevelisedPlot(BasePlot):
             fig.add_annotation(
                 x=j + 1,
                 y=min(thisCost, ymax),
-                yref=f"y{i + 1 if i else ''}",
+                yref=f"y{c + 1 if c else ''}",
                 ax=j + 1,
                 ay=baseCost + (correction * ymax if costDiff < 0.0 else -correction * ymax),
-                ayref=f"y{i + 1 if i else ''}",
+                ayref=f"y{c + 1 if c else ''}",
                 arrowcolor='black',
                 arrowwidth=self._config['global']['lw_thin'],
                 arrowhead=2,
                 row=1,
-                col=i + 1,
+                col=c + 1,
             )
 
             y = thisCost + (costDiffAbs / 2 if costDiff < 0.0 else -costDiffAbs / 2)
-            if i==1 and route == 'Case 1A':
+            if c==1 and route == 'Case 1A':
                 y = thisCost - 3/4*costDiffAbs
             fig.add_annotation(
                 text=f" {costDiffSign}{costDiffAbs:.1f}<br>({costDiffSign}{costDiffAbs / baseCost * 100:.1f}%)",
@@ -289,9 +276,9 @@ class LevelisedPlot(BasePlot):
                 xanchor='left',
                 xshift=xshift,
                 y=baseCost,
-                yref=f"y{i + 1 if i else ''}",
+                yref=f"y{c + 1 if c else ''}",
                 yanchor='middle',
                 yshift=-yshift if costDiff < 0.0 else +yshift,
                 row=1,
-                col=i + 1,
+                col=c + 1,
             )
