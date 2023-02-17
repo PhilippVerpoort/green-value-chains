@@ -54,9 +54,6 @@ class TotalCostPlot(BasePlot):
             ) \
             .drop(columns=['val_other', 'val_transp', 'val_base', 'val_other_base', 'val_transp_base'])
 
-        # sort by commodity
-        costDataCases = costDataCases.sort_values(by='commodity', key=lambda row: [commodities.index(c) for c in row])
-
         return {
             'costDataCases': costDataCases,
         }
