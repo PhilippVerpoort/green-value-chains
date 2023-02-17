@@ -99,20 +99,22 @@ class LevelisedPlot(BasePlot):
             q = f"period=={self._config['select_period']} & case.notnull()"
             subplots = commodities
 
-        # query for relevant data and display cases 1A and 1B as same x
+        # query for relevant data, display cases 1A and 1B as same x, add case subtitles
         costDataAgg = costDataAgg \
             .query(q) \
             .assign(displayCase=lambda r: r.case) \
-            .replace({'displayCase': ['Case 1A', 'Case 1B']}, 'Case 1A/B')
+            .replace({'displayCase': ['Case 1A', 'Case 1B']}, 'Case 1A/B') \
+            .replace({'displayCase': {caseName: f"<b>{caseName}</b>:<br>{caseDesc}" for caseName, caseDesc in self._config['case_names'].items()}})
         costDataH2Transp = costDataH2Transp \
             .query(q) \
             .assign(displayCase=lambda r: r.case) \
-            .replace({'displayCase': ['Case 1A', 'Case 1B']}, 'Case 1A/B')
+            .replace({'displayCase': ['Case 1A', 'Case 1B']}, 'Case 1A/B') \
+            .replace({'displayCase': {caseName: f"<b>{caseName}</b>:<br>{caseDesc}" for caseName, caseDesc in self._config['case_names'].items()}})
 
         # create figure
         fig = make_subplots(
             cols=len(subplots),
-            horizontal_spacing=0.05,
+            horizontal_spacing=0.035,
         )
 
         # add bars for each subplot
@@ -178,7 +180,7 @@ class LevelisedPlot(BasePlot):
             )
 
         display = self._config['cost_types']['transport']
-        baseVal = plotData.query(f"displayCase=='Case 1A/B'").val.sum()
+        baseVal = plotData.query(f"case in ['Case 1A', 'Case 1B']").val.sum()
 
         for m, case in enumerate(plotDataH2Transp.case.unique()):
             p = plotDataH2Transp.query(f"case=='{case}'")

@@ -4,6 +4,13 @@ commodity_colours:
   Ethylene: '#8a4c39'
 
 
+case_names:
+  Base Case: No relocation
+  Case 1A/B: Import of H<sub>2</sub>
+  Case 2: Import of<br>intermediates
+  Case 3: Full relocation
+
+
 cost_types:
   upstream:
     label: Upstream
@@ -12,10 +19,10 @@ cost_types:
     label: Capital
     colour: '#f36f21'
   fonmco:
-    label: Operation and maintenance
+    label: Operation and<br>maintenance
     colour: '#00813e'
   feedstock:
-    label: Non-energy feedstock
+    label: Non-energy<br>feedstock
     colour: '#cccccc'
   iron:
     label: Iron feedstock
