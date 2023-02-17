@@ -282,7 +282,7 @@ class SensitivityPlot(BasePlot):
                     [0.0, '#000000'],
                     [1.0, '#000000'],
                 ],
-                line_width=self._config['global']['lw_thin'],
+                line_width=self._config['global']['lw_ultrathin'],
                 contours=dict(
                     showlabels=True,
                     start=self._config['bottom']['zrange'][0],
@@ -321,7 +321,10 @@ class SensitivityPlot(BasePlot):
                     y=[y for _ in epd_samp],
                     mode='lines',
                     name=case,
-                    line=dict(color=self._config['line_colour'][case], width=self._config['global']['lw_default']),
+                    line=dict(
+                        color=self._config['line_colour'][case],
+                        width=self._config['global']['lw_thin'],
+                    ),
                     showlegend=False,
                 ),
                 row=2,
