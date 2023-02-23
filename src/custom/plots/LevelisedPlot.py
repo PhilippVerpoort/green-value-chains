@@ -40,26 +40,26 @@ class LevelisedPlot(BasePlot):
             costDataNew.loc[(costDataNew['type'] == 'feedstock') & costDataNew['component'].isin(['ore', 'scrap']), 'type'] = 'iron'
 
         # determine breakdown level of bars and associated hover labels
-        if self._config['aggregate_by'] == 'none':
+        if not self._isWebapp or self._config['aggregate_by'] == 'all':
+            costDataNew = self._groupbySumval(costDataNew.fillna({'component': 'empty'}),
+                                              ['type', 'period', 'commodity', 'route'], keep=['case', 'baseRoute'])
+            costDataNew['hover_label'] = [self._config['cost_types'][t]['label'] for t in costDataNew['type']]
+        elif self._config['aggregate_by'] == 'process':
+            costDataNew = self._groupbySumval(costDataNew.fillna({'component': 'empty'}),
+                                        ['type', 'period', 'commodity', 'route', 'component'], keep=['case', 'baseRoute'])
+            costDataNew['hover_label'] = [self._config['components'][c] if c!='empty' else None for c in costDataNew['component']]
+        elif self._config['aggregate_by'] == 'component':
+            costDataNew = self._groupbySumval(costDataNew.fillna({'component': 'empty'}),
+                                        ['type', 'period', 'commodity', 'route', 'process'], keep=['case', 'baseRoute'])
             costDataNew['hover_label'] = [all_processes[p]['label'] for p in costDataNew['process']]
-            costDataNew.loc[costDataNew['component']!='empty', 'hover_label'] = [f"{row['component'].capitalize()} ({row['hover_label']})" for index, row in costDataNew.loc[costDataNew['component']!='empty',:].iterrows()]
         elif self._config['aggregate_by'] == 'subcomponent':
             costDataNew = self._groupbySumval(costDataNew.fillna({'component': 'empty'}),
                                         ['type', 'period', 'commodity', 'route', 'process', 'component'], keep=['case', 'baseRoute'])
             costDataNew['hover_label'] = [all_processes[p]['label'] for p in costDataNew['process']]
             costDataNew.loc[costDataNew['component']!='empty', 'hover_label'] = [f"{row['component'].capitalize()} ({row['hover_label']})" for index, row in costDataNew.loc[costDataNew['component']!='empty',:].iterrows()]
-        elif self._config['aggregate_by'] == 'component':
-            costDataNew = self._groupbySumval(costDataNew.fillna({'component': 'empty'}),
-                                        ['type', 'period', 'commodity', 'route', 'process'], keep=['case', 'baseRoute'])
+        elif self._config['aggregate_by'] == 'none':
             costDataNew['hover_label'] = [all_processes[p]['label'] for p in costDataNew['process']]
-        elif self._config['aggregate_by'] == 'process':
-            costDataNew = self._groupbySumval(costDataNew.fillna({'component': 'empty'}),
-                                        ['type', 'period', 'commodity', 'route', 'component'], keep=['case', 'baseRoute'])
-            costDataNew['hover_label'] = [self._config['components'][c] if c!='empty' else None for c in costDataNew['component']]
-        elif self._config['aggregate_by'] == 'all':
-            costDataNew = self._groupbySumval(costDataNew.fillna({'component': 'empty'}),
-                                        ['type', 'period', 'commodity', 'route'], keep=['case', 'baseRoute'])
-            costDataNew['hover_label'] = [self._config['cost_types'][t]['label'] for t in costDataNew['type']]
+            costDataNew.loc[costDataNew['component']!='empty', 'hover_label'] = [f"{row['component'].capitalize()} ({row['hover_label']})" for index, row in costDataNew.loc[costDataNew['component']!='empty',:].iterrows()]
         else:
             raise Exception('Value of aggregate_by in the plot config is invalid.')
 
