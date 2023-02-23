@@ -59,7 +59,7 @@ class LevelisedPlot(BasePlot):
         elif self._config['aggregate_by'] == 'all':
             costDataNew = self._groupbySumval(costDataNew.fillna({'component': 'empty'}),
                                         ['type', 'period', 'commodity', 'route'], keep=['case', 'baseRoute'])
-            costDataNew['hover_label'] = [self._config['types'][t]['label'] for t in costDataNew['type']]
+            costDataNew['hover_label'] = [self._config['cost_types'][t]['label'] for t in costDataNew['type']]
         else:
             raise Exception('Value of aggregate_by in the plot config is invalid.')
 
