@@ -11,6 +11,16 @@ from src.scaffolding.file.load_default_data import all_processes, all_routes, co
 class LevelisedPlot(BasePlot):
     _complete = True
 
+    def _decorate(self):
+        super(LevelisedPlot, self)._decorate()
+
+        # loop over commodities (three columns)
+        for c, comm in enumerate(commodities):
+            # add commodity annotations above subplot
+            for figName, figPlot in self._ret.items():
+                if figName not in ['fig4', 'figS3']: continue
+                self._addAnnotationComm(figPlot, c, comm)
+
     def _prepare(self):
         if self.anyRequired('fig4', 'figS1', 'figS3'):
             self._prep['default'] = self.__makePrep(self._finalData['costData'])
@@ -128,8 +138,6 @@ class LevelisedPlot(BasePlot):
             # add annotations above subplot
             if mode:
                 self._addAnnotation(fig, c, subplot)
-            else:
-                self._addAnnotationComm(fig, c, subplot)
 
         # update layout of all plots
         fig.update_layout(

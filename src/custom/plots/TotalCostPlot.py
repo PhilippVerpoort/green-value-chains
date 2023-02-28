@@ -11,6 +11,16 @@ from src.scaffolding.file.load_default_data import commodities
 class TotalCostPlot(BasePlot):
     _complete = True
 
+    def _decorate(self):
+        super(TotalCostPlot, self)._decorate()
+
+        # loop over commodities (three columns)
+        for c, comm in enumerate(commodities):
+            # add commodity annotations above subplot
+            for fig in self._ret.values():
+                self._addAnnotationComm(fig, c, comm)
+
+
     def _prepare(self):
         if self.anyRequired('fig3'):
             self._prep = {}
@@ -139,9 +149,6 @@ class TotalCostPlot(BasePlot):
 
             # update bottom axes layout
             self._updateAxisLayout(fig, c + 3, **axes[comm])
-
-            # add commodity annotations above subplot
-            self._addAnnotationComm(fig, c, comm)
 
 
         # update layout

@@ -10,6 +10,16 @@ from src.scaffolding.file.load_default_data import commodities
 class SensitivityPlot(BasePlot):
     _complete = True
 
+    def _decorate(self):
+        super(SensitivityPlot, self)._decorate()
+
+        # loop over commodities (three columns)
+        for c, comm in enumerate(commodities):
+            # add commodity annotations above subplot
+            for fig in self._ret.values():
+                self._addAnnotationComm(fig, c, comm)
+
+
     def _prepare(self):
         if self.anyRequired('fig6'):
             self._prep = self.__makePrep(
@@ -150,9 +160,6 @@ class SensitivityPlot(BasePlot):
 
             # add annotation above subplot
             self._addAnnotation(fig, c, 'Case 1 only', row=2)
-
-            # add commodity annotations above subplot
-            self._addAnnotationComm(fig, c, comm)
 
 
         # update layout

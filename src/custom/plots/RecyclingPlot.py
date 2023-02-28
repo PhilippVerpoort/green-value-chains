@@ -4,10 +4,21 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from src.custom.plots.BasePlot import BasePlot
+from src.scaffolding.file.load_default_data import commodities
 
 
 class RecyclingPlot(BasePlot):
     _complete = True
+
+    def _decorate(self):
+        super(RecyclingPlot, self)._decorate()
+
+        # loop over commodities (three columns)
+        for c, comm in enumerate(commodities):
+            # add commodity annotations above subplot
+            for fig in self._ret.values():
+                self._addAnnotationComm(fig, c, comm)
+
 
     def _prepare(self):
         if self.anyRequired('figS4'):
@@ -52,11 +63,6 @@ class RecyclingPlot(BasePlot):
         ]).drop(columns=['cost', 'costRef', 'shRef'])
 
 
-        # sort by commodities
-        commodityOrder = costData.commodity.unique().tolist()
-        plotData.sort_values(by='commodity', key=lambda row: [commodityOrder.index(c) for c in row], inplace=True)
-
-
         return {
             'plotData': plotData,
         }
@@ -69,9 +75,6 @@ class RecyclingPlot(BasePlot):
 
 
     def __makePlot(self, plotData: dict):
-        commodities = plotData.commodity.unique().tolist()
-
-
         # create figure
         fig = make_subplots(
             cols=len(commodities),
@@ -81,8 +84,8 @@ class RecyclingPlot(BasePlot):
 
 
         # plot lines
-        for i, commodity in enumerate(commodities):
-            commData = plotData.query(f"commodity=='{commodity}'")
+        for i, comm in enumerate(commodities):
+            commData = plotData.query(f"commodity=='{comm}'")
 
             for j, year in enumerate(plotData.period.unique()):
                 yearData = commData.query(f"period=={year}")
@@ -108,25 +111,6 @@ class RecyclingPlot(BasePlot):
                         col=i+1,
                         row=1,
                     )
-
-
-            # add text annotations explaining figure content
-            fig.add_annotation(
-                x=0.0,
-                xref='x domain',
-                xanchor='left',
-                y=1.0,
-                yref='y domain',
-                yanchor='top',
-                text=f"<b>{commodity}</b>",
-                showarrow=False,
-                bordercolor='black',
-                borderwidth=2,
-                borderpad=3,
-                bgcolor='white',
-                col=i+1,
-                row=1,
-            )
 
 
         # set axes labels

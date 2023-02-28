@@ -4,10 +4,21 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from src.custom.plots.BasePlot import BasePlot
+from src.scaffolding.file.load_default_data import commodities
 
 
 class FlexiblePlot(BasePlot):
     _complete = True
+
+    def _decorate(self):
+        super(FlexiblePlot, self)._decorate()
+
+        # loop over commodities (three columns)
+        for c, comm in enumerate(commodities):
+            # add commodity annotations above subplot
+            for fig in self._ret.values():
+                self._addAnnotationComm(fig, c, comm)
+
 
     def _prepare(self):
         if self.anyRequired('figS2'):
@@ -83,14 +94,14 @@ class FlexiblePlot(BasePlot):
     def __makePlot(self, pd_samples: np.ndarray, ocf_samples: np.ndarray, plotData: dict):
         # create figure
         fig = make_subplots(
-            cols=len(plotData),
+            cols=len(commodities),
             shared_yaxes=True,
             horizontal_spacing=0.025,
         )
 
 
         # plot heatmaps and contours
-        for i, commodity in enumerate(plotData):
+        for i, comm in enumerate(commodities):
             tickvals = [100 * i for i in range(6)]
             ticktext = [str(v) for v in tickvals]
 
@@ -98,7 +109,7 @@ class FlexiblePlot(BasePlot):
                 go.Heatmap(
                     x=pd_samples,
                     y=ocf_samples,
-                    z=plotData[commodity],
+                    z=plotData[comm],
                     zsmooth='best',
                     zmin=self._config['zrange'][0],
                     zmax=self._config['zrange'][1],
@@ -126,7 +137,7 @@ class FlexiblePlot(BasePlot):
                 go.Contour(
                     x=pd_samples,
                     y=ocf_samples,
-                    z=plotData[commodity],
+                    z=plotData[comm],
                     contours_coloring='lines',
                     colorscale=[
                         [0.0, '#000000'],
@@ -142,25 +153,6 @@ class FlexiblePlot(BasePlot):
                     showscale=False,
                     hoverinfo='skip',
                 ),
-                col=i+1,
-                row=1,
-            )
-
-
-            # add text annotations explaining figure content
-            fig.add_annotation(
-                x=0.0,
-                xref='x domain',
-                xanchor='left',
-                y=1.0,
-                yref='y domain',
-                yanchor='top',
-                text=f"<b>{commodity}</b>",
-                showarrow=False,
-                bordercolor='black',
-                borderwidth=2,
-                borderpad=3,
-                bgcolor='white',
                 col=i+1,
                 row=1,
             )

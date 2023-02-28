@@ -11,6 +11,15 @@ from src.scaffolding.file.load_default_data import all_processes, all_routes, co
 class EnergySharePlot(BasePlot):
     _complete = True
 
+    def _decorate(self):
+        super(EnergySharePlot, self)._decorate()
+
+        # loop over commodities (three columns)
+        for c, comm in enumerate(commodities):
+            # add commodity annotations above subplot
+            for fig in self._ret.values():
+                self._addAnnotationComm(fig, c, comm)
+
     def _prepare(self):
         if self.anyRequired('fig5'):
             self._prep = self.__makePrep(self._finalData['costData'])
@@ -158,9 +167,6 @@ class EnergySharePlot(BasePlot):
 
                     if type not in hasLegend and not plotDataProcType.empty:
                         hasLegend.append(type)
-
-            # add annotations
-            self._addAnnotationComm(fig, c, comm)
 
             # update layout of subplot
             fig.update_layout(

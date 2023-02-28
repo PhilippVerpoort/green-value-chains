@@ -84,6 +84,7 @@ class BasePlot(AbstractPlot):
             borderpad=3*self._config['global']['lw_thin'],
             bgcolor="rgba({}, {}, {}, {})".format(*hex_to_rgb(self._config['commodity_colours'][comm]), .3),
             font_color=self._config['commodity_colours'][comm],
+            font_size=self._getFontSize('fs_lg'),
             row=1,
             col=col + 1,
         )
