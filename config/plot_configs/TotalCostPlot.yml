@@ -4,7 +4,7 @@ top:
     - 35.0
     - 120.0
 bottom:
-  xaxislabel: Production-cost savings (EUR/t)
+  xaxislabel: Renewables-pull savings (EUR/t)
   yaxislabel: Transportation penalty (EUR/t)
   zaxislabel: Relocation savings relative<br>to the Base Case (%)
   zrange:
