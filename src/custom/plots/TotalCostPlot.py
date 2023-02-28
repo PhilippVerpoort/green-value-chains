@@ -48,7 +48,7 @@ class TotalCostPlot(BasePlot):
         costDataCases = costDataCases \
             .merge(costDataCases.query(f"case=='Base Case'").filter(['commodity', 'epdcase', 'val', 'val_transp', 'val_other']), on=['commodity', 'epdcase'], suffixes=('', '_base')) \
             .assign(
-                val_rel=lambda x: x.val / x.val_base,
+                val_rel=lambda x: ((x.val / x.val_base) - 1.0) * 100.0,
                 val_transp_penalty=lambda x: x.val_transp - x.val_transp_base,
                 val_cost_saving=lambda x: x.val_other_base - x.val_other,
             ) \
@@ -79,7 +79,7 @@ class TotalCostPlot(BasePlot):
             x = np.linspace(*plotRange, self._config['bottom']['samples'])
             y = np.linspace(*plotRange, self._config['bottom']['samples'])
             vx, vy = np.meshgrid(x, y)
-            z = (vx - vy) / costDataComm.query(f"case=='Base Case' and epdcase=='default'").iloc[0].val * 100
+            z = ((vx - vy) / costDataComm.query(f"case=='Base Case' and epdcase=='default'").iloc[0].val) * 100.0
 
             heatmap[comm] = {
                 'x': x,
@@ -124,14 +124,14 @@ class TotalCostPlot(BasePlot):
             # add plots to top row
             self.__addTop(fig, c, comm, costDataComm)
 
-            # add dashed hline top
-            fig.add_hline(100.0, row=1, col=c+1, line_dash='dash', line_color='black')
+            # add zeroline top
+            fig.add_hline(0.0, row=1, col=c+1, line_color='black')
 
             # update top axes layout
             self._updateAxisLayout(
                 fig, c,
                 xaxis=dict(categoryorder='category ascending'),
-                yaxis=dict(range=self._config['top']['yrange'], showticklabels=False, domain=[0.68, 1.0]),
+                yaxis=dict(domain=[0.68, 1.0], **self._config['top']['yaxis']),
             )
 
             # add plots to bottom row
@@ -149,7 +149,6 @@ class TotalCostPlot(BasePlot):
             showlegend=False,
             legend_title='',
             yaxis_title=self._config['top']['yaxislabel'],
-            yaxis_showticklabels=True,
             xaxis5_title=self._config['bottom']['xaxislabel'],
             yaxis4_title=self._config['bottom']['yaxislabel'],
         )
@@ -174,7 +173,7 @@ class TotalCostPlot(BasePlot):
         fig.add_trace(
             go.Scatter(
                 x=costDataCorridor['default'].displayCase,
-                y=costDataCorridor['default'].val_rel * 100,
+                y=costDataCorridor['default'].val_rel,
                 name=comm,
                 mode='lines',
                 line=dict(
@@ -192,7 +191,7 @@ class TotalCostPlot(BasePlot):
         fig.add_trace(
             go.Scatter(
                 x=np.concatenate((costDataCorridor['upper'].displayCase[::-1], costDataCorridor['lower'].displayCase)),
-                y=np.concatenate((costDataCorridor['upper'].val_rel[::-1], costDataCorridor['lower'].val_rel)) * 100,
+                y=np.concatenate((costDataCorridor['upper'].val_rel[::-1], costDataCorridor['lower'].val_rel)),
                 mode='lines',
                 line=dict(
                     shape='spline',
@@ -215,7 +214,7 @@ class TotalCostPlot(BasePlot):
             fig.add_trace(
                 go.Scatter(
                     x=thisData.displayCase,
-                    y=thisData.val_rel * 100,
+                    y=thisData.val_rel,
                     name=comm,
                     mode='markers+lines',
                     marker=dict(
@@ -240,7 +239,7 @@ class TotalCostPlot(BasePlot):
         fig.add_trace(
             go.Scatter(
                 x=costDataComm.displayCase,
-                y=costDataComm.val_rel * 100,
+                y=costDataComm.val_rel,
                 text=costDataComm.epdiff,
                 name=comm,
                 mode='markers+text',

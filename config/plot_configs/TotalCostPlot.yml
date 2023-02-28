@@ -1,8 +1,15 @@
 top:
   yaxislabel: Relocation savings relative to the Base Case (%)
-  yrange:
-    - 35.0
-    - 120.0
+  yaxis:
+    range:
+      - -65.0
+      - +25.0
+    tick0: -60.0
+    dtick: 20.0
+    showgrid: True
+    griddash: dash
+    gridcolor: '#CCCCCC'
+
 bottom:
   xaxislabel: Renewables-pull savings (EUR/t)
   yaxislabel: Transportation penalty (EUR/t)
