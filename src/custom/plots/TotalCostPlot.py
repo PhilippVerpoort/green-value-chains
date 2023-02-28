@@ -87,7 +87,7 @@ class TotalCostPlot(BasePlot):
 
             axes[comm] = {
                 'xaxis': dict(range=xRange),
-                'yaxis': dict(range=yRange),
+                'yaxis': dict(range=yRange, domain=[0.0, 0.56]),
             }
 
         return {
@@ -109,7 +109,7 @@ class TotalCostPlot(BasePlot):
         fig = make_subplots(
             cols=len(commodities),
             rows=2,
-            horizontal_spacing=0.035,
+            horizontal_spacing=0.05,
         )
 
 
@@ -129,7 +129,7 @@ class TotalCostPlot(BasePlot):
             self._updateAxisLayout(
                 fig, c,
                 xaxis=dict(categoryorder='category ascending'),
-                yaxis=dict(range=self._config['top']['yrange'], showticklabels=False),
+                yaxis=dict(range=self._config['top']['yrange'], showticklabels=False, domain=[0.68, 1.0]),
             )
 
             # add plots to bottom row
