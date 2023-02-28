@@ -71,11 +71,13 @@ class TotalCostPlot(BasePlot):
                 'ymin': costDataComm.val_transp_penalty.min(), 'ymax': costDataComm.val_transp_penalty.max(),
             }
 
-            xRange = [0.0, 1.1 * dataRange['xmax']]
-            yRange = [-10.0 if comm=='Steel' else 0.0, 1.1 * dataRange['ymax']]
+            plotRange = [
+                -10.0 if comm == 'Steel' else 0.0,
+                1.1*max(dataRange['xmax'], dataRange['ymax']),
+            ]
 
-            x = np.linspace(*xRange, self._config['bottom']['samples'])
-            y = np.linspace(*yRange, self._config['bottom']['samples'])
+            x = np.linspace(*plotRange, self._config['bottom']['samples'])
+            y = np.linspace(*plotRange, self._config['bottom']['samples'])
             vx, vy = np.meshgrid(x, y)
             z = (vx - vy) / costDataComm.query(f"case=='Base Case' and epdcase=='default'").iloc[0].val * 100
 
@@ -86,8 +88,8 @@ class TotalCostPlot(BasePlot):
             }
 
             axes[comm] = {
-                'xaxis': dict(range=xRange),
-                'yaxis': dict(range=yRange, domain=[0.0, 0.56]),
+                'xaxis': dict(range=plotRange),
+                'yaxis': dict(range=plotRange, domain=[0.0, 0.56]),
             }
 
         return {
