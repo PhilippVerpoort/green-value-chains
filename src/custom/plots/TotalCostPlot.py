@@ -160,7 +160,8 @@ class TotalCostPlot(BasePlot):
         # display cases 1A and 1B as same x
         costDataComm = costDataComm \
             .assign(displayCase=lambda r: r.case) \
-            .replace({'displayCase': ['Case 1A', 'Case 1B']}, 'Case 1A/B')
+            .replace({'displayCase': ['Case 1A', 'Case 1B']}, 'Case 1A/B') \
+            .replace({'displayCase': {caseName: f"<b>{caseName}</b>:<br>{caseDesc}" for caseName, caseDesc in self._config['case_names'].items()}})
 
 
         # middle line
@@ -221,6 +222,9 @@ class TotalCostPlot(BasePlot):
                         size=self._config['global']['marker_sm'],
                         line_width=self._config['global']['lw_thin'],
                         line_color=self._config['commodity_colours'][comm],
+                    ),
+                    line=dict(
+                        dash='dash' if case == 'Case 1A' else 'solid',
                     ),
                     showlegend=(case=='Base Case'),
                     legendgroup=comm,
