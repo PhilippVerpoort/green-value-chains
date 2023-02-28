@@ -89,7 +89,7 @@ class TotalCostPlot(BasePlot):
 
             axes[comm] = {
                 'xaxis': dict(range=plotRange),
-                'yaxis': dict(range=plotRange, domain=[0.0, 0.56]),
+                'yaxis': dict(range=plotRange, domain=[0.0, self._config['bottom']['domain_boundary']]),
             }
 
         return {
@@ -131,7 +131,7 @@ class TotalCostPlot(BasePlot):
             self._updateAxisLayout(
                 fig, c,
                 xaxis=dict(categoryorder='category ascending'),
-                yaxis=dict(domain=[0.68, 1.0], **self._config['top']['yaxis']),
+                yaxis=dict(domain=[self._config['top']['domain_boundary'], 1.0], **self._config['top']['yaxis']),
             )
 
             # add plots to bottom row
@@ -341,9 +341,9 @@ class TotalCostPlot(BasePlot):
                 ],
                 colorbar=dict(
                     x=1.01,
-                    y=(0.5-0.05)/2,
+                    y=self._config['bottom']['domain_boundary']/2,
                     yanchor='middle',
-                    len=(0.5-0.025/2),
+                    len=self._config['bottom']['domain_boundary'],
                     title=self._config['bottom']['zaxislabel'],
                     titleside='right',
                     tickvals=[float(t) for t in self._config['bottom']['zticks']],

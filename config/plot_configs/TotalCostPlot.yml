@@ -1,4 +1,5 @@
 top:
+  domain_boundary: 0.68
   yaxislabel: Relocation savings relative to the Base Case (%)
   yaxis:
     range:
@@ -11,6 +12,7 @@ top:
     gridcolor: '#CCCCCC'
 
 bottom:
+  domain_boundary: 0.56
   xaxislabel: Renewables-pull savings (EUR/t)
   yaxislabel: Transportation penalty (EUR/t)
   zaxislabel: Relocation savings relative<br>to the Base Case (%)
