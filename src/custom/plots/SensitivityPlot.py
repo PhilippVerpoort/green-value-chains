@@ -264,6 +264,7 @@ class SensitivityPlot(BasePlot):
                     titleside='right',
                     tickvals=[float(t) for t in self._config['bottom']['zticks']],
                     ticktext=self._config['bottom']['zticks'],
+                    titlefont_size=self._getFontSize('fs_sm'),
                 ),
                 showscale=not c,
                 hoverinfo='skip',
