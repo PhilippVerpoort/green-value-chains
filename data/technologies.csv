@@ -64,10 +64,10 @@ MTO,capex,,,,,395.1,EUR/t
 MTO,fixed_opex_rel,,,,,0.07,1
 MTO,energy_demand,electricity,,,,1.389,MWh/t
 MTO,feedstock_demand,methanol,,,,2.28,1
-,transport,hydrogen,,pipeline,2030,30,EUR/MWh
-,transport,hydrogen,,pipeline,2050,20,EUR/MWh
-,transport,hydrogen,,shipping,2030,110,EUR/MWh
-,transport,hydrogen,,shipping,2050,90,EUR/MWh
+,transport,hydrogen,,pipeline,2030,20,EUR/MWh
+,transport,hydrogen,,pipeline,2050,15,EUR/MWh
+,transport,hydrogen,,shipping,2030,70,EUR/MWh
+,transport,hydrogen,,shipping,2050,60,EUR/MWh
 ,transport,ore,,,,14,EUR/t
 ,transport,dri,,,,20,EUR/t
 ,transport,steel,,,,30,EUR/t
