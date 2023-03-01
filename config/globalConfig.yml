@@ -34,7 +34,7 @@ cost_types:
     label: Transport
     colour: '#7c1f8a'
   non-energy:
-    label: Non-energy cost
+    label: Non-energy
     colour: '#3745a3'
 #  carbon:
 #    label: Carbon cost from carbon pricing
