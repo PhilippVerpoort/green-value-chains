@@ -42,7 +42,7 @@ class BasePlot(AbstractPlot):
             .reset_index(drop=True)
 
     @staticmethod
-    def _groupbySumval(df: pd.DataFrame, groupCols: list, keep: list = []):
+    def _groupbySumval(df: pd.DataFrame, groupCols: list, keep: list = []) -> pd.DataFrame:
         if 'val_rel' in df.columns:
             raise Exception('Cannot sum relative values.')
         sumCols = [col for col in ['val', 'val_diff'] if col in df.columns]
