@@ -274,7 +274,6 @@ class TotalCostPlot(BasePlot):
                 go.Scatter(
                     x=thisData.val_cost_saving,
                     y=thisData.val_transp_penalty,
-                    text=thisData.case,
                     name=comm,
                     mode='markers+lines',
                     marker=dict(
