@@ -151,9 +151,32 @@ class TotalCostPlot(BasePlot):
             self._updateAxisLayout(fig, c + 3, **axes[comm])
 
 
+        # add dummy data for legend
+        for legend, symbol in [('Case 1A', self._config['symbolCase1A']), ('Other cases', self._config['symbol'])]:
+            fig.add_trace(
+                go.Scatter(
+                    x=[-1000.0],
+                    y=[-1000.0],
+                    name=legend,
+                    mode='markers+lines',
+                    marker=dict(
+                        color='black',
+                        symbol=symbol,
+                        size=self._config['global']['marker_sm'],
+                        line_width=self._config['global']['lw_thin'],
+                        line_color='black',
+                    ),
+                    showlegend=True,
+                    legendgroup='dummy',
+                ),
+                row=2,
+                col=1,
+            )
+
+
         # update layout
         fig.update_layout(
-            showlegend=False,
+            showlegend=True,
             legend_title='',
             yaxis_title=self._config['top']['yaxislabel'],
             xaxis5_title=self._config['bottom']['xaxislabel'],
@@ -226,15 +249,12 @@ class TotalCostPlot(BasePlot):
                     mode='markers+lines',
                     marker=dict(
                         color=self._config['commodity_colours'][comm],
-                        symbol=self._config['symbol'],
+                        symbol=self._config['symbolCase1A'] if case == 'Case 1A' else self._config['symbol'],
                         size=self._config['global']['marker_sm'],
                         line_width=self._config['global']['lw_thin'],
                         line_color=self._config['commodity_colours'][comm],
                     ),
-                    line=dict(
-                        dash='dash' if case == 'Case 1A' else 'solid',
-                    ),
-                    showlegend=(case=='Base Case'),
+                    showlegend=False,
                     legendgroup=comm,
                 ),
                 row=1,
@@ -278,7 +298,7 @@ class TotalCostPlot(BasePlot):
                     mode='markers+lines',
                     marker=dict(
                         color=self._config['commodity_colours'][comm],
-                        symbol=self._config['symbol'],
+                        symbol=self._config['symbolCase1A'] if case == 'Case 1A' else self._config['symbol'],
                         size=self._config['global']['marker_sm'],
                         line_width=self._config['global']['lw_thin'],
                         line_color=self._config['commodity_colours'][comm],
