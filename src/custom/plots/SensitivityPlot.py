@@ -332,6 +332,7 @@ class SensitivityPlot(BasePlot):
                     line=dict(
                         color=self._config['line_colour'][case],
                         width=self._config['global']['lw_thin'],
+                        dash='dash' if case=='Case 1A' else 'solid',
                     ),
                     showlegend=False,
                 ),

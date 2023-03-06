@@ -12,7 +12,7 @@ bottom:
   ylabelshort:  H₂ transp cost
   yrange:
     - 0.0
-    - 50.0
+    - 75.0
   zaxislabel: Relocation savings relative<br>to the Base Case (%)
   zrange:
     - -100.0
