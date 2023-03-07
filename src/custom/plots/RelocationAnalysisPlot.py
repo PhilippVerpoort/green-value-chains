@@ -19,7 +19,7 @@ class RelocationAnalysisPlot(BasePlot):
                 self._addAnnotationComm(fig, c, comm)
 
     def _prepare(self):
-        if self.anyRequired('fig5', 'figS5'):
+        if self.anyRequired('fig6', 'figS5'):
             self._prep = self.__makePrep(self._finalData['costData'])
 
 
@@ -150,9 +150,9 @@ class RelocationAnalysisPlot(BasePlot):
 
 
     def _plot(self):
-        # make fig5
-        if self.anyRequired('fig5'):
-            self._ret['fig5'] = self.__makeMainPlot(**self._prep)
+        # make fig6
+        if self.anyRequired('fig6'):
+            self._ret['fig6'] = self.__makeMainPlot(**self._prep)
 
         # make figS5
         if self.anyRequired('figS5'):

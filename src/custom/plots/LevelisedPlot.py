@@ -18,11 +18,11 @@ class LevelisedPlot(BasePlot):
         for c, comm in enumerate(commodities):
             # add commodity annotations above subplot
             for figName, figPlot in self._ret.items():
-                if figName not in ['fig4', 'figS3']: continue
+                if figName not in ['fig5', 'figS3']: continue
                 self._addAnnotationComm(figPlot, c, comm)
 
     def _prepare(self):
-        if self.anyRequired('fig4', 'figS1', 'figS3'):
+        if self.anyRequired('fig5', 'figS1', 'figS3'):
             self._prep['default'] = self.__makePrep(self._finalData['costData'])
 
         if self.anyRequired('figS3'):
@@ -83,9 +83,9 @@ class LevelisedPlot(BasePlot):
 
 
     def _plot(self):
-        # produce fig4
-        if self.anyRequired('fig4'):
-            self._ret['fig4'] = self.__makePlot(**self._prep['default'])
+        # produce fig5
+        if self.anyRequired('fig5'):
+            self._ret['fig5'] = self.__makePlot(**self._prep['default'])
 
         # produce figS1
         if self.anyRequired('figS1'):

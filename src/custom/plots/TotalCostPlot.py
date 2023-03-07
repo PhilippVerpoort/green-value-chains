@@ -22,7 +22,7 @@ class TotalCostPlot(BasePlot):
 
 
     def _prepare(self):
-        if self.anyRequired('fig3'):
+        if self.anyRequired('fig4'):
             self._prep = {}
             self._prep |= self.__prepareData(self._finalData['costData'])
             self._prep |= self.__prepareHeatmap(self._prep['costDataCases'])
@@ -110,8 +110,8 @@ class TotalCostPlot(BasePlot):
 
     def _plot(self):
         # produce fig3
-        if self.anyRequired('fig3'):
-            self._ret['fig3'] = self.__makePlot(**self._prep)
+        if self.anyRequired('fig4'):
+            self._ret['fig4'] = self.__makePlot(**self._prep)
 
         return self._ret
 
