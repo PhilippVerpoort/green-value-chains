@@ -32,7 +32,7 @@ class RelocationAnalysisPlot(BasePlot):
             .reset_index(drop=True)
 
         # insert final electricity prices
-        costDataNew = self._finaliseCostData(costDataNew, epdcases=['upper', 'default', 'lower'], epperiod=self._config['select_period'])
+        costDataNew = self._finaliseCostData(costDataNew, epdcases=['strong', 'medium', 'weak'], epperiod=self._config['select_period'])
 
         # modify data for each commodity
         costDataLevelised = []
@@ -95,7 +95,7 @@ class RelocationAnalysisPlot(BasePlot):
                 (1, 'Case 1B', 'Case 2'),
                 (2, 'Case 2', 'Case 3'),
             ]
-            costDataCommValAdd = costDataComm.query(f"type!='energy' & type!='transport' & case=='Base Case' & epdcase=='default'")
+            costDataCommValAdd = costDataComm.query(f"type!='energy' & type!='transport' & case=='Base Case' & epdcase=='medium'")
             for pid, caseFrom, caseTo in relocations:
                 processesRetainedFrom = processesShown[pid:]
                 processesRetainedTo = processesShown[pid+1:]
@@ -280,7 +280,7 @@ class RelocationAnalysisPlot(BasePlot):
             )
 
             # case annotations
-            caseName = thisData.query(f"epdcase=='default'")
+            caseName = thisData.query(f"epdcase=='medium'")
             fig.add_trace(
                 go.Scatter(
                     x=caseName.val_marg_savings,

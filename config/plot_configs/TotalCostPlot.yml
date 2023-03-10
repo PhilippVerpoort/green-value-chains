@@ -1,10 +1,11 @@
 top:
   domain_boundary: 0.68
-  yaxislabel: Relocation savings relative to the Base Case (%)
+  yaxislabelleft: Production cost relative to Base Case (%)
+  yaxislabelright: Relocation savings<br>relative to the Base Case (%)
   yaxis:
     range:
-      - -65.0
-      - +25.0
+      - 0.0
+      - 125.0
     tick0: -60.0
     dtick: 20.0
     showgrid: True
@@ -15,7 +16,7 @@ bottom:
   domain_boundary: 0.56
   xaxislabel: Transport-unrelated relocation savings (EUR/t)
   yaxislabel: Transport penalty (EUR/t)
-  zaxislabel: Relocation savings relative<br>to the Base Case (%)
+  zaxislabel: Relocation savings<br>relative to the Base Case (%)
   zrange:
     - -100.0
     - +100.0

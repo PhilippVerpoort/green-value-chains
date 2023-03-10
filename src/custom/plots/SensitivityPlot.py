@@ -87,7 +87,7 @@ class SensitivityPlot(BasePlot):
             'bottom': {},
         }
         for comm in commodities:
-            baseCost = costDataCases.query(f"commodity=='{comm}' & case=='Base Case' & epdcase=='default'").iloc[0].val
+            baseCost = costDataCases.query(f"commodity=='{comm}' & case=='Base Case' & epdcase=='medium'").iloc[0].val
 
             for case in cases:
                 r = merge.query(f"commodity=='{comm}' & case=='{case}'").iloc[0]
@@ -101,7 +101,7 @@ class SensitivityPlot(BasePlot):
                     ) / baseCost * 100.0
 
         return {
-            'costDataCases': costDataCases.query(f"epdcase in ['upper', 'default', 'lower']"),
+            'costDataCases': costDataCases.query(f"epdcase in ['strong', 'medium', 'weak']"),
             'xrange': xrange,
             'yrange': yrange,
             'epd_samp': epd_samp,

@@ -9,7 +9,7 @@ appendix:
   yaxislabel: Levelised Cost of Commodities (EUR/t)
 
 select_case: Base Case
-select_epdcase: default
+select_epdcase: medium
 select_period: 2050
 
 symbol: x-thin

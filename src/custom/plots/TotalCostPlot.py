@@ -41,7 +41,7 @@ class TotalCostPlot(BasePlot):
             .drop(columns=['period'])
 
         # insert final electricity prices
-        costDataCases = self._finaliseCostData(costDataNew, epdcases=['upper', 'default', 'lower'], epperiod=self._config['select_period'])
+        costDataCases = self._finaliseCostData(costDataNew, epdcases=['strong', 'medium', 'weak'], epperiod=self._config['select_period'])
 
         # aggregate cost data split by transport part and other parts
         costDataCases = pd.merge(
@@ -58,7 +58,7 @@ class TotalCostPlot(BasePlot):
         costDataCases = costDataCases \
             .merge(costDataCases.query(f"case=='Base Case'").filter(['commodity', 'epdcase', 'val', 'val_transp', 'val_other']), on=['commodity', 'epdcase'], suffixes=('', '_base')) \
             .assign(
-                val_rel=lambda x: ((x.val / x.val_base) - 1.0) * 100.0,
+                val_rel=lambda x: (x.val / x.val_base) * 100.0,
                 val_transp_penalty=lambda x: x.val_transp - x.val_transp_base,
                 val_cost_saving=lambda x: x.val_other_base - x.val_other,
             ) \
@@ -89,7 +89,7 @@ class TotalCostPlot(BasePlot):
             x = np.linspace(*plotRange, self._config['bottom']['samples'])
             y = np.linspace(*plotRange, self._config['bottom']['samples'])
             vx, vy = np.meshgrid(x, y)
-            z = ((vx - vy) / costDataComm.query(f"case=='Base Case' and epdcase=='default'").iloc[0].val) * 100.0
+            z = ((vx - vy) / costDataComm.query(f"case=='Base Case' and epdcase=='medium'").iloc[0].val) * 100.0
 
             heatmap[comm] = {
                 'x': x,
@@ -135,13 +135,14 @@ class TotalCostPlot(BasePlot):
             self.__addTop(fig, c, comm, costDataComm)
 
             # add zeroline top
-            fig.add_hline(0.0, row=1, col=c+1, line_color='black')
+            fig.add_hline(100.0, row=1, col=c+1, line_color='black')
 
             # update top axes layout
+            xrange = [i*(costDataComm.case.nunique()-2) + 0.2 * (+1 if i else -1) for i in range(2)]
             self._updateAxisLayout(
                 fig, c,
-                xaxis=dict(categoryorder='category ascending'),
-                yaxis=dict(domain=[self._config['top']['domain_boundary'], 1.0], **self._config['top']['yaxis']),
+                xaxis=dict(categoryorder='category ascending', range=xrange),
+                yaxis=dict(domain=[self._config['top']['domain_boundary'], 1.0], **self._config['top']['yaxis'], showticklabels=False),
             )
 
             # add plots to bottom row
@@ -152,6 +153,30 @@ class TotalCostPlot(BasePlot):
 
 
         # add dummy data for legend
+        self.__addDummyLegend(fig)
+
+
+        # update layout
+        fig.update_layout(
+            showlegend=True,
+            legend=dict(
+                title='',
+                x=1.01,
+                xanchor='left',
+                y=self._config['bottom']['domain_boundary'],
+                yanchor='top',
+            ),
+            yaxis_title=self._config['top']['yaxislabelleft'],
+            yaxis_showticklabels=True,
+            xaxis5_title=self._config['bottom']['xaxislabel'],
+            yaxis4_title=self._config['bottom']['yaxislabel'],
+        )
+
+
+        return fig
+
+
+    def __addDummyLegend(self, fig: go.Figure):
         for legend, symbol in [('Case 1A', self._config['symbolCase1A']), ('Other cases', self._config['symbol'])]:
             fig.add_trace(
                 go.Scatter(
@@ -174,19 +199,6 @@ class TotalCostPlot(BasePlot):
             )
 
 
-        # update layout
-        fig.update_layout(
-            showlegend=True,
-            legend_title='',
-            yaxis_title=self._config['top']['yaxislabel'],
-            xaxis5_title=self._config['bottom']['xaxislabel'],
-            yaxis4_title=self._config['bottom']['yaxislabel'],
-        )
-
-
-        return fig
-
-
     def __addTop(self, fig: go.Figure, c: int, comm: str, costDataComm: pd.DataFrame):
         # display cases 1A and 1B as same x
         costDataComm = costDataComm \
@@ -202,8 +214,8 @@ class TotalCostPlot(BasePlot):
         }
         fig.add_trace(
             go.Scatter(
-                x=costDataCorridor['default'].displayCase,
-                y=costDataCorridor['default'].val_rel,
+                x=costDataCorridor['medium'].displayCase,
+                y=costDataCorridor['medium'].val_rel,
                 name=comm,
                 mode='lines',
                 line=dict(
@@ -220,8 +232,8 @@ class TotalCostPlot(BasePlot):
         # outside corridor
         fig.add_trace(
             go.Scatter(
-                x=np.concatenate((costDataCorridor['upper'].displayCase[::-1], costDataCorridor['lower'].displayCase)),
-                y=np.concatenate((costDataCorridor['upper'].val_rel[::-1], costDataCorridor['lower'].val_rel)),
+                x=np.concatenate((costDataCorridor['strong'].displayCase[::-1], costDataCorridor['weak'].displayCase)),
+                y=np.concatenate((costDataCorridor['strong'].val_rel[::-1], costDataCorridor['weak'].val_rel)),
                 mode='lines',
                 line=dict(
                     shape='spline',
@@ -238,7 +250,7 @@ class TotalCostPlot(BasePlot):
         )
 
         # points
-        costDataComm = costDataComm.query(f"case!='Base Case' or epdcase=='default'")
+        costDataComm = costDataComm.query(f"case!='Base Case' or epdcase=='medium'")
         for case in costDataComm.case.unique():
             thisData = costDataComm.query(f"case=='{case}'")
             fig.add_trace(
@@ -281,6 +293,29 @@ class TotalCostPlot(BasePlot):
             row=1,
             col=c + 1,
         )
+
+        # secondary axis
+        if c==2:
+            fig.add_trace(
+                go.Scatter(
+                    x=[costDataComm.displayCase.unique()[0]],
+                    y=[+10000.0],
+                    mode='markers',
+                    showlegend=False,
+                    xaxis='x3',
+                    yaxis='y7',
+                ),
+            )
+
+            fig.update_layout(
+                yaxis7=dict(
+                    title=self._config['top']['yaxislabelright'],
+                    anchor='x3',
+                    overlaying='y',
+                    side='right',
+                    range=[t-100.0 for t in self._config['top']['yaxis']['range']],
+                ),
+            )
 
 
     def __addBottom(self, fig: go.Figure, c: int, comm: str, costDataComm: pd.DataFrame, heatmapLinspaces: dict):
@@ -353,6 +388,7 @@ class TotalCostPlot(BasePlot):
             )
 
         # heatmap
+        colbarlen = 3/4 * self._config['bottom']['domain_boundary']
         fig.add_trace(
             go.Heatmap(
                 x=heatmapLinspaces['x'],
@@ -367,9 +403,9 @@ class TotalCostPlot(BasePlot):
                 ],
                 colorbar=dict(
                     x=1.01,
-                    y=self._config['bottom']['domain_boundary']/2,
+                    y=colbarlen/2,
                     yanchor='middle',
-                    len=self._config['bottom']['domain_boundary'],
+                    len=colbarlen,
                     title=self._config['bottom']['zaxislabel'],
                     titleside='right',
                     tickvals=[float(t) for t in self._config['bottom']['zticks']],
@@ -412,8 +448,8 @@ class TotalCostPlot(BasePlot):
         # add center line
         fig.add_trace(
             go.Scatter(
-                x=[-1000.0, +2000.0],
-                y=[-1000.0, +2000.0],
+                x=[-1000.0, +10000.0],
+                y=[-1000.0, +10000.0],
                 mode='lines',
                 line=dict(
                     color='black',
