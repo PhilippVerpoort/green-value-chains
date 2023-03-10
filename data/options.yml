@@ -7,6 +7,6 @@ include_electrolysis: True
 gwp: gwp100
 
 irate:
-  importer: 8.0
-  exporter: 12.0
+  importer: 5.0
+  exporter: 8.0
 ltime: 18
