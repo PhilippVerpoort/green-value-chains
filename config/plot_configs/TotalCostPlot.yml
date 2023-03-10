@@ -42,4 +42,4 @@ contourLines: False
 #  Urea: cross-thin
 #  Ethylene: circle-open-dot #triangle-up-open
 
-select_period: 2050
+select_period: 2040

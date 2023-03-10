@@ -18,7 +18,7 @@ zcolours:
 
 samples: 51
 
-select_period: 2050
+select_period: 2040
 
 line_colour:
   2: '#db2a1a'

@@ -1,9 +1,9 @@
 component,location,label,period,val,unit
 hydrogen,importer,H₂ price (Importer),2030,100,EUR/MWh
 hydrogen,exporter,H₂ price (Exporter),2030,60,EUR/MWh
-hydrogen,importer,H₂ price (Importer),2050,60,EUR/MWh
-hydrogen,exporter,H₂ price (Exporter),2050,40,EUR/MWh
+hydrogen,importer,H₂ price (Importer),2040,60,EUR/MWh
+hydrogen,exporter,H₂ price (Exporter),2040,40,EUR/MWh
 natural gas,either,Natural-gas price,2030,50,EUR/MWh
-natural gas,either,Natural-gas price,2050,45,EUR/MWh
+natural gas,either,Natural-gas price,2040,45,EUR/MWh
 co2,either,CO₂ feedstock price,2030,100,EUR/t
-co2,either,CO₂ feedstock price,2050,200,EUR/t
+co2,either,CO₂ feedstock price,2040,200,EUR/t
