@@ -14,8 +14,8 @@ top:
 
 bottom:
   domain_boundary: 0.56
-  xaxislabel: Transport-unrelated relocation savings (EUR/t)
-  yaxislabel: Transport penalty (EUR/t)
+  xaxislabel: Renewables-pull savings (EUR/t)
+  yaxislabel: Penalties (EUR/t)
   zaxislabel: Relocation savings<br>relative to the Base Case (%)
   zrange:
     - -100.0

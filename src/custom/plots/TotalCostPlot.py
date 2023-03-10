@@ -45,24 +45,24 @@ class TotalCostPlot(BasePlot):
 
         # aggregate cost data split by transport part and other parts
         costDataCases = pd.merge(
-                self._groupbySumval(costDataCases.query("type=='transport'"), ['commodity', 'case', 'epdcase'], keep=['epdiff']),
-                self._groupbySumval(costDataCases.query("type!='transport'").fillna({'component': 'empty'}), ['commodity', 'case', 'epdcase'], keep=['epdiff']),
+                self._groupbySumval(costDataCases.query("type!='energy'"), ['commodity', 'case', 'epdcase'], keep=['epdiff']),
+                self._groupbySumval(costDataCases.query("type=='energy'").fillna({'component': 'empty'}), ['commodity', 'case', 'epdcase'], keep=['epdiff']),
                 on=['commodity', 'case', 'epdcase', 'epdiff'],
                 how='outer',
-                suffixes=('_transp', '_other'),
+                suffixes=('_penalty', '_pull'),
             )\
             .fillna(0.0) \
-            .assign(val=lambda x: x.val_transp + x.val_other)
+            .assign(val=lambda x: x.val_penalty + x.val_pull)
 
         # add differences to Base Case
         costDataCases = costDataCases \
-            .merge(costDataCases.query(f"case=='Base Case'").filter(['commodity', 'epdcase', 'val', 'val_transp', 'val_other']), on=['commodity', 'epdcase'], suffixes=('', '_base')) \
+            .merge(costDataCases.query(f"case=='Base Case'").filter(['commodity', 'epdcase', 'val', 'val_penalty', 'val_pull']), on=['commodity', 'epdcase'], suffixes=('', '_base')) \
             .assign(
                 val_rel=lambda x: (x.val / x.val_base) * 100.0,
-                val_transp_penalty=lambda x: x.val_transp - x.val_transp_base,
-                val_cost_saving=lambda x: x.val_other_base - x.val_other,
+                val_penalty_rel=lambda x: x.val_penalty - x.val_penalty_base,
+                val_pull_rel=lambda x: x.val_pull_base - x.val_pull,
             ) \
-            .drop(columns=['val_other', 'val_transp', 'val_base', 'val_other_base', 'val_transp_base'])
+            .drop(columns=['val_base', 'val_penalty', 'val_penalty_base', 'val_pull', 'val_pull_base'])
 
         return {
             'costDataCases': costDataCases,
@@ -77,8 +77,8 @@ class TotalCostPlot(BasePlot):
             costDataComm = costDataCases.query(f"commodity=='{comm}'").reset_index(drop=True)
 
             dataRange = {
-                'xmin': costDataComm.val_cost_saving.min(), 'xmax': costDataComm.val_cost_saving.max(),
-                'ymin': costDataComm.val_transp_penalty.min(), 'ymax': costDataComm.val_transp_penalty.max(),
+                'xmin': costDataComm.val_pull_rel.min(), 'xmax': costDataComm.val_pull_rel.max(),
+                'ymin': costDataComm.val_penalty_rel.min(), 'ymax': costDataComm.val_penalty_rel.max(),
             }
 
             plotRange = [
@@ -327,8 +327,8 @@ class TotalCostPlot(BasePlot):
             # add points
             fig.add_trace(
                 go.Scatter(
-                    x=thisData.val_cost_saving,
-                    y=thisData.val_transp_penalty,
+                    x=thisData.val_pull_rel,
+                    y=thisData.val_penalty_rel,
                     name=comm,
                     mode='markers+lines',
                     marker=dict(
@@ -349,8 +349,8 @@ class TotalCostPlot(BasePlot):
             epdcaseDiff = thisData.query(f"case in ['Case 1A', 'Case 1B', 'Case 2']")
             fig.add_trace(
                 go.Scatter(
-                    x=epdcaseDiff.val_cost_saving,
-                    y=epdcaseDiff.val_transp_penalty,
+                    x=epdcaseDiff.val_pull_rel,
+                    y=epdcaseDiff.val_penalty_rel,
                     text=epdcaseDiff.epdiff,
                     name=comm,
                     mode='markers+text',
@@ -370,8 +370,8 @@ class TotalCostPlot(BasePlot):
             caseName = thisData.query(f"epdcase=='default'")
             fig.add_trace(
                 go.Scatter(
-                    x=caseName.val_cost_saving,
-                    y=caseName.val_transp_penalty,
+                    x=caseName.val_pull_rel,
+                    y=caseName.val_penalty_rel,
                     text=caseName.case,
                     name=comm,
                     mode='markers+text',
