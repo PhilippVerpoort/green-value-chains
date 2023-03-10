@@ -66,8 +66,8 @@ MTO,energy_demand,electricity,,,,1.389,MWh/t
 MTO,feedstock_demand,methanol,,,,2.28,1
 ,transport,hydrogen,,pipeline,2030,20,EUR/MWh
 ,transport,hydrogen,,pipeline,2050,15,EUR/MWh
-,transport,hydrogen,,shipping,2030,70,EUR/MWh
-,transport,hydrogen,,shipping,2050,60,EUR/MWh
+,transport,hydrogen,,shipping,2030,65,EUR/MWh
+,transport,hydrogen,,shipping,2050,50,EUR/MWh
 ,transport,ore,,,,14,EUR/t
 ,transport,dri,,,,20,EUR/t
 ,transport,steel,,,,30,EUR/t
