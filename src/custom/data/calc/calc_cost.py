@@ -97,7 +97,7 @@ def __prepareCostData(techData: pd.DataFrame):
     }
 
 
-def __calcFCR(i: float, n: int):
+def calcFCR(i, n: int):
     return i * (1 + i) ** n / ((1 + i) ** n - 1)
 
 
@@ -132,7 +132,7 @@ def __calcRouteCost(costData: dict, prices: pd.DataFrame, processes: dict, impor
     fcr = pd.DataFrame.from_records([
         {
             'location': l,
-            'fcr': __calcFCR(options['irate'][l]/100.0, options['ltime']),
+            'fcr': calcFCR(options['irate'][l] / 100.0, options['ltime']),
         }
         for l in ['importer', 'exporter']
     ])

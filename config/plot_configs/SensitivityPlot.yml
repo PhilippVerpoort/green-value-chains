@@ -1,18 +1,40 @@
-xaxislabel: Electricity-price difference (EUR/MWh)
-xlabelshort: Elec-price diff
-xsamples: 20
+sensitivity1:
+  xaxislabel: Weighted average cost of capital (WACC) in RE-rich region (%)
+  xlabelshort: RE-rich WACC
+  xrange:
+    - 5.0
+    - 15.0
 
-top:
-  yaxislabel: Production-cost difference (EUR/t)
-  ylabelshort: Prod-cost diff
+  yaxislabel: Total production cost (EUR/t)
+  ylabelshort: Tot. prod. cost
+  epdcase: medium
+
+sensitivity2:
+  xaxislabel: H<sub>2</sub> specific transportation cost (EUR/MWh)
+  xlabelshort:  H<sub>2</sub> transp cost
+  xrange:
+    - 0.0
+    - 65.0
+
+  yaxislabel: Total production cost (EUR/t)
+  ylabelshort: Tot. prod. cost
+
+sensitivity3:
+  xaxislabel: Electricity-price difference (EUR/MWh)
+  xlabelshort: Elec-price diff
+  yaxislabel: Total production cost (EUR/t)
+  ylabelshort: Tot. prod. cost
 
   yaxis2label: Relative to Base Case production cost (%)
-bottom:
-  yaxislabel: H₂ specific transportation cost (EUR/MWh)
-  ylabelshort:  H₂ transp cost
+sensitivity4:
+  xaxislabel: Electricity-price difference (EUR/MWh)
+  xlabelshort: Elec-price diff
+
+  yaxislabel: H<sub>2</sub> specific transportation cost (EUR/MWh)
+  ylabelshort:  H<sub>2</sub> transp cost
   yrange:
     - 0.0
-    - 75.0
+    - 65.0
   zaxislabel: Relocation savings relative<br>to the Base Case (%)
   zrange:
     - -100.0
