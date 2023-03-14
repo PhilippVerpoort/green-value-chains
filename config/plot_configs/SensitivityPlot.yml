@@ -5,8 +5,8 @@ sensitivity1:
     - 5.0
     - 15.0
 
-  yaxislabel: Total production cost (EUR/t)
-  ylabelshort: Tot. prod. cost
+  yaxislabel: Relocations savings relative to Base Case (EUR/t)
+  ylabelshort: Relocation savings
   epdcase: medium
 
 sensitivity2:
@@ -16,14 +16,14 @@ sensitivity2:
     - 0.0
     - 65.0
 
-  yaxislabel: Total production cost (EUR/t)
-  ylabelshort: Tot. prod. cost
+  yaxislabel: Relocations savings relative to Base Case (EUR/t)
+  ylabelshort: Relocations savings
 
 sensitivity3:
   xaxislabel: Electricity-price difference (EUR/MWh)
   xlabelshort: Elec-price diff
-  yaxislabel: Total production cost (EUR/t)
-  ylabelshort: Tot. prod. cost
+  yaxislabel: Relocations savings relative to Base Case (EUR/t)
+  ylabelshort: Relocations savings
 
   yaxis2label: Relative to Base Case production cost (%)
 sensitivity4:
