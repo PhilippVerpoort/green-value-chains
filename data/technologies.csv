@@ -1,6 +1,7 @@
 process,type,component,subcomponent,mode,period,val,unit
 ELEC,capex,,,,2030,67.0,EUR/(MWh/a)
 ELEC,capex,,,,2040,25.0,EUR/(MWh/a)
+ELEC,ocf,,,,,0.5,1
 ELEC,fixed_opex_rel,,,,,0.03,1
 ELEC,energy_demand,electricity,,,2030,1.5,1
 ELEC,energy_demand,electricity,,,2040,1.395,1

@@ -53,6 +53,18 @@ def __prepareCostData(techData: pd.DataFrame):
         .drop(columns=['val_x', 'val_y'])
 
 
+    # ocf
+    ocfData = techData \
+        .query("type=='ocf'") \
+        .rename(columns={'val': 'ocf'}) \
+        .filter(['process', 'period', 'ocf'])
+    costCapital = costCapital \
+        .merge(ocfData, on=['process', 'period'], how='left') \
+        .fillna({'ocf': 1.0}) \
+        .assign(val=lambda x: x.val / x.ocf) \
+        .drop(columns=['ocf'])
+
+
     # energy and feedstock cost
     energyFeedstockPrices = techData.query("type=='energy_prices' | type=='feedstock_prices'")
     energyFeedstockDemand = techData.query("type=='energy_demand' | type=='feedstock_demand'")
