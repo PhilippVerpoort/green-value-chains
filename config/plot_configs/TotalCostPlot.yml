@@ -1,7 +1,7 @@
 top:
   domain_boundary: 0.68
   yaxislabelleft: Production cost relative to Base Case (%)
-  yaxislabelright: Relocation savings<br>relative to the Base Case (%)
+  yaxislabelright: Relocation savings relative<br>to production cost in the Base Case (%)
   yaxis:
     range:
       - 0.0
@@ -16,7 +16,7 @@ bottom:
   domain_boundary: 0.56
   xaxislabel: Renewables-pull savings (EUR/t)
   yaxislabel: Penalties (EUR/t)
-  zaxislabel: Relocation savings<br>relative to the Base Case (%)
+  zaxislabel: Relocation savings relative<br>to production cost in the Base Case (%)
   zrange:
     - -100.0
     - +100.0
