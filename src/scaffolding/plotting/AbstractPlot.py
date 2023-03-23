@@ -118,6 +118,7 @@ class AbstractPlot(ABC):
             w_mm = self._sizes[subfigName]['print']['width']
 
             subfigPlot.write_image(pathOfOutputFile(f"{subfigName}.png"), **self.__getImageSize(h_mm, w_mm))
+            subfigPlot.write_image(pathOfOutputFile(f"{subfigName}.svg"), **self.__getImageSize(h_mm, w_mm))
 
     @classmethod
     def __adjustFontSizes(cls, subfigName: str, subfigPlot: go.Figure, fs_sm: float, fs_md: float, fs_lg: float):
