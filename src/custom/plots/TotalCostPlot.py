@@ -27,6 +27,20 @@ class TotalCostPlot(BasePlot):
             self._prep |= self.__prepareData(self._finalData['costData'])
             self._prep |= self.__prepareHeatmap(self._prep['costDataCases'])
 
+            # printing of results for table
+            if not self._isWebapp:
+                printData = self._prep['costDataCases'].query(f"case=='Case 3'")
+                mergeData = None
+                for i, comm in enumerate(commodities):
+                    thisData = printData \
+                        .query(f"commodity=='{comm}'") \
+                        .filter(['epdcase', 'val_rel']) \
+                        .assign(val_rel=lambda row: row['val_rel']-100.0) \
+                        .rename(columns={'val_rel': comm})
+                    mergeData = mergeData.merge(thisData, on='epdcase') if i else thisData
+
+                print(mergeData[['epdcase', *commodities]].set_index('epdcase').sort_values(by='Steel', ascending=False))
+
 
     # make adjustments to data (route names, component labels)
     def __prepareData(self, costData: pd.DataFrame):
