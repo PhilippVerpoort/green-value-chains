@@ -1,6 +1,7 @@
-title: The renewables pull in future global green value chains
+title: Estimating the renewables pull in future global green value chains
 desc:
-  Techno-economic assessment of import scenarios for selected energy-intensive goods (steel, urea, ethylene) based on 
-  price differences for renewable electricity.
-auth: Philipp C. Verpoort, Anke Hofmann, Lukas Gast, Falko Ueckerdt
-date: 14/02/2023
+  This webapp reproduces results presented in an accompanying manuscript on estimations of the renewables pull in 
+  future global green value chains. It determines energy-cost savings and other relocation penalties based for 
+  different import scenarios for the green value chains of steel, urea, and ethylene.
+auth: Philipp C. Verpoort, Lukas Gast, Anke Hofmann, Falko Ueckerdt
+date: 24/03/2023
