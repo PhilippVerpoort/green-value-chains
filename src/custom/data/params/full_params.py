@@ -6,19 +6,10 @@ from src.scaffolding.file.load_data import techdata_raw
 
 # calculate parameters including uncertainty at different times, using linear interpolation if needed.
 def getFullTechData(times: list):
-    # aggregate data from separate
-    techdata = __aggregate(techdata_raw)
-
     # impute entries for missing years
-    techdata = __imputeYears(techdata, times)
+    techdata = __imputeYears(techdata_raw, times)
 
     return techdata
-
-
-
-def __aggregate(techdata: pd.DataFrame):
-    return techdata.groupby(['process', 'type', 'component', 'subcomponent', 'mode', 'period'], as_index=False, dropna=False)\
-                   .agg({'unit': 'first', 'val': lambda x: sum(x)/len(x) if len(x)>0 else 0.0})
 
 
 def __imputeYears(techdata: pd.DataFrame, times: list):
