@@ -5,7 +5,7 @@ from plotly.subplots import make_subplots
 from plotly.colors import hex_to_rgb
 
 from src.custom.plots.BasePlot import BasePlot
-from src.scaffolding.file.load_default_data import commodities
+from src.scaffolding.file.load_data import commodities
 
 
 class TotalCostPlot(BasePlot):

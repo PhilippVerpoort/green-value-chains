@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from src.custom.plots.BasePlot import BasePlot
-from src.scaffolding.file.load_default_data import commodities
+from src.scaffolding.file.load_data import commodities
 
 
 class RecyclingPlot(BasePlot):

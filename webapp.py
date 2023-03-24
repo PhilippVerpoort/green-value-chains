@@ -10,9 +10,8 @@ from src.scaffolding.app.layout.layout import getLayout
 dash_app.layout = getLayout(dash_app.get_asset_url("logo.png"))
 
 
-# import and list callbacks (list so they don't get removed as unused imports)
-from src.scaffolding.app.callbacks.callbacks import callbackServeAssets, callbackSettingsModal, callbackDisplayForRoutes, callbackUpdate
-callbackServeAssets, callbackSettingsModal, callbackDisplayForRoutes, callbackUpdate
+# import callbacks
+from src.scaffolding.app.callbacks.callbacks import *
 
 
 # define flask_app for wsgi

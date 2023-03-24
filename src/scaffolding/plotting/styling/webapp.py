@@ -1,7 +1,5 @@
-from src.scaffolding.plotting.styling.styling import adjustFontSizes
-
-
 def addWebappSpecificStyling(figs: dict):
+    pass
     for subfigName, plotlyFigure in figs.items():
         if plotlyFigure is None: continue
 

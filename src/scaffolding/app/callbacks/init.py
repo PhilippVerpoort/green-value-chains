@@ -1,26 +1,17 @@
 from src.scaffolding.data.data import getFullData
-from src.scaffolding.file.load_config_app import app_cfg
-from src.scaffolding.file.load_config_plot import plots_cfg
-from src.scaffolding.file.load_default_data import default_other_prices, default_options
-from src.scaffolding.plotting.plot_all import plotAllFigs
-from src.scaffolding.plotting.styling.webapp import addWebappSpecificStyling
+from src.scaffolding.file.load_config import plot_cfgs, plots
+from src.scaffolding.file.load_data import default_input_data
+from src.scaffolding.plotting.plot_all import plotAllFigs, getFigures
 
 
 # get list of figures initially needed from app config
-figsNeeded = [fig for fig, routes in app_cfg['figures'].items() if '/' in routes]
-
-
-# collect input data for calculations
-inputData = {
-    'prices': default_other_prices,
-    'options': default_options,
-}
+figsReq = [figName for plot in plots.values() for figName in plot.getFigs() if '/' in plot.getFigSpecs(figName)['display']]
 
 
 # obtain full computed output data from inputs
-outputData = getFullData(inputData)
+finalData = getFullData(default_input_data)
 
 
 # run plotting routines to generate figures
-figsDefault = plotAllFigs(outputData, inputData, plots_cfg, target='webapp', required_figs=figsNeeded)
-addWebappSpecificStyling(figsDefault)
+initialPlots = plotAllFigs(default_input_data, finalData, plot_cfgs, figs_req=figsReq, target='webapp')
+figsInit = getFigures(initialPlots)

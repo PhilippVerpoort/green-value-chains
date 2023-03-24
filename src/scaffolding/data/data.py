@@ -2,7 +2,7 @@ import pandas as pd
 
 from src.custom.data.calc.calc_cost import calcCost
 from src.custom.data.params.full_params import getFullTechData
-from src.scaffolding.file.load_default_data import all_routes
+from src.scaffolding.file.load_data import all_routes
 
 
 # obtain all required data for a scenario

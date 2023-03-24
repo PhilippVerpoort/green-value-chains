@@ -5,7 +5,6 @@ figS4:
     'Showing cost as a function of the recylcing share.'
   display:
   - /advanced
-  nosettings: true
   sizes:
     print:
       height: 81.0  # unit mm

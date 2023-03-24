@@ -1,5 +1,5 @@
 from dash import html
-from src.scaffolding.file.load_config_app import app_cfg
+from src.scaffolding.file.load_config import app_cfg
 
 
 # description card

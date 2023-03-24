@@ -1,25 +1,29 @@
 from dash import html, dcc
 
-from src.scaffolding.file.load_config_plot import plots
-from src.scaffolding.file.load_config_app import figs_cfg, app_cfg
+from src.scaffolding.file.load_config import plots
 
 
 def getFigures():
-    cards = []
+    cards = {}
 
-    for fig in app_cfg['figures']:
-        plotName = next(plotName for plotName in plots if fig in plots[plotName])
-        figCard = __getFigTemplate(fig, plots[plotName][fig], plotName)
-        cards.append(figCard)
+    for plotName, plot in plots.items():
+        for i, figName in enumerate(sorted(plot.getFigs())):
+            figCard = __getFigTemplate(figName, plot.getFigSpecs(figName), plotName, not i)
+            cards[figName] = figCard
 
-    return cards
+    return list(dict(sorted(cards.items(), key=lambda t: t[0])).values())
 
 
-def __getFigTemplate(figName: str, subFigNames: list, plotName: str):
-    figCfg = figs_cfg[figName]
-    width = figCfg['width'] if 'width' in figCfg else '100%'
-    height = figCfg['height'] if 'height' in figCfg else '450px'
-    display = False
+def __getFigTemplate(figName: str, figSpecs: dict, plotName: str, hasSettings: bool):
+    if 'subfigs' in figSpecs:
+        sfs = [
+            (subfigName, subfigSpecs['webapp']['height'], subfigSpecs['webapp']['width'])
+             for subfigName, subfigSpecs in figSpecs['subfigs'].items()
+        ]
+    else:
+        sfs = [(figName, figSpecs['sizes']['webapp']['height'], figSpecs['sizes']['webapp']['width'])]
+
+    displayDefault = '/' in figSpecs['display']
 
     return html.Div(
         id=f"card-{figName}",
@@ -31,31 +35,31 @@ def __getFigTemplate(figName: str, subFigNames: list, plotName: str):
                         dcc.Graph(
                             id=subFigName,
                             style={
-                                'height': height,
-                                'width': width,
+                                'height': subFigHeight,
+                                'width': f"{subFigWidth}%",
                                 'float': 'left',
                             },
                         ),
                     ],
                     type='circle',
                     style={
-                        'height': height,
-                        'width': width,
+                        'height': subFigHeight,
+                        'width': f"{subFigWidth}%",
                         'float': 'left',
                     },
                 )
-                for subFigName in subFigNames
+                for subFigName, subFigHeight, subFigWidth in sfs
             ),
             html.Hr(),
-            html.B(f"{figCfg['name']} | {figCfg['title']}"),
-            html.P(figCfg['desc']),
+            html.B(f"{figSpecs['name']} | {figSpecs['title']}"),
+            html.P(figSpecs['desc']),
             (html.Div([
                     html.Hr(),
                     html.Button(id=f"{plotName}-settings", children='Config', n_clicks=0,),
                 ],
                 id=f"{plotName}-settings-div",
                 style={'display': 'none'},
-            ) if ('nosettings' not in figCfg or not figCfg['nosettings']) else None),
+            ) if hasSettings else None),
         ],
-        style={} if display else {'display': 'none'},
+        style={} if displayDefault else {'display': 'none'},
     )

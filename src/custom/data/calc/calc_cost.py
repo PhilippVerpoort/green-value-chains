@@ -2,7 +2,7 @@ from copy import deepcopy
 
 import pandas as pd
 
-from src.scaffolding.file.load_default_data import all_processes
+from src.scaffolding.file.load_data import all_processes
 
 
 def calcCost(tech_data_full: pd.DataFrame, other_prices: pd.DataFrame, selectedRoutes: dict, commodity: str, options: dict):

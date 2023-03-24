@@ -1,32 +1,24 @@
 import sys
 
-from src.scaffolding.file.load_config_plot import plot_cfgs
-from src.scaffolding.file.load_default_data import default_other_prices, default_options, default_elec_prices
+from src.scaffolding.file.load_config import plot_cfgs
+from src.scaffolding.file.load_data import default_input_data
 from src.scaffolding.data.data import getFullData
 from src.scaffolding.plotting.plot_all import plotAllFigs, exportFigs
 
 
 # get list of figs to plot from command line args.
 if len(sys.argv) > 1:
-    figs_needed = sys.argv[1:]
+    figsReq = sys.argv[1:]
 else:
-    figs_needed = None
-
-
-# collect input data for calculations
-inputData = {
-    'other_prices': default_other_prices,
-    'elec_prices': default_elec_prices,
-    'options': default_options,
-}
+    figsReq = None
 
 
 # obtain full computed output data from inputs
-finalData = getFullData(inputData)
+finalData = getFullData(default_input_data)
 
 
 # run plotting routines to generate figures
-producedPlots = plotAllFigs(inputData, finalData, plot_cfgs, required_figs=figs_needed)
+producedPlots = plotAllFigs(default_input_data, finalData, plot_cfgs, figs_req=figsReq, target='webapp')
 
 
 # export figures to image files

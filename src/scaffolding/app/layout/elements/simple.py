@@ -2,7 +2,7 @@ from dash import dcc, html, dash_table
 import dash_bootstrap_components as dbc
 
 from src.scaffolding.app.callbacks.simple_params import convertPricesDF2T
-from src.scaffolding.file.load_default_data import default_other_prices, default_options
+from src.scaffolding.file.load_data import default_other_prices, default_options
 
 
 def getElementSimpleControlsCard():

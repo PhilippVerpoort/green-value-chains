@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from src.custom.plots.BasePlot import BasePlot
-from src.scaffolding.file.load_default_data import all_processes, all_routes, commodities
+from src.scaffolding.file.load_data import all_processes, all_routes, commodities
 
 
 class RelocationAnalysisPlot(BasePlot):

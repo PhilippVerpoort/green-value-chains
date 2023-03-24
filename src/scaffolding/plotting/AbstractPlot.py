@@ -49,17 +49,27 @@ class AbstractPlot(ABC):
             else:
                 cls._sizes[figName] = figSpecs['sizes']
 
-    def getFigs(self):
-        return [figName for figName in self._specs]
+    @classmethod
+    def getFigs(cls):
+        return [figName for figName in cls._specs]
 
-    def getSubfigs(self):
+    @classmethod
+    def getAllSubfigs(cls):
         r = []
-        for figName, figSpecs in self._specs.items():
-            if 'subfigs' in figSpecs:
-                r.extend([subfigName for subfigName in figSpecs['subfigs']])
-            else:
-                r.append(figName)
+
+        for figName in cls._specs:
+            r.extend(cls.getSubfigs(figName))
+
         return r
+
+    @classmethod
+    def getSubfigs(cls, figName: str):
+        figSpecs = cls._specs[figName]
+        return [subfigName for subfigName in figSpecs['subfigs']] if 'subfigs' in figSpecs else [figName]
+
+    @classmethod
+    def getFigSpecs(cls, figName: str):
+        return cls._specs[figName]
 
     def anyRequired(self, *subfigs):
         if not self._requiredFigs: return True
@@ -81,7 +91,7 @@ class AbstractPlot(ABC):
         pass
 
     def _addPlaceholders(self):
-        for subfigName in self.getSubfigs():
+        for subfigName in self.getAllSubfigs():
             if subfigName not in self._ret:
                 f = go.Figure()
                 f.add_annotation(
@@ -119,6 +129,9 @@ class AbstractPlot(ABC):
 
             subfigPlot.write_image(pathOfOutputFile(f"{subfigName}.png"), **self.__getImageSize(h_mm, w_mm))
             subfigPlot.write_image(pathOfOutputFile(f"{subfigName}.svg"), **self.__getImageSize(h_mm, w_mm))
+
+    def display(self):
+        return self._ret
 
     @classmethod
     def __adjustFontSizes(cls, subfigName: str, subfigPlot: go.Figure, fs_sm: float, fs_md: float, fs_lg: float):

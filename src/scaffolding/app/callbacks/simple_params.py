@@ -1,6 +1,6 @@
 import pandas as pd
 
-from src.scaffolding.file.load_default_data import default_options
+from src.scaffolding.file.load_data import default_options
 
 
 def convertPricesDF2T(prices: pd.DataFrame):

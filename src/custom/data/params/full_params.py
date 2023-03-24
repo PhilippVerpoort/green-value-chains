@@ -1,24 +1,17 @@
 import numpy as np
 import pandas as pd
 
-from src.scaffolding.file.load_default_data import default_techdata
+from src.scaffolding.file.load_data import techdata_raw
 
 
-# Calculate parameters including uncertainty at different times, using linear interpolation if needed.
+# calculate parameters including uncertainty at different times, using linear interpolation if needed.
 def getFullTechData(times: list):
-    # convert to standard units
-    techdata = __convertUnits(default_techdata)
-
     # aggregate data from separate
-    techdata = __aggregate(techdata)
+    techdata = __aggregate(techdata_raw)
 
     # impute entries for missing years
     techdata = __imputeYears(techdata, times)
 
-    return techdata
-
-
-def __convertUnits(techdata: pd.DataFrame):
     return techdata
 
 

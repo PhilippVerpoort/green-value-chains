@@ -32,28 +32,27 @@ figS1:
     iron, 4: importing a finished steel product).'
   display:
   - /advanced
-  nosettings: true
   subfigs:
     figS1a:
       print:
         height: 81.0  # unit mm
         width: 180.0  # unit mm
       webapp:
-        height: 600.0  # unit px
+        height: 900.0  # unit px
         width: 100.0  # unit %
     figS1b:
       print:
         height: 81.0  # unit mm
         width: 180.0  # unit mm
       webapp:
-        height: 600.0  # unit px
+        height: 900.0  # unit px
         width: 100.0  # unit %
     figS1c:
       print:
         height: 81.0  # unit mm
         width: 180.0  # unit mm
       webapp:
-        height: 600.0  # unit px
+        height: 900.0  # unit px
         width: 100.0  # unit %
 figS3:
   name: Figure S3
@@ -62,11 +61,10 @@ figS3:
     'Using higher shares of recycling.'
   display:
   - /advanced
-  nosettings: true
   sizes:
     print:
       height: 81.0  # unit mm
       width: 180.0  # unit mm
     webapp:
-      height: 600.0  # unit px
+      height: 900.0  # unit px
       width: 100.0  # unit %

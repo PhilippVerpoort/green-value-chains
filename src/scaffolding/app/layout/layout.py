@@ -5,8 +5,7 @@ from src.scaffolding.app.layout.modals.plot_settings_modal import getModalPlotCo
 from src.scaffolding.app.layout.elements.figures import getFigures
 from src.scaffolding.app.layout.elements.simple import getElementSimpleControlsCard
 from src.scaffolding.app.layout.elements.summary import getElementSummaryCard
-from src.scaffolding.file.load_config_plot import plots_cfg
-from src.scaffolding.file.load_config_app import app_cfg
+from src.scaffolding.file.load_config import plot_cfgs, app_cfg
 
 
 def getLayout(logo_url: str):
@@ -97,7 +96,7 @@ def getLayout(logo_url: str):
 
             # dcc locations, stores, and downloads
             dcc.Location(id='url', refresh=False),
-            dcc.Store(id='plots-cfg', storage_type='memory', data=plots_cfg),
+            dcc.Store(id='plot-cfgs', storage_type='memory', data=plot_cfgs),
             dcc.Download(id='download-config-yaml'),
             dcc.Download(id='download-results-xlsx'),
         ],

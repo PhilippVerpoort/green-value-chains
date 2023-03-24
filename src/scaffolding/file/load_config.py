@@ -1,6 +1,7 @@
 from importlib import import_module
 from pkgutil import iter_modules
 
+from src.scaffolding.file.file_load import loadYAMLConfigFile
 from src.scaffolding.file.file_path import pathOfConfigFile
 from src.scaffolding.plotting.AbstractPlot import AbstractPlot
 
@@ -25,3 +26,7 @@ for plotName, plot in plots.items():
     plot.loadSpecs()
     __filePath = pathOfConfigFile(f"plot_configs/{plotName}.yml")
     plot_cfgs[plotName] = open(__filePath, 'r').read()
+
+
+# load config for webapp
+app_cfg = loadYAMLConfigFile('webapp')
