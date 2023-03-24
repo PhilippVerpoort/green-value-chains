@@ -18,10 +18,8 @@ from src.scaffolding.plotting.plot_all import plotAllFigs, getFigures
     [Input('simple-update', 'n_clicks'),
      State('url', 'pathname'),
      State('plot-cfgs', 'data'),
-     State('simple-important-params', 'data'),
-     State('simple-electrolysis', 'value'),
-     State('simple-gwp', 'value'),])
-def callbackUpdate(n1, route: str, plot_cfgs: dict, simple_important_params: list, simple_electrolysis: bool, simple_gwp: str):
+     State('simple-elec-prices', 'data'),])
+def callbackUpdate(n1, route: str, plot_cfgs: dict, simple_elec_prices: list):
     ctx = dash.callback_context
 
     if not ctx.triggered:
@@ -31,14 +29,15 @@ def callbackUpdate(n1, route: str, plot_cfgs: dict, simple_important_params: lis
         btnPressed = ctx.triggered[0]['prop_id'].split('.')[0]
         if btnPressed == 'simple-update':
             # get new input and output data
-            inputDataUpdated =  updateScenarioInput(simple_important_params, simple_electrolysis, simple_gwp)
-            outputData = getFullData(inputDataUpdated)
+            inputDataUpdated = updateScenarioInput(simple_elec_prices)
+            finalData = getFullData(inputDataUpdated)
 
             # get list of figs required
             figsReq = [figName for plot in plots.values() for figName in plot.getFigs() if appRoute(route) in plot.getFigSpecs(figName)['display']]
 
             # get figures
-            updatedPlots = plotAllFigs(outputData, inputDataUpdated, plot_cfgs, figs_req=figsReq, target='webapp')
+            print(inputDataUpdated['elec_prices'])
+            updatedPlots = plotAllFigs(inputDataUpdated, finalData, plot_cfgs, figs_req=figsReq, target='webapp')
             figsUpdated = getFigures(updatedPlots)
         else:
             raise Exception(f"Unknown button pressed: {btnPressed}")
