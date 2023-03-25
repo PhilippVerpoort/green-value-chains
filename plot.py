@@ -18,7 +18,7 @@ finalData = getFullData(default_input_data)
 
 
 # run plotting routines to generate figures
-producedPlots = plotAllFigs(default_input_data, finalData, plot_cfgs, figs_req=figsReq, target='webapp')
+producedPlots = plotAllFigs(default_input_data, finalData, plot_cfgs, figs_req=figsReq)
 
 
 # export figures to image files
