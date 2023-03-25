@@ -1,5 +1,5 @@
 fig5:
-  name: Figure 5
+  name: Fig. 5
   title: Levelised production cost of selected commodities.
   desc:
     'The levelised cost of production is shown for (panels left to right) steel, urea, and ethylene for 
@@ -21,9 +21,9 @@ fig5:
     webapp:
       height: 600.0  # unit px
       width: 100.0  # unit %
-figS1:
-  name: Figure S1
-  title: Levelised cost for multiple years
+figED2:
+  name: Extended Data Fig. 2
+  title: Cost comparison between short-term (2030) and long-term (2040) assumptions.
   desc:
     'Based on hydrogen direct reduction (H-DR) as well as fossil references using
     coal in blast furnace/basic-oxygen furance (BF-BOF) and natural-gas direct reduction
@@ -33,38 +33,24 @@ figS1:
   display:
   - /advanced
   subfigs:
-    figS1a:
+    figED2a:
       print:
         height: 81.0  # unit mm
         width: 180.0  # unit mm
       webapp:
         height: 900.0  # unit px
         width: 100.0  # unit %
-    figS1b:
+    figED2b:
       print:
         height: 81.0  # unit mm
         width: 180.0  # unit mm
       webapp:
         height: 900.0  # unit px
         width: 100.0  # unit %
-    figS1c:
+    figED2c:
       print:
         height: 81.0  # unit mm
         width: 180.0  # unit mm
       webapp:
         height: 900.0  # unit px
         width: 100.0  # unit %
-figS3:
-  name: Figure S3
-  title: Levelised cost for recycled routes
-  desc:
-    'Using higher shares of recycling.'
-  display:
-  - /advanced
-  sizes:
-    print:
-      height: 81.0  # unit mm
-      width: 180.0  # unit mm
-    webapp:
-      height: 900.0  # unit px
-      width: 100.0  # unit %

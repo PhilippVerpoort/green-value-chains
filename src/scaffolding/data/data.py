@@ -21,20 +21,18 @@ def getFullData(input_data: dict):
     elecPriceDiff = __getElecPriceDiff(elec_prices)
 
     # determine routes based on options
-    costData, costDataRec = __getCostData(techDataFull, other_prices, options)
+    costData = __getCostData(techDataFull, other_prices, options)
 
     return {
         'techDataFull': techDataFull,
         'techCostH2Transp': techCostH2Transp,
         'elecPriceDiff': elecPriceDiff,
         'costData': costData,
-        'costDataRec': costDataRec,
     }
 
 
 def __getCostData(techDataFull, other_prices, options):
     costDataList = []
-    costDataListRec = []
     for commodity in all_routes:
         routes = {
             r: all_routes[commodity][r]
@@ -43,15 +41,11 @@ def __getCostData(techDataFull, other_prices, options):
 
         recyclingTokens = ['SECONDARY', 'CCU']
         routesWORecycling = {k: v for k, v in routes.items() if not any(t in k for t in recyclingTokens)}
-        routesWithRecycling = {k: v for k, v in routes.items() if any(t in k for t in recyclingTokens)}
 
         # calculate cost from tech data
         costDataList.append(calcCost(techDataFull, other_prices, routesWORecycling, commodity, options))
 
-        # calculate recycling cost for figS4
-        costDataListRec.append(calcCost(techDataFull, other_prices, routesWithRecycling, commodity, options))
-
-    return pd.concat(costDataList), pd.concat(costDataListRec)
+    return pd.concat(costDataList)
 
 
 def __getElecPriceDiff(elec_prices):

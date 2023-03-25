@@ -25,7 +25,7 @@ class SensitivityPlot(BasePlot):
 
 
     def _prepare(self):
-        if self.anyRequired('fig7'):
+        if self.anyRequired('figED1'):
             self._prep = self.__makePrep(
                 self._finalData['costData'],
                 self._finalData['techCostH2Transp'],
@@ -165,8 +165,8 @@ class SensitivityPlot(BasePlot):
 
     def _plot(self):
         # make fig7
-        if self.anyRequired('fig7'):
-            self._ret['fig7'] = self.__makePlot(**self._prep)
+        if self.anyRequired('figED1'):
+            self._ret['figED1'] = self.__makePlot(**self._prep)
 
 
     def __makePlot(self, mergedData: pd.DataFrame, plotData: dict, epdcaseDiffs: pd.Series):

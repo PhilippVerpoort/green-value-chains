@@ -18,15 +18,12 @@ class LevelisedPlot(BasePlot):
         for c, comm in enumerate(commodities):
             # add commodity annotations above subplot
             for figName, figPlot in self._ret.items():
-                if figName not in ['fig5', 'figS3']: continue
+                if figName not in ['fig5']: continue
                 self._addAnnotationComm(figPlot, c, comm)
 
     def _prepare(self):
-        if self.anyRequired('fig5', 'figS1', 'figS3'):
+        if self.anyRequired('fig5', 'figED2'):
             self._prep['default'] = self.__makePrep(self._finalData['costData'])
-
-        if self.anyRequired('figS3'):
-            self._prep['recycling'] = self.__makePrep(self._finalData['costDataRec'])
 
 
     # make adjustments to data (route names, component labels)
@@ -88,14 +85,10 @@ class LevelisedPlot(BasePlot):
             self._ret['fig5'] = self.__makePlot(**self._prep['default'])
 
         # produce figS1
-        if self.anyRequired('figS1'):
+        if self.anyRequired('figED2'):
             for k, commodity in enumerate(list(all_routes.keys())):
-                subfigName = f"figS1{ascii_lowercase[k]}"
+                subfigName = f"figED2{ascii_lowercase[k]}"
                 self._ret[subfigName] = self.__makePlot(**self._prep['default'], mode=commodity)
-
-        # produce figS3
-        if self.anyRequired('figS3'):
-            self._ret['figS3'] = self.__makePlot(**self._prep['recycling'])
 
         return self._ret
 
