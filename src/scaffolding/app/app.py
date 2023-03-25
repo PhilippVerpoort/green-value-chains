@@ -10,4 +10,5 @@ dash_app = dash.Dash(
     external_stylesheets=[dbc.themes.BOOTSTRAP, 'assets/base.css', 'assets/pik-interactive.css'],
     meta_tags=[{'name': 'viewport', 'content': 'width=device-width, initial-scale=1'}],
 )
+#dash_app.enable_dev_tools(debug=True)
 dash_app.title = app_cfg['title']
