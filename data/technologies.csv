@@ -22,7 +22,7 @@ CCU,capex,,,,2040,100,EUR/t
 CCU,energy_demand,electricity,,,,1.667,MWh/t
 DR,capex,,,,,350,EUR/t
 DR,energy_demand,electricity,electricity,,,0.1,MWh/t
-DR,energy_demand,electricity,heat,,,0.1,MWh/t
+DR,energy_demand,electricity,heat,,,0.3,MWh/t
 DR,energy_demand,hydrogen,,H2,,1.8,MWh/t
 DR,energy_demand,natural gas,,H2,,0.432,MWh/t
 DR,energy_demand,natural gas,,NG,,2.694,MWh/t
