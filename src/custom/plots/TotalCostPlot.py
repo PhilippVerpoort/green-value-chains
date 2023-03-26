@@ -381,7 +381,7 @@ class TotalCostPlot(BasePlot):
             )
 
             # case annotations
-            caseName = thisData.query(f"epdcase=='default'")
+            caseName = thisData.query(f"epdcase=='medium'")
             fig.add_trace(
                 go.Scatter(
                     x=caseName.val_pull_rel,
