@@ -263,9 +263,6 @@ class LevelisedPlot(BasePlot):
                 col=c + 1,
             )
 
-            y = thisCost + (costDiffAbs / 2 if costDiff < 0.0 else -costDiffAbs / 2)
-            if c==1 and caseName == 'Case 1A':
-                y = thisCost - 3/4*costDiffAbs
             fig.add_annotation(
                 text=f" {costDiffSign}{costDiffAbs:.1f}<br>({costDiffSign}{costDiffAbs / baseCost * 100:.1f}%)",
                 align='left',
@@ -274,9 +271,9 @@ class LevelisedPlot(BasePlot):
                 xanchor='left',
                 xshift=xshift,
                 y=baseCost,
-                yref=f"y{c + 1 if c else ''}",
                 yanchor='middle',
-                yshift=-yshift if costDiff < 0.0 else +yshift,
+                yref=f"y{c + 1 if c else ''}",
+                yshift=-yshift if caseName != 'Case 1A' else +yshift,
                 row=1,
                 col=c + 1,
             )
