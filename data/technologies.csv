@@ -46,7 +46,7 @@ EAF,feedstock_prices,lime,,,,100,EUR/t
 EAF,feedstock_prices,scrap,,,,180,EUR/t
 EAF,fixed_opex_rel,,,,,0.03,1
 HB,capex,,,,,379.2,EUR/t
-HB,energy_demand,hydrogen,,,,5.883,MWh/t
+HB,energy_demand,hydrogen,,,,6.033,MWh/t
 HB,energy_demand,electricity,air-separation unit,,,0.723,MWh/t
 HB,energy_demand,electricity,Haber-Bosch process,,,2.06,MWh/t
 HB,fixed_opex_rel,,,,,0.03,1
