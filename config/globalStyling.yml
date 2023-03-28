@@ -16,7 +16,7 @@ webapp:
     marker_lg: 16
     marker_md: 12
     marker_sm: 8
-    fs_lg: 6
-    fs_md: 5
-    fs_sm: 4
-    fs_tn: 3
+    fs_lg: 5
+    fs_md: 4
+    fs_sm: 3
+    fs_tn: 2
