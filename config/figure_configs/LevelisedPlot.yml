@@ -21,36 +21,3 @@ fig5:
     webapp:
       height: 600.0  # unit px
       width: 100.0  # unit %
-figED2:
-  name: Extended Data Fig. 2
-  title: Cost comparison between short-term (2030) and long-term (2040) assumptions.
-  desc:
-    'Based on hydrogen direct reduction (H-DR) as well as fossil references using
-    coal in blast furnace/basic-oxygen furance (BF-BOF) and natural-gas direct reduction
-    (NG-DR). Cases 1-4 represent the four different import routes for H-DR (1: importing
-    iron ore only, 2: importing iron ore and hydrogen, 3: importing directly reduced
-    iron, 4: importing a finished steel product).'
-  display:
-  - /advanced
-  subfigs:
-    figED2a:
-      print:
-        height: 81.0  # unit mm
-        width: 180.0  # unit mm
-      webapp:
-        height: 900.0  # unit px
-        width: 100.0  # unit %
-    figED2b:
-      print:
-        height: 81.0  # unit mm
-        width: 180.0  # unit mm
-      webapp:
-        height: 900.0  # unit px
-        width: 100.0  # unit %
-    figED2c:
-      print:
-        height: 81.0  # unit mm
-        width: 180.0  # unit mm
-      webapp:
-        height: 900.0  # unit px
-        width: 100.0  # unit %
