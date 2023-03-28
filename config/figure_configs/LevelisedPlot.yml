@@ -1,16 +1,12 @@
 fig5:
   name: Fig. 5
-  title: Levelised production cost of selected commodities.
+  title: 'Levelised cost of production for the three studied value chains (left-to-right: steel, urea, ethylene).'
   desc:
-    'The levelised cost of production is shown for (panels left to right) steel, urea, and ethylene for 
-    four different import cases (as defined in Fig. 2) in year 2040. The cost is calculated using 
-    techno-economic data as well as an assumption of an electricity price of 50 EUR/MWh in the 
-    importing and 15 EUR/MWh in the exporting region and some cost reduction of CAPEX compared to 
-    Methods. Moreover, Case 1A shows high transportation cost of 90 EUR/MWh, whereas Case 1B shows 
-    moderate cost for hydrogen transportation of 20 EUR/MWh. The result shows clear and substantial 
-    cost-reduction for relocating production to regions with cheap RE for all cases except Case 1A, as 
-    indicated by the arrows showing the relative and absolute cost differences of Cases 1–3 compared to 
-    the Base Case.'
+    'These estimates are shown for the four relocation cases defined in Fig. 3 and assume the medium-pull case from 
+     Tab. 1. The levelised cost visualise how the high feedstock cost in the steel value chain diminish the relocation 
+     savings compared to those for urea and ethylene, which have a much higher share of energy in the total production 
+     cost. Moreover, the higher WACC of 8% in the RE-rich region compared to 5% in the RE-scarce region results in 
+     higher capital cost, yet this effect appears to be small compared to the renewables pull.'
   display:
   - /
   - /advanced

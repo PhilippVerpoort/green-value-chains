@@ -1,8 +1,16 @@
 fig4:
   name: Figure 4
-  title: Total cost reductions.
+  title: 'Relocation savings for the different import and electricity-price cases for the three studied commodities (left-to-right: steel, urea, ethylene).'
   desc:
-    'Description to be written.'
+    'Top row: Relocation savings, i.e. overall production-cost savings, relative to the Base Case production cost, 
+     shown for the import cases outlined in Fig. 3 and electricity-price cases in Tab. 1. Bottom row: Comparison 
+     between the renewables pull, i.e. energy-cost savings, on the lower axis and transport and financing penalties on 
+     the upper axis with the heatmap showing the resulting relocation savings relative to the Base Case for the 
+     medium-pull electricity-price case. Case 1A is displayed separately from the other cases and not included in the 
+     corridor of values on the top row to highlight its saliency and contrast it to the otherwise monotonous decrease 
+     of production cost with increasing degree of relocation. The bottom row shows how the penalties cause Case 1A to 
+     have higher production cost compared to the Base Case for an electricity-price difference below approx. 35 
+     EUR/MWh.'
   display:
   - /
   - /advanced
