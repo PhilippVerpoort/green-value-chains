@@ -1,0 +1,19 @@
+fig6:
+  name: Fig. 6
+  title: 'Estimates of annual green-relocation protection for Germany.'
+  desc:
+    'We assume the scenarios outlined in Tab. 4 and apply the generic framework for production-cost estimates presented 
+     in the previous section.'
+  display:
+  - 'advanced'
+  size:
+    print:
+      height: 80.0  # unit mm
+      width: 88.0  # unit mm
+    webapp:
+      height: 600.0  # unit px
+      width: 100.0  # unit %
+  config:
+    yaxis_title: Annual green-relocation protection (bn EUR/a)
+
+    epdcases: ['weak', 'medium', 'strong']

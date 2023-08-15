@@ -1,23 +1,55 @@
-#!/usr/bin/env python
-# run this script and navigate to http://127.0.0.1:8050/ in your web browser
+from pathlib import Path
+
+import pint
+from posted.units.units import ureg
+from piw import Webapp
+from dash.dependencies import Input, State
+
+from src.ctrls import mainCtrl
+from src.plots.LevelisedPlot import LevelisedPlot
+from src.plots.ScenarioPlot import ScenarioPlot
+from src.plots.SensitivityPlot import SensitivityPlot
+from src.plots.TotalCostPlot import TotalCostPlot
+from src.update import updateScenarioInput
+from src.utils import loadYAMLConfigFile
+from src.load import loadData, loadPOSTED, loadOther
+from src.proc import processInputs
 
 
-from src.scaffolding.app.app import dash_app as dash_app
-from src.scaffolding.app.layout.layout import getLayout
+# make sure to always use correct units registry
+pint.set_application_registry(ureg)
 
 
-# define layout
-dash_app.layout = getLayout(dash_app.get_asset_url("logo.png"))
+webapp = Webapp(
+    piwID='green-value-chains',
+    title='Estimating the renewables pull in future global green value chains',
+    pages={
+        '': 'Simple',
+        'advanced': 'Advanced',
+    },
+    desc='This webapp reproduces results presented in an accompanying manuscript on estimations of the renewables pull '
+         'in future global green value chains. It determines energy-cost savings and other relocation penalties for '
+         'different import scenarios for the green value chains of steel, urea, and ethylene.',
+    authors=['Philipp C. Verpoort', 'Lukas Gast', 'Anke Hofmann', 'Falko Ueckerdt'],
+    date='25/03/2023',
+    load=[loadData, loadPOSTED, loadOther],
+    ctrls=[mainCtrl],
+    generate_args=[
+        Input('simple-update', 'n_clicks'),
+        State('simple-elec-prices', 'data'),
+        State('simple-transp-cost', 'data'),
+    ],
+    update=[updateScenarioInput],
+    proc=[processInputs],
+    plots=[TotalCostPlot, LevelisedPlot, ScenarioPlot, SensitivityPlot],
+    glob_cfg={f: loadYAMLConfigFile(f) for f in ('globPlot', 'globStyle')},
+    output=Path(__file__).parent / 'output',
+    debug=False,
+    input_caching=True,
+)
 
 
-# import callbacks
-from src.scaffolding.app.callbacks.callbacks import *
-
-
-# define flask_app for wsgi
-flask_app = dash_app.server
-
-
-# for running as Python script in standalone
+# this will allow running the app locally
 if __name__ == '__main__':
-    dash_app.run_server(debug=False)
+    webapp.start()
+    webapp.run()

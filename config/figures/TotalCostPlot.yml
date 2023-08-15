@@ -1,0 +1,66 @@
+fig4:
+  name: Figure 4
+  title:
+    'Relocation savings for the different import and electricity-price cases for the three studied commodities 
+     (left-to-right: steel, urea, ethylene).'
+  desc:
+    'Top row: Relocation savings, i.e. overall production-cost savings, relative to the Base Case production cost, 
+     shown for the import cases outlined in Fig. 3 and electricity-price cases in Tab. 1. Bottom row: Comparison 
+     between the renewables pull, i.e. energy-cost savings, on the lower axis and transport and financing penalties on 
+     the upper axis with the heatmap showing the resulting relocation savings relative to the Base Case for the 
+     medium-pull electricity-price case. Case 1A is displayed separately from the other cases and not included in the 
+     corridor of values on the top row to highlight its saliency and contrast it to the otherwise monotonous decrease 
+     of production cost with increasing degree of relocation. The bottom row shows how the penalties cause Case 1A to 
+     have higher production cost compared to the Base Case for an electricity-price difference below approx. 35 
+     EUR/MWh.'
+  display:
+  - ''
+  - 'advanced'
+  size:
+    print:
+      height: 100.0  # unit mm
+      width: 180.0  # unit mm
+    webapp:
+      height: 900.0  # unit px
+      width: 100.0  # unit %
+  config:
+    epdcases: ['weak', 'medium', 'strong']
+
+    symbol: x-thin
+    symbolCase1A: triangle-up
+    contourLines: False
+
+    top:
+      domain_boundary: 0.70
+      yaxislabel: Production cost relative to Base Case (%)
+      yaxis:
+        range:
+          - 0.0
+          - 125.0
+        tick0: -60.0
+        dtick: 20.0
+        showgrid: True
+        griddash: dash
+        gridcolor: '#CCCCCC'
+
+    bottom:
+      domain_boundary: 0.56
+      xaxislabel: Energy-cost savings (EUR/t)
+      yaxislabel: Penalties (EUR/t)
+      zaxislabel: Relocation savings relative<br>to production cost in the Base Case (%)
+      zrange:
+        - -100.0
+        - +100.0
+      zdelta: 20.0
+      zcolours:
+        - '#3745a3'
+        - '#ffffff'
+        - '#e6af2e'
+      zticks:
+        - 100
+        - 50
+        - 0
+        - -50
+        - -100
+      samples: 10
+

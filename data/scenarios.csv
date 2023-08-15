@@ -1,0 +1,7 @@
+scenario,commodity,Base Case,Case 1A,Case 1B,Case 2,Case 3
+Scen 1,Steel,0.33,0.33,0.33,0,0
+Scen 1,Urea,0.33,0.33,0.33,0,0
+Scen 1,Ethylene,0.33,0.33,0.33,0,0
+Scen 2,Steel,0.15,0.15,0,0.5,0.2
+Scen 2,Urea,0.15,0.15,0,0.5,0.2
+Scen 2,Ethylene,0.15,0.15,0,0.5,0.2

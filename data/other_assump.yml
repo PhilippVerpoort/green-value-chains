@@ -1,0 +1,10 @@
+period: 2040
+
+ocf:
+  default: 0.95
+  ELH2: 0.5
+
+irate:
+  RE-scarce: 5.0
+  RE-rich: 8.0
+ltime: 18

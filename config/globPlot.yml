@@ -1,0 +1,44 @@
+commodity_colours:
+  Steel: '#666666'
+  Urea: '#0e8088'
+  Ethylene: '#8a4c39'
+
+case_names:
+  Base Case: Full domestic<br>production
+  Case 1: Import of H<sub>2</sub>
+  Case 2: Import of<br>intermediates
+  Case 3: Import of semi-<br>finished products
+
+cost_types:
+  capital:
+    label: Annualised<br>CAPEX
+    colour: '#f36f21'
+  fonmco:
+    label: Operation and<br>maintenance
+    colour: '#00813e'
+  rawmat:
+    label: Raw materials
+    colour: '#cccccc'
+  energy:
+    label: Non-elec. energy
+    colour: '#aaaaaa'
+  elec:
+    label: Electricity
+    colour: '#e6af2e'
+  transport:
+    label: Transport
+    colour: '#7c1f8a'
+
+components:
+  alloys: Alloys
+  dri: DRI
+  graphite: Graphite
+  labour: Labour
+  lime: Lime
+  natural gas: Natural gas
+  electricity: Electricity
+  hydrogen: Hydrogen
+  onm: Operation and Maintenance
+  ore: Iron ore
+  scrap: Steel scrap
+  steel: Steel

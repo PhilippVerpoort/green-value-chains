@@ -1,0 +1,51 @@
+Steel:
+  graph:
+    HOTROLL:
+      steelslab: CAST
+    CAST:
+      steelliq: EAF
+    EAF:
+      dri: IDR
+    IDR:
+      h2: ELH2
+    ELH2: {}
+  locations:
+  - - ELH2
+  - - IDR
+  - - EAF
+    - CAST
+    - HOTROLL
+Urea:
+  graph:
+    UREA-SYN:
+      nh3: HBNH3-ASU
+      co2: DAC
+    HBNH3-ASU:
+      h2: ELH2
+    DAC:
+      heat: HEATPUMP-4-DAC
+    HEATPUMP-4-DAC: {}
+    ELH2: {}
+  locations:
+  - - ELH2
+  - - HBNH3-ASU
+  - - HEATPUMP-4-DAC
+    - DAC
+    - UREA-SYN
+Ethylene:
+  graph:
+    MEOH-2-OLEF:
+      meoh: MEOH-SYN
+    MEOH-SYN:
+      h2: ELH2
+      co2: DAC
+    DAC:
+      heat: HEATPUMP-4-DAC
+    HEATPUMP-4-DAC: {}
+    ELH2: {}
+  locations:
+  - - ELH2
+  - - HEATPUMP-4-DAC
+    - DAC
+    - MEOH-SYN
+  - - MEOH-2-OLEF

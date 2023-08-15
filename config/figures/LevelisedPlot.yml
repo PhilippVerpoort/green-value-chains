@@ -1,0 +1,25 @@
+fig5:
+  name: Fig. 5
+  title: 'Levelised cost of production for the three studied value chains (left-to-right: steel, urea, ethylene).'
+  desc:
+    'These estimates are shown for the four relocation cases defined in Fig. 3 and assume the medium-pull case from 
+     Tab. 1. The levelised cost visualise how the high feedstock cost in the steel value chain diminish the relocation 
+     savings compared to those for urea and ethylene, which have a much higher share of energy in the total production 
+     cost. Moreover, the higher WACC of 8% in the RE-rich region compared to 5% in the RE-scarce region results in 
+     higher capital cost, yet this effect appears to be small compared to the renewables pull.'
+  display:
+  - ''
+  - 'advanced'
+  size:
+    print:
+      height: 80.0  # unit mm
+      width: 180.0  # unit mm
+    webapp:
+      height: 600.0  # unit px
+      width: 100.0  # unit %
+  config:
+    yaxis_title: Levelised cost of production (EUR/t)
+
+    epdcase: medium
+    aggregate_by: subcomponent # all, process, component, subcomponent, or none
+    separate_iron: False # whether or not to separate iron feedstock components out and display in other colour
