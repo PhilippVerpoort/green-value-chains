@@ -7,9 +7,6 @@ from src.utils import loadYAMLDataFile, loadCSVDataFile
 
 
 def loadData(inputs: dict):
-    # load value chain definitions
-    inputs['value_chains'] = loadYAMLDataFile('value_chains')
-
     # load data for electricity-price cases
     inputs['epdcases'] = loadCSVDataFile('epd_cases') \
         .astype({c: 'pint[EUR/MWh]' for c in ('RE-scarce', 'RE-rich')}, errors='ignore')
@@ -32,6 +29,9 @@ def loadData(inputs: dict):
     # load scenarios and volumes
     inputs['scenarios'] = loadCSVDataFile('scenarios').set_index(['scenario', 'commodity'])
     inputs['volumes'] = loadCSVDataFile('volumes').astype({'volume': 'float32'}).set_index(['commodity'])['volume']
+
+    # load value chain definitions
+    inputs['value_chains'] = loadYAMLDataFile('value_chains')
 
 def loadPOSTED(inputs: dict):
     # create list of technologies to load

@@ -9,7 +9,6 @@ def mainCtrl(default_inputs: dict):
     tableDataElecPrice = default_inputs['epdcases'] \
         .pint.dequantify() \
         .droplevel(level='unit', axis=1) \
-        .query(f"epdcase in {('weak', 'medium', 'strong')}") \
         .assign(epdcaseDisplay=lambda df: df['epdcase'].str.capitalize()) \
         .assign(processDisplay=lambda df: df['process'].map({'ELH2': 'Electrolysis', 'OTHER': 'Other'})) \
         .to_dict('records')

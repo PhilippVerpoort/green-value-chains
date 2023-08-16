@@ -1,11 +1,7 @@
 epdcase,process,RE-rich,RE-scarce
-min,ELH2,40,40
-min,OTHER,60,60
 weak,ELH2,30,50
 weak,OTHER,50,70
 medium,ELH2,30,70
 medium,OTHER,50,90
 strong,ELH2,15,85
 strong,OTHER,35,105
-max,ELH2,10,90
-max,OTHER,30,110

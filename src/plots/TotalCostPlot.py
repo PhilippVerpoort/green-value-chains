@@ -123,12 +123,11 @@ class TotalCostPlot(BasePlot):
             )
 
     def __prepareData(self, outputs: dict, comm: str, cfg: dict):
-        # produce LCOX DataTable by assuming final elec prices from epdcases, drop units, filter for relevant epdcases
+        # produce LCOX DataTable by assuming final elec prices from epdcases and drop units
         lcox = outputs['tables'][comm] \
             .assume(outputs['cases'][comm]) \
             .calc(LCOX) \
             .data['LCOX'] \
-            .query(f"epdcase.isin({cfg['epdcases']})") \
             .pint.dequantify().droplevel('unit', axis=1) \
             .stack(['process', 'type'])
 

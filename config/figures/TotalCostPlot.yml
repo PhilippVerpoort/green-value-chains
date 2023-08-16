@@ -24,8 +24,6 @@ fig4:
       height: 900.0  # unit px
       width: 100.0  # unit %
   config:
-    epdcases: ['weak', 'medium', 'strong']
-
     symbol: x-thin
     symbolCase1A: triangle-up
     contourLines: False
