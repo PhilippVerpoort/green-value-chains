@@ -41,7 +41,7 @@ webapp = Webapp(
     ],
     update=[updateScenarioInput],
     proc=[processInputs],
-    plots=[TotalCostPlot, LevelisedPlot, ScenarioPlot, SensitivityPlot],
+    plots=[TotalCostPlot, LevelisedPlot, SensitivityPlot, ScenarioPlot],
     glob_cfg={f: loadYAMLConfigFile(f) for f in ('globPlot', 'globStyle')},
     output=Path(__file__).parent / 'output',
     debug=False,

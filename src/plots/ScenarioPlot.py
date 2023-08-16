@@ -10,7 +10,7 @@ class ScenarioPlot(BasePlot):
     figs = loadYAMLConfigFile(f"figures/ScenarioPlot")
 
     def plot(self, inputs: dict, outputs: dict, subfigNames: list) -> dict:
-        cfg = self._figCfgs['fig6']
+        cfg = self._figCfgs['fig7']
 
         plotData = self.__prepare(inputs, outputs, cfg)
 
@@ -49,7 +49,7 @@ class ScenarioPlot(BasePlot):
             hovermode=False,
         )
 
-        return {'fig6': fig}
+        return {'fig7': fig}
 
     def __prepare(self, inputs: dict, outputs: dict, cfg: dict):
         # produce LCOX DataTable by assuming final elec prices and applying calc routine, then combine into single

@@ -26,7 +26,7 @@ class SensitivityPlot(BasePlot):
                 self._addAnnotationComm(subfigPlot, comm, c)
 
     def plot(self, inputs: dict, outputs: dict, subfigNames: list) -> dict:
-        cfg = self._figCfgs['fig7']
+        cfg = self._figCfgs['fig6']
         commodities = list(inputs['value_chains'].keys())
 
         # create figure
@@ -114,7 +114,7 @@ class SensitivityPlot(BasePlot):
             yaxis7_title=cfg['yaxis_title'],
         )
 
-        return {'fig7': fig}
+        return {'fig6': fig}
 
     def __addDummyLegend(self, fig: go.Figure, cfg: dict):
         for legend, symbol in [('Case 1A', cfg['symbolCase1A']), ('Other<br>cases', cfg['symbol'])]:
