@@ -12,9 +12,6 @@ posted = {git = "https://github.com/PhilippVerpoort/posted.git", rev = "v0.2.0"}
 kaleido = "0.2.1"
 openpyxl = "^3.1.2"
 
-[tool.poetry.group.jupyter.dependencies]
-jupyterlab = "^4.0.2"
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
