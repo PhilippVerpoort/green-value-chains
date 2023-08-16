@@ -24,7 +24,7 @@ pint.set_application_registry(ureg)
 # define webapp
 webapp = Webapp(
     piwID='green-value-chains',
-    title='Estimating the renewables pull in future global green value chains',
+    title='Future global green value chains: estimating the renewables pull and understanding its impact on industrial relocation',
     pages={
         '': 'Simple',
         'advanced': 'Advanced',
