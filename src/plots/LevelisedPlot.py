@@ -251,7 +251,7 @@ class LevelisedPlot(BasePlot):
             )
 
             fig.add_annotation(
-                text=f" {costDiffSign}{costDiffAbs:.1f}<br>({costDiffSign}{costDiffAbs / baseCost * 100:.1f}%)",
+                text=f" {costDiffSign}{costDiffAbs:.1f}<br>({costDiffAbs / baseCost * 100:.1f}%)",
                 align='left',
                 showarrow=False,
                 x=casePos,
