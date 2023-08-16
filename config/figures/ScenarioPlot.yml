@@ -1,9 +1,10 @@
 fig7:
   name: Fig. 7
-  title: 'Estimates of annual green-relocation protection for Germany.'
+  title: Estimates of annual green-relocation protection for Germany.
   desc:
-    'We assume the scenarios outlined in Tab. 4 and apply the generic framework for production-cost estimates presented 
-     in the previous section.'
+    'We assume the scenarios outlined in Tab. 2 and apply the generic framework for production-cost estimates presented 
+    in the previous section. The three columns correspond to the three cases for electricity-price differences (weak, 
+    medium, and strong pull) in Tab. 1.'
   display:
   - 'advanced'
   size:

@@ -1,9 +1,12 @@
 fig6:
   name: Figure 6
-  title:
-    'Sensitivity analysis.'
+  title: Sensitivity analysis.
   desc:
-    'TBC'
+    'Shown are the main results from Fig. 4 with electricity-price difference of 40 EUR/MWh, while varying the WACC on 
+    the RE-rich exporter between 5% and 20% (a--c), rel.~changes in CAPEX between -50% and +100% (d--f), tranpost cost 
+    for H<sub>2</sub> between 5 EUR/MWh and 90 EUR/MWh (g--i), whether the heat for DAC is provided by a heatpump or 
+    not (j--k), and whether existing grey plants (hot rolling in steel, Haber-Bosch, urea synth.) can be repurposed 
+    (l--m).'
   display:
   - 'advanced'
   size:
