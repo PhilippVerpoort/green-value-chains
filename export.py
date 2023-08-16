@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys
 
 from webapp import webapp
@@ -13,5 +14,6 @@ def export():
     webapp.export(figNames, formats=['png', 'svg'])
 
 
+# call export function when running as script
 if __name__ == '__main__':
     export()

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from pathlib import Path
 
 import pint
@@ -20,6 +21,7 @@ from src.proc import processInputs
 pint.set_application_registry(ureg)
 
 
+# define webapp
 webapp = Webapp(
     piwID='green-value-chains',
     title='Estimating the renewables pull in future global green value chains',
@@ -49,7 +51,7 @@ webapp = Webapp(
 )
 
 
-# this will allow running the app locally
+# this will allow running the webapp locally
 if __name__ == '__main__':
     webapp.start()
     webapp.run()
