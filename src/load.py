@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pandas as pd
 from posted.ted.TEDataSet import TEDataSet
 from posted.ted.TEProcessTreeDataTable import TEProcessTreeDataTable
@@ -67,7 +69,7 @@ def loadPOSTED(inputs: dict):
     # load datatables from POSTED
     inputs['proc_tables'] = {}
     for tid, kwargs in techs.items():
-        dac = {'load_other': ['data/DAC-capex-custom.csv'], 'load_database': True} if tid == 'DAC' else {}
+        dac = {'load_other': [Path(__file__).parent.parent / 'data' / 'DAC-capex-custom.csv'], 'load_database': True} if tid == 'DAC' else {}
         t = TEDataSet(tid, **dac).generateTable(
             period=inputs['other_assump']['period'],
             agg=['src_ref'],
