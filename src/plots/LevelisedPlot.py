@@ -128,13 +128,13 @@ class LevelisedPlot(BasePlot):
 
         # prepare hover info
         hover = self._target == 'webapp'
-        hovercols = ['impsubcase', 'hover_ptype', 'hover_flow', 'hover_proc'] if hover else None
+        hovercols = ['impsubcase', 'hover_ptype', 'hover_flow', 'hover_proc', 'value'] if hover else None
         hovercomp = {
             'header_basic': '<b>%{customdata[1]}</b><br>',
             'header_flow': '<b>%{customdata[1]} (%{customdata[2]})</b><br>',
             'impcase': 'Import case: %{customdata[0]}<br>',
             'process': 'Process: %{customdata[3]}<br>',
-            'cost': 'Cost: %{y} EUR/t',
+            'cost': 'Cost: %{customdata[4]} EUR/t',
             'extra': '<extra></extra>',
         }
         hovertemplateBasic = ''.join(hovercomp[c] for c in ['header_basic', 'impcase', 'process', 'cost', 'extra'])
