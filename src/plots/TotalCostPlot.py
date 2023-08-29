@@ -296,7 +296,7 @@ class TotalCostPlot(BasePlot):
                     showlegend=False,
                     legendgroup=comm,
                     hoverinfo='text' if hover else 'skip',
-                    hovertemplate='<b>%{customdata[0]}</b><br>Elec.-price diff: %{customdata[1]}<br>Rel. prod. cost: %{y}%<extra></extra>',
+                    hovertemplate='<b>%{customdata[0]}</b><br>Elec.-price diff: %{customdata[1]}<br>Rel. prod. cost: %{y:.1f}%<extra></extra>',
                     customdata=thisData[['impsubcase', 'epd']] if hover else None,
                 )
             fig.add_trace(
