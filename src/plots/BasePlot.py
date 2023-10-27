@@ -71,25 +71,23 @@ class BasePlot(AbstractPlot):
             .agg(dict(**{c: 'first' for c in groupCols + keep}, **{c: 'sum' for c in sumCols})) \
             .reset_index(drop=True)
 
-    def _addAnnotation(self, fig: go.Figure, text: str, col: int, row: int = 1):
+    def _addAnnotation(self, fig: go.Figure, text: str, subplot_id: int):
         fig.add_annotation(
             text=f"<b>{text}</b>",
-            x=0.0,
-            xref='x domain',
-            xanchor='left',
+            x=1.0,
+            xref=f"x{subplot_id + 1 if subplot_id else ''} domain",
+            xanchor='right',
             y=1.0,
-            yref='y domain',
+            yref=f"y{subplot_id + 1 if subplot_id else ''} domain",
             yanchor='top',
             showarrow=False,
             bordercolor='black',
             borderwidth=self._globCfg['globStyle'][self._target]['lw_ultrathin'],
             borderpad=2*self._globCfg['globStyle'][self._target]['lw_ultrathin'],
             bgcolor='white',
-            row=row,
-            col=col + 1,
         )
 
-    def _addAnnotationComm(self, fig: go.Figure, comm: str, col: int):
+    def _addAnnotationComm(self, fig: go.Figure, comm: str, c: int):
         fig.add_annotation(
             text=f"<b>{comm}</b>",
             x=0.5,
@@ -107,7 +105,7 @@ class BasePlot(AbstractPlot):
             font_color=self._globCfg['globPlot']['commodity_colours'][comm],
             font_size=self.getFontSize('fs_lg'),
             row=1,
-            col=col + 1,
+            col=c + 1,
         )
 
     @staticmethod

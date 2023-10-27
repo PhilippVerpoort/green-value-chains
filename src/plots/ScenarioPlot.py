@@ -1,5 +1,7 @@
+import numpy as np
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 from posted.calc_routines.LCOX import LCOX
 
 from src.utils import loadYAMLConfigFile
@@ -13,10 +15,11 @@ class ScenarioPlot(BasePlot):
         cfg = self._figCfgs['fig7']
 
         plotData = self.__prepare(inputs, outputs, cfg)
+        plotData['scenario_name'] = plotData['scenario'].map(cfg['scenario_names'])
 
         fig = px.bar(
             plotData,
-            x='scenario',
+            x='scenario_name',
             y='value',
             color='commodity',
             facet_col='epdcase',
@@ -24,30 +27,74 @@ class ScenarioPlot(BasePlot):
             text_auto=True,
         )
 
+        # add legend group
+        for trace in fig.data:
+            trace['legendgroup'] = 'protection'
+            trace['legendgrouptitle_text'] = f"<b>{cfg['legendgroup_titles']['protection']}</b>"
+
+        # add federal budget data
+        budgetData = pd.DataFrame.from_dict(cfg['planned_expenses'], orient='index')
+
+        for t in budgetData['type'].unique():
+            thisData = budgetData.query(f"type=='{t}'")
+
+            fig.add_trace(
+                go.Bar(
+                    x=thisData['label'],
+                    y=thisData['value'],
+                    marker_color=cfg['expenses_color'][t],
+                    name=t,
+                    xaxis='x4',
+                    yaxis='y4',
+                    legendgroup='existing',
+                    legendgrouptitle_text=f"<b>{cfg['legendgroup_titles']['existing']}</b>",
+                )
+            )
+
+        # adjust axes domains
+        N = 3
+        xspace = 0.67
+        xdelta = 0.02
+        xranges = list(zip(np.linspace(0, xspace+xdelta, N+1)[:N], np.linspace(-xdelta, xspace, N+1)[1:]))
+        fig.update_layout(
+            **{
+                f"xaxis{i+1 if i else ''}": dict(
+                    domain=xranges[i],
+                )
+                for i in range(N)
+            },
+            xaxis4={'domain': [xspace+xdelta, 1.0]},
+            yaxis4={'anchor': 'x4', 'matches': 'y', 'side': 'right'},
+        )
+
         # update text template
-        for d in fig.data:
-            d['texttemplate'] = '%{y:.1f} bn EUR/a'
-            d['hoverinfo'] = 'skip'
+        for trace in fig.data:
+            trace['texttemplate'] = '%{y:.1f} bn EUR/a'
+            trace['hoverinfo'] = 'skip'
 
-        # replace annotations
-        fig.layout.annotations = []
-        for s, scen in enumerate(cfg['epdcases']):
-            self._addAnnotation(fig, scen.capitalize(), s)
-
+        # adjust legend and axes titles
         fig.update_layout(
             legend=dict(
                 title='',
-                xanchor='right',
+                xanchor='left',
                 yanchor='top',
-                x=0.99,
+                x=0.005,
                 y=0.99,
             ),
-            xaxis_title='',
-            xaxis2_title='',
-            xaxis3_title='',
-            yaxis_title=cfg['yaxis_title'],
+            **{f"xaxis{i+1 if i else ''}_title": '' for i in range(N+1)},
+            yaxis_title=cfg['yaxis_title']['left'],
+            yaxis4_title=cfg['yaxis_title']['right'],
+            **{f"yaxis{i + 1 if i else ''}_range": [0.0, cfg['yaxis_max']] for i in range(N + 1)},
+            # yaxis4_tickmode='array',
+            # yaxis4_tickvals=[],
+            yaxis4_ticklabelposition='outside right',
             hovermode=False,
         )
+
+        # replace annotations
+        fig.layout.annotations = []
+        for s, scen in enumerate(cfg['epdcases'] + ['For comparison']):
+            self._addAnnotation(fig, scen.capitalize(), s)
 
         return {'fig7': fig}
 
