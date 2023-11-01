@@ -47,6 +47,8 @@ class LevelisedPlot(BasePlot):
 
             ymax = self.__addBars(fig, c, commData)
 
+            self.__addArrows(fig, c)
+
             # update layout of subplot
             self._updateAxisLayout(fig, c,
                 xaxis=dict(
@@ -264,3 +266,36 @@ class LevelisedPlot(BasePlot):
                 row=1,
                 col=c + 1,
             )
+
+    # add arrows explaining the plot
+    def __addArrows(self, fig: go.Figure, c: int):
+        # top
+        xref = f"x{c + 1 if c else ''} domain"
+        yref = f"y{c + 1 if c else ''} domain"
+
+        fig.add_annotation(
+            showarrow=True,
+            text=None,
+            ax=0.15,
+            ay=0.3,
+            axref=xref,
+            ayref=yref,
+            x=0.85,
+            y=0.3,
+            xref=xref,
+            yref=yref,
+            arrowhead=1,
+            arrowsize=0.8,
+            arrowwidth=4,
+            arrowcolor='#000000',
+            opacity=1.0,
+        )
+
+        fig.add_annotation(
+            showarrow=False,
+            text='Deeper relocation',
+            x=0.5,
+            y=0.26,
+            xref=xref,
+            yref=yref,
+        )
