@@ -6,14 +6,14 @@ from posted.config.config import flowTypes
 
 # create main control card
 def main_ctrl(default_inputs: dict):
-    tableDataElecPrice = default_inputs['epdcases'] \
+    table_data_elec_price = default_inputs['epdcases'] \
         .pint.dequantify() \
         .droplevel(level='unit', axis=1) \
         .assign(epdcaseDisplay=lambda df: df['epdcase'].str.capitalize()) \
         .assign(processDisplay=lambda df: df['process'].map({'ELH2': 'Electrolysis', 'OTHER': 'Other'})) \
         .to_dict('records')
 
-    tableDataTranspCost = default_inputs['transp_cost'] \
+    table_data_transp_cost = default_inputs['transp_cost'] \
         .assign(tradedDisplay=lambda df: df['traded'].map({
             flowid: flowSpecs['name']
             for flowid, flowSpecs in flowTypes.items()
@@ -25,8 +25,8 @@ def main_ctrl(default_inputs: dict):
         children=[
             html.Div(
                 children='Please enter your own assumptions in the table below and press the GENERATE button to update '
-                         'the results. Electricity prices are assumed in EUR/MWh. For changing other assumptions, please refer to the full source code '
-                         'on GitHub.',
+                         'the results. Electricity prices are assumed in EUR/MWh. For changing other assumptions, '
+                         'please refer to the full source code on GitHub.',
                 className='card-element',
             ),
             dbc.Label(
@@ -45,7 +45,7 @@ def main_ctrl(default_inputs: dict):
                             {'id': 'RE-rich', 'name': 'RE-rich region', 'editable': True, },
                             {'id': 'RE-scarce', 'name': 'RE-scarce region', 'editable': True, },
                         ],
-                        data=tableDataElecPrice,
+                        data=table_data_elec_price,
                         editable=True,
                         style_cell={'whiteSpace': 'pre-line'},
                         style_cell_conditional=[
@@ -93,7 +93,7 @@ def main_ctrl(default_inputs: dict):
                             {'id': 'assump', 'name': 'Assumption', 'editable': True, },
                             {'id': 'unit', 'name': 'Value', 'editable': False, },
                         ],
-                        data=tableDataTranspCost,
+                        data=table_data_transp_cost,
                         editable=True,
                         style_cell={'whiteSpace': 'pre-line'},
                         style_cell_conditional=[
