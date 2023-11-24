@@ -82,8 +82,8 @@ class BasePlot(AbstractPlot):
             yanchor='top',
             showarrow=False,
             bordercolor='black',
-            borderwidth=self._globCfg['globStyle'][self._target]['lw_ultrathin'],
-            borderpad=2*self._globCfg['globStyle'][self._target]['lw_ultrathin'],
+            borderwidth=self._glob_cfg['globStyle'][self._target]['lw_ultrathin'],
+            borderpad=2*self._glob_cfg['globStyle'][self._target]['lw_ultrathin'],
             bgcolor='white',
         )
 
@@ -98,11 +98,11 @@ class BasePlot(AbstractPlot):
             yref='y domain',
             yanchor='bottom',
             showarrow=False,
-            bordercolor=self._globCfg['globPlot']['commodity_colours'][comm],
-            borderwidth=self._globCfg['globStyle'][self._target]['lw_thin'],
-            borderpad=3*self._globCfg['globStyle'][self._target]['lw_thin'],
-            bgcolor="rgba({}, {}, {}, {})".format(*hex_to_rgb(self._globCfg['globPlot']['commodity_colours'][comm]), .3),
-            font_color=self._globCfg['globPlot']['commodity_colours'][comm],
+            bordercolor=self._glob_cfg['globPlot']['commodity_colours'][comm],
+            borderwidth=self._glob_cfg['globStyle'][self._target]['lw_thin'],
+            borderpad=3*self._glob_cfg['globStyle'][self._target]['lw_thin'],
+            bgcolor="rgba({}, {}, {}, {})".format(*hex_to_rgb(self._glob_cfg['globPlot']['commodity_colours'][comm]), .3),
+            font_color=self._glob_cfg['globPlot']['commodity_colours'][comm],
             font_size=self.getFontSize('fs_lg'),
             row=1,
             col=c + 1,
@@ -120,4 +120,4 @@ class BasePlot(AbstractPlot):
             })
 
     def getFontSize(self, size: str):
-        return self._dpi * inch_per_pt * self._globCfg['globStyle'][self._target][size]
+        return self._dpi * inch_per_pt * self._glob_cfg['globStyle'][self._target][size]

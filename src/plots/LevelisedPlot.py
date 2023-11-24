@@ -32,7 +32,7 @@ class LevelisedPlot(BasePlot):
     }
 
     def plot(self, inputs: dict, outputs: dict, subfigNames: list) -> dict:
-        cfg = self._figCfgs['fig5']
+        cfg = self._fig_cfgs['fig5']
         commodities = list(inputs['value_chains'].keys())
 
         # create figure
@@ -96,14 +96,14 @@ class LevelisedPlot(BasePlot):
         commData['impcase_display'] = commData['impcase'] \
             .map({
                 caseName: f"<b>{caseName + ('A/B' if caseName == 'Case 1' else '')}</b>:<br>{caseDesc}"
-                for caseName, caseDesc in self._globCfg['globPlot']['case_names'].items()
+                for caseName, caseDesc in self._glob_cfg['globPlot']['case_names'].items()
             })
 
         # prepare hover data
         if self._target == 'webapp':
             commData['hover_ptype'] = commData['ptype'].map({
                 ptype: display['label']
-                for ptype, display in self._globCfg['globPlot']['cost_types'].items()
+                for ptype, display in self._glob_cfg['globPlot']['cost_types'].items()
             })
             commData['hover_flow'] = commData['type'].map({
                 f"dem_cost:{flowid}": flowSpecs['name']
@@ -144,7 +144,7 @@ class LevelisedPlot(BasePlot):
         hovertemplateTransp = ''.join(hovercomp[c] for c in ['header_flow', 'impcase', 'cost', 'extra'])
 
         # add traces for all cost types
-        for ptype, display in self._globCfg['globPlot']['cost_types'].items():
+        for ptype, display in self._glob_cfg['globPlot']['cost_types'].items():
             thisData = mainData \
                 .query(f"ptype=='{ptype}'") \
                 .sort_index(level='impcase') \
@@ -179,7 +179,7 @@ class LevelisedPlot(BasePlot):
                 col=c + 1,
             )
 
-        display = self._globCfg['globPlot']['cost_types']['transport']
+        display = self._glob_cfg['globPlot']['cost_types']['transport']
         baseVal = mainData.query(f"impcase=='Case 1'").value.sum()
 
         for s, subcase in enumerate(h2transpData.impsubcase.unique()):
@@ -217,7 +217,7 @@ class LevelisedPlot(BasePlot):
         fig.add_hline(
             baseCost,
             line_color='black',
-            line_width=self._globCfg['globStyle'][self._target]['lw_thin'],
+            line_width=self._glob_cfg['globStyle'][self._target]['lw_thin'],
             row=1,
             col=c + 1,
         )
@@ -246,7 +246,7 @@ class LevelisedPlot(BasePlot):
                 ay=baseCost + (correction * ymax if costDiff < 0.0 else -correction * ymax),
                 ayref=f"y{c + 1 if c else ''}",
                 arrowcolor='black',
-                arrowwidth=self._globCfg['globStyle'][self._target]['lw_thin'],
+                arrowwidth=self._glob_cfg['globStyle'][self._target]['lw_thin'],
                 arrowhead=2,
                 row=1,
                 col=c + 1,

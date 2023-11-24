@@ -26,7 +26,7 @@ class SensitivityPlot(BasePlot):
                 self._addAnnotationComm(subfigPlot, comm, c)
 
     def plot(self, inputs: dict, outputs: dict, subfigNames: list) -> dict:
-        cfg = self._figCfgs['fig6']
+        cfg = self._fig_cfgs['fig6']
         commodities = list(inputs['value_chains'].keys())
 
         # create figure
@@ -92,8 +92,8 @@ class SensitivityPlot(BasePlot):
                 yref=f"y{2+3*row} domain",
                 yanchor='middle',
                 bordercolor='black',
-                borderwidth=self._globCfg['globStyle'][self._target]['lw_thin'],
-                borderpad=10*self._globCfg['globStyle'][self._target]['lw_thin'],
+                borderwidth=self._glob_cfg['globStyle'][self._target]['lw_thin'],
+                borderpad=10*self._glob_cfg['globStyle'][self._target]['lw_thin'],
                 bgcolor='white',
                 opacity=1.0,
             )
@@ -270,7 +270,7 @@ class SensitivityPlot(BasePlot):
             .assign(
                 impcase_display=lambda df: df['impcase'].map({
                 caseName: f"<b>{caseName + ('A/B' if caseName == 'Case 1' else '')}</b>:<br>{caseDesc}"
-                for caseName, caseDesc in self._globCfg['globPlot']['case_names'].items()}),
+                for caseName, caseDesc in self._glob_cfg['globPlot']['case_names'].items()}),
                 impcase_x=lambda df: df['impcase'].astype('category').cat.codes,
             )
 

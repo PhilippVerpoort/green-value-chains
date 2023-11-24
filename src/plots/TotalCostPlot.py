@@ -23,8 +23,8 @@ class TotalCostPlot(BasePlot):
             for subfigPlot in subfigs.values():
                 self._addAnnotationComm(subfigPlot, comm, c)
 
-    def plot(self, inputs: dict, outputs: dict, subfigNames: list) -> dict:
-        cfg = self._figCfgs['fig4']
+    def plot(self, inputs: dict, outputs: dict, subfig_names: list) -> dict:
+        cfg = self._fig_cfgs['fig4']
         commodities = list(inputs['value_chains'].keys())
 
         # create figure
@@ -150,7 +150,7 @@ class TotalCostPlot(BasePlot):
             .assign(
                 impcase_display=lambda df: df['impcase'].map({
                 caseName: f"<b>{caseName + ('A/B' if caseName == 'Case 1' else '')}</b>:<br>{caseDesc}"
-                for caseName, caseDesc in self._globCfg['globPlot']['case_names'].items()}),
+                for caseName, caseDesc in self._glob_cfg['globPlot']['case_names'].items()}),
                 impcase_x=lambda df: df['impcase'].astype('category').cat.codes,
             ) \
             .merge(epd, on='epdcase')

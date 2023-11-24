@@ -12,7 +12,7 @@ class ScenarioPlot(BasePlot):
     figs = loadYAMLConfigFile(f"figures/ScenarioPlot")
 
     def plot(self, inputs: dict, outputs: dict, subfigNames: list) -> dict:
-        cfg = self._figCfgs['fig7']
+        cfg = self._fig_cfgs['fig7']
 
         plotData = self.__prepare(inputs, outputs, cfg)
         plotData['scenario_name'] = plotData['scenario'].map(cfg['scenario_names'])
