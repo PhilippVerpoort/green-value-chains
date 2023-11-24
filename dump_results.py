@@ -7,9 +7,9 @@ from posted.ted.TEDataFile import TEDataFile
 from posted.calc_routines.LCOX import LCOX
 from posted.config.config import techs
 
-from src.load import loadData, loadPOSTED, loadOther
+from src.load import load_data, load_posted, load_other
 from src.plots.LevelisedPlot import LevelisedPlot
-from src.proc import processInputs
+from src.proc import process_inputs
 
 
 # load required data and dump into Excel spreadsheet
@@ -17,10 +17,10 @@ def export():
     # load inputs and outputs
     inputs = {}
     outputs = {}
-    loadData(inputs)
-    loadPOSTED(inputs)
-    loadOther(inputs)
-    processInputs(inputs, outputs)
+    load_data(inputs)
+    load_posted(inputs)
+    load_other(inputs)
+    process_inputs(inputs, outputs)
 
     # create a writer object for an Excel spreadsheet
     with pd.ExcelWriter(Path(__file__).parent / 'output' / 'dump_results.xlsx') as writer:

@@ -6,15 +6,15 @@ import pandas as pd
 from posted.ted.TEDataFile import TEDataFile
 from posted.config.config import techs
 
-from src.load import loadData, loadPOSTED
+from src.load import load_data, load_posted
 
 
 # load required data and dump into Excel spreadsheet
 def export():
     # load POSTED data
     inputs = {}
-    loadData(inputs)
-    loadPOSTED(inputs)
+    load_data(inputs)
+    load_posted(inputs)
 
     # create a writer object for an Excel spreadsheet
     with pd.ExcelWriter(Path(__file__).parent / 'output' / 'dump_posted.xlsx') as writer:

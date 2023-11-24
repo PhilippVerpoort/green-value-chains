@@ -6,14 +6,14 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from posted.calc_routines.LCOX import LCOX
 
-from src.utils import loadYAMLConfigFile
+from src.utils import load_yaml_config_file
 from src.plots.BasePlot import BasePlot
 
 
 class SensitivityPlot(BasePlot):
-    figs = loadYAMLConfigFile(f"figures/SensitivityPlot")
-    _addSubfigName = True
-    _addSubfigNameDict = {b: ascii_lowercase[a] for a, b in enumerate([0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13])}
+    figs = load_yaml_config_file(f"figures/SensitivityPlot")
+    _add_subfig_name = True
+    _add_subfig_name_dict = {b: ascii_lowercase[a] for a, b in enumerate([0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13])}
 
     def _decorate(self, inputs: dict, outputs: dict, subfigs: dict):
         super(SensitivityPlot, self)._decorate(inputs, outputs, subfigs)
@@ -22,10 +22,10 @@ class SensitivityPlot(BasePlot):
         commodities = list(inputs['value_chains'].keys())
         for c, comm in enumerate(commodities):
             # add commodity annotations above subplot
-            for subfigPlot in subfigs.values():
-                self._addAnnotationComm(subfigPlot, comm, c)
+            for subfig_plot in subfigs.values():
+                self._add_annotation_comm(subfig_plot, comm, c)
 
-    def plot(self, inputs: dict, outputs: dict, subfigNames: list) -> dict:
+    def plot(self, inputs: dict, outputs: dict, subfig_names: list) -> dict:
         cfg = self._fig_cfgs['fig6']
         commodities = list(inputs['value_chains'].keys())
 
@@ -39,7 +39,7 @@ class SensitivityPlot(BasePlot):
 
         # add bars for each subplot
         for c, comm in enumerate(commodities):
-            commData = self.__prepareData(inputs, outputs, comm, cfg)
+            comm_data = self._prepare_data(inputs, outputs, comm, cfg)
 
             # add rows
             for row, senstype in enumerate(cfg['senstypes']):
@@ -47,14 +47,14 @@ class SensitivityPlot(BasePlot):
                    (senstype == 'repurpose' and comm == 'Ethylene'):
                     continue
 
-                commDataRow = commData.query(f"senstype=='{senstype}'")
-                self.__addRow(fig, c, comm, row, commDataRow, cfg, h2transp=(senstype == 'h2transp'))
+                comm_data_row = comm_data.query(f"senstype=='{senstype}'")
+                self._add_row(fig, c, comm, row, comm_data_row, cfg, h2transp=(senstype == 'h2transp'))
 
                 # add zeroline top
                 fig.add_hline(100.0, row=row+1, col=c+1, line_color='black')
 
                 # update top axes layout
-                self._updateAxisLayout(
+                self._update_axis_layout(
                     fig, c+3*row,
                     xaxis=dict(
                         range=[-0.1, +3.65],
@@ -68,14 +68,14 @@ class SensitivityPlot(BasePlot):
                 )
 
             # update top axes layout
-            self._updateAxisLayout(
+            self._update_axis_layout(
                 fig, c+3*row,
                 xaxis=dict(
                     categoryorder='category ascending',
                     range=[-0.1, +3.65],
                     tickmode='array',
-                    tickvals=[i for i in range(commData['impcase'].nunique())],
-                    ticktext=[d for d in commData['impcase_display'].unique()],
+                    tickvals=[i for i in range(comm_data['impcase'].nunique())],
+                    ticktext=[d for d in comm_data['impcase_display'].unique()],
                 ),
             )
 
@@ -99,7 +99,7 @@ class SensitivityPlot(BasePlot):
             )
 
         # add dummy data for legend
-        self.__addDummyLegend(fig, cfg)
+        self._add_dummy_legend(fig, cfg)
 
         # update layout
         fig.update_layout(
@@ -116,7 +116,7 @@ class SensitivityPlot(BasePlot):
 
         return {'fig6': fig}
 
-    def __addDummyLegend(self, fig: go.Figure, cfg: dict):
+    def _add_dummy_legend(self, fig: go.Figure, cfg: dict):
         for legend, symbol in [('Case 1A', cfg['symbolCase1A']), ('Other<br>cases', cfg['symbol'])]:
             fig.add_trace(
                 go.Scatter(
@@ -138,7 +138,7 @@ class SensitivityPlot(BasePlot):
                 col=1,
             )
 
-    def __prepareData(self, inputs: dict, outputs: dict, comm: str, cfg: dict):
+    def _prepare_data(self, inputs: dict, outputs: dict, comm: str, cfg: dict):
         # prepare base data
         epd = outputs['cases'][comm].query(f"epdcase=='{cfg['epdcase']}'").droplevel('epdcase')
         table = outputs['tables'][comm] \
@@ -148,7 +148,7 @@ class SensitivityPlot(BasePlot):
 
         # sensitivity 1 -- wacc
         tmp = outputs['procLocs'][comm].replace('RE-scarce', inputs['other_assump']['irate']['RE-scarce'])
-        assumpWACC = pd.concat([
+        assump_wacc = pd.concat([
                 tmp.replace('RE-rich', wacc).assign(sensvar=f"{wacc}%").set_index('sensvar', append=True)
                 for wacc in [5.0, 8.0, 12.0, 20.0]
             ]) \
@@ -158,19 +158,18 @@ class SensitivityPlot(BasePlot):
             .set_index('type', append=True) \
             .unstack('type')
         sensitivities.append(
-                table \
-                    .assume(assumpWACC) \
-                    .calc(LCOX) \
+                table.assume(assump_wacc)
+                    .calc(LCOX)
                     .data['LCOX']
-                    .assign(senstype='wacc') \
+                    .assign(senstype='wacc')
                     .set_index('senstype', append=True)
             )
 
         # sensitivity 2 -- capex
-        assumpCAPEX = pd.concat([
-                table.data['value', 'capex'] \
+        assump_capex = pd.concat([
+                table.data['value', 'capex']
                     .apply(lambda x: x * (1.0 + sensvar/100))
-                    .assign(sensvar=f"{sensvar:+d}%") \
+                    .assign(sensvar=f"{sensvar:+d}%")
                     .set_index(['sensvar'], append=True)
                 for sensvar in [-50, 0, +50, +100]
             ]) \
@@ -178,19 +177,19 @@ class SensitivityPlot(BasePlot):
             .set_index('type', append=True) \
             .unstack('type')
         sensitivities.append(
-            table \
-                .assume(assumpCAPEX) \
-                .calc(LCOX) \
-                .data['LCOX'] \
-                .assign(senstype='capex') \
+            table
+                .assume(assump_capex)
+                .calc(LCOX)
+                .data['LCOX']
+                .assign(senstype='capex')
                 .set_index('senstype', append=True)
         )
 
         # sensitivity 3 -- h2 transp cost
-        assumpH2TranspCost = pd.concat([
-                table.data['assump', 'transp:h2'] \
-                    .apply(lambda x: pd.Series(index=x.index, data=(sensvar if (x == x).all() else np.nan)), axis=1) \
-                    .assign(sensvar=f"{sensvar} EUR/MWh") \
+        assump_h2transp_cost = pd.concat([
+                table.data['assump', 'transp:h2']
+                    .apply(lambda x: pd.Series(index=x.index, data=(sensvar if (x == x).all() else np.nan)), axis=1)
+                    .assign(sensvar=f"{sensvar} EUR/MWh")
                     .set_index(['sensvar'], append=True)
                 for sensvar in [5, 15, 35, 50, 70, 90]
             ]) \
@@ -199,12 +198,12 @@ class SensitivityPlot(BasePlot):
             .set_index('type', append=True) \
             .unstack('type')
         sensitivities.append(
-            table \
-                .assume(assumpH2TranspCost) \
-                .calc(LCOX) \
-                .data['LCOX'] \
-                .assign(senstype='h2transp') \
-                .set_index('senstype', append=True) \
+            table
+                .assume(assump_h2transp_cost)
+                .calc(LCOX)
+                .data['LCOX']
+                .assign(senstype='h2transp')
+                .set_index('senstype', append=True)
                 .query(f"impsubcase!='Case 1A'")
         )
 
@@ -212,52 +211,55 @@ class SensitivityPlot(BasePlot):
         if comm != 'Steel':
             sensitivities.append(
                 pd.concat([
-                        table \
-                            .calc(LCOX) \
-                            .data['LCOX'] \
-                            .assign(sensvar='w/ HP') \
+                        table
+                            .calc(LCOX)
+                            .data['LCOX']
+                            .assign(sensvar='w/ HP')
                             .set_index('sensvar', append=True),
-                        table \
-                            .assume(
-                            table.data['value'][[c for c in table.data['value'] if c[1] == 'HEATPUMP-4-DAC']] * np.nan) \
+                        table
+                            .assume(table.data['value'][[c for c in table.data['value']
+                                                         if c[1] == 'HEATPUMP-4-DAC']] * np.nan)
                             .assume(table.data[[('value', 'demand_sc:heat', 'DAC')]].rename(
-                            columns={'demand_sc:heat': 'demand:heat'}).droplevel(level='part', axis=1)) \
-                            .calc(LCOX) \
-                            .data['LCOX'] \
-                            .assign(sensvar='w/o HP') \
+                                    columns={'demand_sc:heat': 'demand:heat'}).droplevel(level='part', axis=1))
+                            .calc(LCOX)
+                            .data['LCOX']
+                            .assign(sensvar='w/o HP')
                             .set_index('sensvar', append=True),
-                    ]) \
-                    .assign(senstype='dachp') \
+                    ])
+                    .assign(senstype='dachp')
                     .set_index('senstype', append=True)
             )
 
         # sensitivity 5 -- repurposing
         if comm != 'Etyhlene':
-            repurpProc = ['HOTROLL', 'HBNH3-ASU', 'UREA-SYN']
-            originCAPEX = table.data['value', 'capex'][[t for t in repurpProc if t in table.data['value', 'capex']]]
-            modifier = outputs['procLocs'][comm].filter(repurpProc).apply(lambda col: col.map({'RE-scarce': np.nan, 'RE-rich': 1.0}))
-            assumpRepurp = pd.concat([
-                    originCAPEX \
-                        .assign(sensvar='w/o repurposing'),
-                    (originCAPEX * modifier) \
-                        .assign(sensvar='w/ repurposing'),
+            repurp_proc = ['HOTROLL', 'HBNH3-ASU', 'UREA-SYN']
+            origin_capex = table.data['value', 'capex'][[t for t in repurp_proc if t in table.data['value', 'capex']]]
+            modifier = outputs['procLocs'][comm] \
+                .filter(repurp_proc) \
+                .apply(lambda col: col.map({'RE-scarce': np.nan, 'RE-rich': 1.0}))
+            assump_repurp = pd.concat([
+                    origin_capex.assign(sensvar='w/o repurposing'),
+                    (origin_capex * modifier).assign(sensvar='w/ repurposing'),
                 ]) \
                 .set_index('sensvar', append=True) \
                 .assign(type='capex') \
                 .set_index('type', append=True) \
                 .unstack('type')
             sensitivities.append(
-                table \
-                    .assume(assumpRepurp) \
-                    .calc(LCOX) \
-                    .data['LCOX'] \
-                    .assign(senstype='repurpose') \
+                table
+                    .assume(assump_repurp)
+                    .calc(LCOX)
+                    .data['LCOX']
+                    .assign(senstype='repurpose')
                     .set_index('senstype', append=True)
             )
 
         # data for top row: calculate differences to Base Case, then rename import cases (1 to 1A/B and add subtitles),
         # and finally merge epd numbers for epdcases for display in plot
-        commDataTop = pd.concat([s.reorder_levels(['impcase', 'impsubcase', 'sensvar', 'senstype']) for s in sensitivities]) \
+        comm_data_top = pd.concat([
+                s.reorder_levels(['impcase', 'impsubcase', 'sensvar', 'senstype'])
+                for s in sensitivities
+            ]) \
             .pint.dequantify().droplevel('unit', axis=1) \
             .stack(['process', 'type']) \
             .groupby(['impcase', 'impsubcase', 'sensvar', 'senstype']) \
@@ -268,16 +270,17 @@ class SensitivityPlot(BasePlot):
             .to_frame('LCOP_rel') \
             .reset_index() \
             .assign(
-                impcase_display=lambda df: df['impcase'].map({
-                caseName: f"<b>{caseName + ('A/B' if caseName == 'Case 1' else '')}</b>:<br>{caseDesc}"
-                for caseName, caseDesc in self._glob_cfg['globPlot']['case_names'].items()}),
                 impcase_x=lambda df: df['impcase'].astype('category').cat.codes,
+                impcase_display=lambda df: df['impcase'].map({
+                    case_name: f"<b>{case_name + ('A/B' if case_name == 'Case 1' else '')}</b>:<br>{case_desc}"
+                    for case_name, case_desc in self._glob_cfg['globPlot']['case_names'].items()
+                }),
             )
 
-        return commDataTop
+        return comm_data_top
 
     # add stacked bars showing levelised cost components
-    def __addRow(self, fig: go.Figure, c: int, comm: str, row: int, commData: pd.DataFrame, cfg: dict, h2transp: bool):
+    def _add_row(self, fig: go.Figure, c: int, comm: str, row: int, comm_data: pd.DataFrame, cfg: dict, h2transp: bool):
         # prepare hover info
         hover = self._target == 'webapp'
 
@@ -304,16 +307,16 @@ class SensitivityPlot(BasePlot):
         )
 
         # lines
-        for l, sensvar in enumerate(commData['sensvar'].unique()):
-            thisData = commData.query(f"sensvar=='{sensvar}'")
-            plotData = thisData.query(f"impsubcase!='Case 1A'").sort_values(by='impcase')
+        for s, sensvar in enumerate(comm_data['sensvar'].unique()):
+            this_data = comm_data.query(f"sensvar=='{sensvar}'")
+            plot_data = this_data.query(f"impsubcase!='Case 1A'").sort_values(by='impcase')
 
             if h2transp:
-                plotDataH2Transp = plotData.query(f"impcase!='Case 3'") if l else plotData
+                plot_data_h2transp = plot_data.query(f"impcase!='Case 3'") if s else plot_data
                 fig.add_trace(
                     go.Scatter(
-                        x=plotDataH2Transp['impcase_x'],
-                        y=plotDataH2Transp['LCOP_rel'],
+                        x=plot_data_h2transp['impcase_x'],
+                        y=plot_data_h2transp['LCOP_rel'],
                         name=comm,
                         mode='lines',
                         line=dict(
@@ -330,8 +333,8 @@ class SensitivityPlot(BasePlot):
             else:
                 fig.add_trace(
                     go.Scatter(
-                        x=plotData['impcase_x'],
-                        y=plotData['LCOP_rel'],
+                        x=plot_data['impcase_x'],
+                        y=plot_data['LCOP_rel'],
                         name=comm,
                         mode='lines',
                         line=dict(
@@ -346,11 +349,11 @@ class SensitivityPlot(BasePlot):
                     col=c + 1,
                 )
 
-                plotData = thisData.query(f"impsubcase=='Case 1B'")
+                plot_data = this_data.query(f"impsubcase=='Case 1B'")
                 fig.add_trace(
                     go.Scatter(
                         x=[0.0, 0.9],
-                        y=plotData['LCOP_rel'],
+                        y=plot_data['LCOP_rel'],
                         name=comm,
                         mode='lines',
                         line=dict(
@@ -367,13 +370,13 @@ class SensitivityPlot(BasePlot):
                 )
 
             # points
-            pointData = thisData.query(f"impcase!='Base Case'")
-            for impsubcase in pointData['impsubcase'].unique():
-                thisData = pointData.query(f"impsubcase=='{impsubcase}'")
+            point_data = this_data.query(f"impcase!='Base Case'")
+            for impsubcase in point_data['impsubcase'].unique():
+                this_data = point_data.query(f"impsubcase=='{impsubcase}'")
                 fig.add_trace(
                     go.Scatter(
-                        x=thisData['impcase_x'] - (0.1 if impsubcase == 'Case 1A' else 0.0),
-                        y=thisData['LCOP_rel'],
+                        x=this_data['impcase_x'] - (0.1 if impsubcase == 'Case 1A' else 0.0),
+                        y=this_data['LCOP_rel'],
                         name=comm,
                         mode='markers+lines',
                         marker=dict(
@@ -386,8 +389,10 @@ class SensitivityPlot(BasePlot):
                         showlegend=False,
                         legendgroup=comm,
                         hoverinfo='text' if hover else 'skip',
-                        hovertemplate='<b>%{customdata[0]}</b><br>Sensitivity: %{customdata[1]}<br>Rel. prod. cost: %{y}%<extra></extra>',
-                        customdata=thisData[['impsubcase', 'sensvar']] if hover else None,
+                        hovertemplate='<b>%{customdata[0]}</b><br>'
+                                      'Sensitivity: %{customdata[1]}<br>'
+                                      'Rel. prod. cost: %{y}%<extra></extra>',
+                        customdata=this_data[['impsubcase', 'sensvar']] if hover else None,
                     ),
                     row=row + 1,
                     col=c + 1,
@@ -395,19 +400,19 @@ class SensitivityPlot(BasePlot):
 
         # sensvar annotations
         dys = 10.0 if h2transp else 8.0
-        sensVarLabel = commData.query(f"impcase=='Case 1'" if h2transp else f"impcase=='Case 3'") \
+        sens_var_label = comm_data.query(f"impcase=='Case 1'" if h2transp else f"impcase=='Case 3'") \
             .sort_values(by='LCOP_rel') \
             .reset_index(drop=True) \
             .assign(LCOP_label_pos=lambda df: df['LCOP_rel'].mean() + dys * (df.index - len(df)/2 + 0.5))
         fig.add_trace(
             go.Scatter(
-                x=sensVarLabel['impcase_x'],
-                y=sensVarLabel['LCOP_label_pos'],
-                text=sensVarLabel['sensvar'],
+                x=sens_var_label['impcase_x'],
+                y=sens_var_label['LCOP_label_pos'],
+                text=sens_var_label['sensvar'],
                 name=comm,
                 mode='markers+text',
                 textposition='middle right',
-                textfont_size=self.getFontSize('fs_tn'),
+                textfont_size=self.get_font_size('fs_tn'),
                 textfont_color=cfg['globPlot']['commodity_colours'][comm],
                 marker_size=cfg['globStyle'][self._target]['marker_sm'],
                 marker_color='rgba(0,0,0,0)',
@@ -421,17 +426,18 @@ class SensitivityPlot(BasePlot):
 
         # case annotation
         if not h2transp:
-            for impsubcase, sensVarCmd, x, pos in [('Case 1A', 'max', 0.9, 'middle left'), ('Case 1B', 'min', 1.0, 'bottom right')]:
-                caseLabel = commData.query(f"impsubcase=='{impsubcase}' & sensvar==sensvar.{sensVarCmd}()")
+            for impsubcase, sens_var_cmd, x, pos in [('Case 1A', 'max', 0.9, 'middle left'),
+                                                     ('Case 1B', 'min', 1.0, 'bottom right'),]:
+                case_label = comm_data.query(f"impsubcase=='{impsubcase}' & sensvar==sensvar.{sens_var_cmd}()")
                 fig.add_trace(
                     go.Scatter(
                         x=[x],
-                        y=caseLabel['LCOP_rel'],
-                        text=caseLabel['impsubcase'],
+                        y=case_label['LCOP_rel'],
+                        text=case_label['impsubcase'],
                         name=comm,
                         mode='markers+text',
                         textposition=pos,
-                        textfont_size=self.getFontSize('fs_sm'),
+                        textfont_size=self.get_font_size('fs_sm'),
                         textfont_color=cfg['globPlot']['commodity_colours'][comm],
                         marker_size=cfg['globStyle'][self._target]['marker_sm'],
                         marker_color='rgba(0,0,0,0)',

@@ -1,7 +1,7 @@
+from abc import ABC
 from string import ascii_lowercase
 from typing import Optional, Final
 
-import pandas as pd
 import plotly.graph_objects as go
 from plotly.colors import hex_to_rgb
 
@@ -10,43 +10,46 @@ from piw import AbstractPlot
 
 inch_per_pt: Final[float] = 1 / 72
 
-class BasePlot(AbstractPlot):
-    _addSubfigName: bool = False
-    _addSubfigNameDict: Optional[dict] = None
+
+class BasePlot(AbstractPlot, ABC):
+    _add_subfig_name: bool = False
+    _add_subfig_name_dict: Optional[dict] = None
 
     def _decorate(self, inputs: dict, outputs: dict, subfigs: dict):
-        for subfigName, subfigPlot in subfigs.items():
-            if subfigPlot is None: continue
+        for subfig_name, subfig_plot in subfigs.items():
+            if subfig_plot is None:
+                continue
 
-            fs_sm = self.getFontSize('fs_sm')
-            fs_md = self.getFontSize('fs_md')
-            fs_lg = self.getFontSize('fs_lg')
+            fs_sm = self.get_font_size('fs_sm')
+            fs_md = self.get_font_size('fs_md')
+            fs_lg = self.get_font_size('fs_lg')
 
-            self._decorateFontAndLabels(subfigName, subfigPlot, fs_sm, fs_md, fs_lg)
+            self._decorate_font_and_labels(subfig_name, subfig_plot, fs_sm, fs_md, fs_lg)
 
-    def _decorateFontAndLabels(self, subfigName: str, subfigPlot: go.Figure, fs_sm: float, fs_md: float, fs_lg: float):
-        subfigPlot.update_layout(font_size=fs_sm)
-        subfigPlot.update_xaxes(title_font_size=fs_sm, tickfont_size=fs_sm)
-        subfigPlot.update_yaxes(title_font_size=fs_sm, tickfont_size=fs_sm)
-        subfigPlot.update_annotations(font_size=fs_sm)
+    def _decorate_font_and_labels(self, subfig_name: str, subfig_plot: go.Figure,
+                                  fontsize_small: float, fontsize_medium: float, fontsize_large: float):
+        subfig_plot.update_layout(font_size=fontsize_small)
+        subfig_plot.update_xaxes(title_font_size=fontsize_small, tickfont_size=fontsize_small)
+        subfig_plot.update_yaxes(title_font_size=fontsize_small, tickfont_size=fontsize_small)
+        subfig_plot.update_annotations(font_size=fontsize_small)
 
         # subplot labels
-        if self._addSubfigName:
-            if subfigName[-1] in ascii_lowercase:
-                subfigNameDict = {1: subfigName[-1]}
+        if self._add_subfig_name:
+            if subfig_name[-1] in ascii_lowercase:
+                subfig_name_dict = {1: subfig_name[-1]}
             else:
-                numSubPlots = self.__countNumbSubplots(subfigPlot)
+                subfig_plot_nsubplots = _count_numb_subplots(subfig_plot)
 
-                if self._addSubfigNameDict is None:
-                    subfigNameDict = {i: ascii_lowercase[i] for i in range(numSubPlots)}
+                if self._add_subfig_name_dict is None:
+                    subfig_name_dict = {i: ascii_lowercase[i] for i in range(subfig_plot_nsubplots)}
                 else:
-                    subfigNameDict = self._addSubfigNameDict
+                    subfig_name_dict = self._add_subfig_name_dict
 
-            for i, subfigLabel in subfigNameDict.items():
-                subfigPlot.add_annotation(
+            for i, subfig_label in subfig_name_dict.items():
+                subfig_plot.add_annotation(
                     showarrow=False,
-                    text=f"<b>{subfigLabel}</b>",
-                    font_size=fs_lg,
+                    text=f"<b>{subfig_label}</b>",
+                    font_size=fontsize_large,
                     x=0.0,
                     xanchor='left',
                     xref=f"x{i + 1 if i else ''} domain",
@@ -56,22 +59,7 @@ class BasePlot(AbstractPlot):
                     yshift=10.0,
                 )
 
-    def __countNumbSubplots(self, fig: go.Figure):
-        return sum(1 for row in range(len(fig._grid_ref))
-                   for col in range(len(fig._grid_ref[row]))
-                   if fig._grid_ref[row][col] is not None) \
-            if fig._grid_ref is not None else 1
-
-    @staticmethod
-    def _groupbySumval(df: pd.DataFrame, groupCols: list, keep: list = []) -> pd.DataFrame:
-        if 'val_rel' in df.columns:
-            raise Exception('Cannot sum relative values.')
-        sumCols = [col for col in ['val', 'val_diff'] if col in df.columns]
-        return df.groupby(groupCols) \
-            .agg(dict(**{c: 'first' for c in groupCols + keep}, **{c: 'sum' for c in sumCols})) \
-            .reset_index(drop=True)
-
-    def _addAnnotation(self, fig: go.Figure, text: str, subplot_id: int):
+    def _add_annotation(self, fig: go.Figure, text: str, subplot_id: int):
         fig.add_annotation(
             text=f"<b>{text}</b>",
             x=1.0,
@@ -87,7 +75,7 @@ class BasePlot(AbstractPlot):
             bgcolor='white',
         )
 
-    def _addAnnotationComm(self, fig: go.Figure, comm: str, c: int):
+    def _add_annotation_comm(self, fig: go.Figure, comm: str, c: int):
         fig.add_annotation(
             text=f"<b>{comm}</b>",
             x=0.5,
@@ -101,15 +89,16 @@ class BasePlot(AbstractPlot):
             bordercolor=self._glob_cfg['globPlot']['commodity_colours'][comm],
             borderwidth=self._glob_cfg['globStyle'][self._target]['lw_thin'],
             borderpad=3*self._glob_cfg['globStyle'][self._target]['lw_thin'],
-            bgcolor="rgba({}, {}, {}, {})".format(*hex_to_rgb(self._glob_cfg['globPlot']['commodity_colours'][comm]), .3),
+            bgcolor="rgba({}, {}, {}, {})".format(*hex_to_rgb(
+                self._glob_cfg['globPlot']['commodity_colours'][comm]), .3),
             font_color=self._glob_cfg['globPlot']['commodity_colours'][comm],
-            font_size=self.getFontSize('fs_lg'),
+            font_size=self.get_font_size('fs_lg'),
             row=1,
             col=c + 1,
         )
 
     @staticmethod
-    def _updateAxisLayout(fig: go.Figure, i: int, xaxis: Optional[dict] = None, yaxis: Optional[dict] = None):
+    def _update_axis_layout(fig: go.Figure, i: int, xaxis: Optional[dict] = None, yaxis: Optional[dict] = None):
         if xaxis is not None:
             fig.update_layout(**{
                 f"xaxis{i + 1 if i else ''}": xaxis,
@@ -119,5 +108,13 @@ class BasePlot(AbstractPlot):
                 f"yaxis{i + 1 if i else ''}": yaxis,
             })
 
-    def getFontSize(self, size: str):
+    def get_font_size(self, size: str):
         return self._dpi * inch_per_pt * self._glob_cfg['globStyle'][self._target][size]
+
+
+def _count_numb_subplots(fig: go.Figure):
+    grid_ref = fig._grid_ref
+    return sum(1 for row in range(len(grid_ref))
+               for col in range(len(grid_ref[row]))
+               if grid_ref[row][col] is not None) \
+        if grid_ref is not None else 1

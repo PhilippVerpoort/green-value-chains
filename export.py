@@ -7,11 +7,11 @@ from webapp import webapp
 # get list of figs to plot from command line args and call webapp.export()
 def export():
     if len(sys.argv) > 1:
-        figNames = sys.argv[1:]
+        fig_names = sys.argv[1:]
     else:
-        figNames = None
+        fig_names = None
 
-    webapp.export(figNames, export_formats=['png', 'svg'])
+    webapp.export(fig_names, export_formats=['png', 'svg'])
 
 
 # call export function when running as script

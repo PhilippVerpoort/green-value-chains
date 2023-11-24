@@ -16,7 +16,7 @@ def loadYAMLDataFile(fname: str):
         ret = yaml.load(f.read(), Loader=yaml.FullLoader)
     return ret
 
-def loadYAMLConfigFile(fname: str):
+def load_yaml_config_file(fname: str):
     path = BASE_PATH / 'config' / f"{fname}.yml"
     with open(path, 'r') as f:
         ret = yaml.load(f.read(), Loader=yaml.FullLoader)

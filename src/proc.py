@@ -5,7 +5,7 @@ from posted.units.units import ureg
 
 
 # process cases
-def processInputs(inputs: dict, outputs: dict):
+def process_inputs(inputs: dict, outputs: dict):
     vcs = inputs['value_chains']
 
     # calculate epd from price cases

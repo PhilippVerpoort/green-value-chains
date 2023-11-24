@@ -4,21 +4,21 @@ import plotly.express as px
 import plotly.graph_objects as go
 from posted.calc_routines.LCOX import LCOX
 
-from src.utils import loadYAMLConfigFile
+from src.utils import load_yaml_config_file
 from src.plots.BasePlot import BasePlot
 
 
 class ScenarioPlot(BasePlot):
-    figs = loadYAMLConfigFile(f"figures/ScenarioPlot")
+    figs = load_yaml_config_file(f"figures/ScenarioPlot")
 
-    def plot(self, inputs: dict, outputs: dict, subfigNames: list) -> dict:
+    def plot(self, inputs: dict, outputs: dict, subfig_names: list) -> dict:
         cfg = self._fig_cfgs['fig7']
 
-        plotData = self.__prepare(inputs, outputs, cfg)
-        plotData['scenario_name'] = plotData['scenario'].map(cfg['scenario_names'])
+        plot_data = _prepare(inputs, outputs, cfg)
+        plot_data['scenario_name'] = plot_data['scenario'].map(cfg['scenario_names'])
 
         fig = px.bar(
-            plotData,
+            plot_data,
             x='scenario_name',
             y='value',
             color='commodity',
@@ -33,15 +33,15 @@ class ScenarioPlot(BasePlot):
             trace['legendgrouptitle_text'] = f"<b>{cfg['legendgroup_titles']['protection']}</b>"
 
         # add federal budget data
-        budgetData = pd.DataFrame.from_dict(cfg['planned_expenses'], orient='index')
+        budget_data = pd.DataFrame.from_dict(cfg['planned_expenses'], orient='index')
 
-        for t in budgetData['type'].unique():
-            thisData = budgetData.query(f"type=='{t}'")
+        for t in budget_data['type'].unique():
+            this_data = budget_data.query(f"type=='{t}'")
 
             fig.add_trace(
                 go.Bar(
-                    x=thisData['label'],
-                    y=thisData['value'],
+                    x=this_data['label'],
+                    y=this_data['value'],
                     marker_color=cfg['expenses_color'][t],
                     name=t,
                     xaxis='x4',
@@ -52,16 +52,16 @@ class ScenarioPlot(BasePlot):
             )
 
         # adjust axes domains
-        N = 3
+        n = 3
         xspace = 0.67
         xdelta = 0.02
-        xranges = list(zip(np.linspace(0, xspace+xdelta, N+1)[:N], np.linspace(-xdelta, xspace, N+1)[1:]))
+        xranges = list(zip(np.linspace(0, xspace+xdelta, n+1)[:n], np.linspace(-xdelta, xspace, n+1)[1:]))
         fig.update_layout(
             **{
                 f"xaxis{i+1 if i else ''}": dict(
                     domain=xranges[i],
                 )
-                for i in range(N)
+                for i in range(n)
             },
             xaxis4={'domain': [xspace+xdelta, 1.0]},
             yaxis4={'anchor': 'x4', 'matches': 'y', 'side': 'right'},
@@ -81,10 +81,10 @@ class ScenarioPlot(BasePlot):
                 x=0.005,
                 y=0.99,
             ),
-            **{f"xaxis{i+1 if i else ''}_title": '' for i in range(N+1)},
+            **{f"xaxis{i+1 if i else ''}_title": '' for i in range(n+1)},
             yaxis_title=cfg['yaxis_title']['left'],
             yaxis4_title=cfg['yaxis_title']['right'],
-            **{f"yaxis{i + 1 if i else ''}_range": [0.0, cfg['yaxis_max']] for i in range(N + 1)},
+            **{f"yaxis{i + 1 if i else ''}_range": [0.0, cfg['yaxis_max']] for i in range(n + 1)},
             # yaxis4_tickmode='array',
             # yaxis4_tickvals=[],
             yaxis4_ticklabelposition='outside right',
@@ -94,48 +94,49 @@ class ScenarioPlot(BasePlot):
         # replace annotations
         fig.layout.annotations = []
         for s, scen in enumerate(cfg['epdcases'] + ['For comparison']):
-            self._addAnnotation(fig, scen.capitalize(), s)
+            self._add_annotation(fig, scen.capitalize(), s)
 
         return {'fig7': fig}
 
-    def __prepare(self, inputs: dict, outputs: dict, cfg: dict):
-        # produce LCOX DataTable by assuming final elec prices and applying calc routine, then combine into single
-        # dataframe for all commodities/value chains
-        lcox = []
-        for comm in inputs['value_chains']:
-            lcoxComm = outputs['tables'][comm] \
-                .assume(outputs['cases'][comm]) \
-                .calc(LCOX) \
-                .data['LCOX'] \
-                .query(f"epdcase.isin({cfg['epdcases']})") \
-                .pint.dequantify().droplevel('unit', axis=1) \
-                .stack(['process', 'type']).to_frame('LCOP') \
-                .groupby(['impsubcase', 'epdcase']) \
-                .agg({'LCOP': 'sum'}) \
-                .assign(commodity=comm) \
-                .set_index('commodity', append=True) \
-                .unstack(['commodity', 'epdcase']) \
-                .apply(lambda row: row-row[-1]) \
-                .stack(['commodity', 'epdcase']) \
-                .unstack('impsubcase') \
-                .reorder_levels(['commodity', 'epdcase'])
-            lcox.append(lcoxComm)
-        lcox = pd.concat(lcox)
 
-        # add scenario data
-        scenarios = pd.concat([inputs['scenarios']], keys=['share'], axis=1)
-        savings = lcox.merge(scenarios, left_index=True, right_index=True)
-        savings = savings['LCOP'] * savings['share']
+def _prepare(inputs: dict, outputs: dict, cfg: dict):
+    # produce LCOX DataTable by assuming final elec prices and applying calc routine, then combine into single
+    # dataframe for all commodities/value chains
+    lcox = []
+    for comm in inputs['value_chains']:
+        lcox_comm = outputs['tables'][comm] \
+            .assume(outputs['cases'][comm]) \
+            .calc(LCOX) \
+            .data['LCOX'] \
+            .query(f"epdcase.isin({cfg['epdcases']})") \
+            .pint.dequantify().droplevel('unit', axis=1) \
+            .stack(['process', 'type']).to_frame('LCOP') \
+            .groupby(['impsubcase', 'epdcase']) \
+            .agg({'LCOP': 'sum'}) \
+            .assign(commodity=comm) \
+            .set_index('commodity', append=True) \
+            .unstack(['commodity', 'epdcase']) \
+            .apply(lambda row: row-row[-1]) \
+            .stack(['commodity', 'epdcase']) \
+            .unstack('impsubcase') \
+            .reorder_levels(['commodity', 'epdcase'])
+        lcox.append(lcox_comm)
+    lcox = pd.concat(lcox)
 
-        # add volume data, sum up, sort, and return
-        return savings \
-            .apply(lambda col: col * inputs['volumes'] / 1.0E+3) \
-            .sum(axis=1) \
-            .to_frame('value') \
-            .loc[[
-                (comm, epdcase, scenario)
-                for comm in inputs['value_chains']
-                for epdcase in cfg['epdcases']
-                for scenario in scenarios.index.unique('scenario')
-            ]] \
-            .reset_index()
+    # add scenario data
+    scenarios = pd.concat([inputs['scenarios']], keys=['share'], axis=1)
+    savings = lcox.merge(scenarios, left_index=True, right_index=True)
+    savings = savings['LCOP'] * savings['share']
+
+    # add volume data, sum up, sort, and return
+    return savings \
+        .apply(lambda col: col * inputs['volumes'] / 1.0E+3) \
+        .sum(axis=1) \
+        .to_frame('value') \
+        .loc[[
+            (comm, epdcase, scenario)
+            for comm in inputs['value_chains']
+            for epdcase in cfg['epdcases']
+            for scenario in scenarios.index.unique('scenario')
+        ]] \
+        .reset_index()

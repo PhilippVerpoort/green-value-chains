@@ -3,7 +3,7 @@ import pandas as pd
 
 
 # update callback function
-def updateScenarioInput(inputs_updated: dict, btn_pressed: str, args: list):
+def update_inputs(inputs_updated: dict, btn_pressed: str, args: list):
     # get dataframe of updated values from table
     elec_prices = args[1]
     inputs_updated['epdcases'] = pd.DataFrame.from_dict(elec_prices) \

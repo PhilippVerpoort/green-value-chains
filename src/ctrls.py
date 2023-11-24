@@ -5,7 +5,7 @@ from posted.config.config import flowTypes
 
 
 # create main control card
-def mainCtrl(default_inputs: dict):
+def main_ctrl(default_inputs: dict):
     tableDataElecPrice = default_inputs['epdcases'] \
         .pint.dequantify() \
         .droplevel(level='unit', axis=1) \

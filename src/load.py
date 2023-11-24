@@ -8,7 +8,7 @@ from posted.ted.Mask import Mask
 from src.utils import loadYAMLDataFile, loadCSVDataFile
 
 
-def loadData(inputs: dict):
+def load_data(inputs: dict):
     # load data for electricity-price cases
     inputs['epdcases'] = loadCSVDataFile('epd_cases') \
         .astype({c: 'pint[EUR/MWh]' for c in ('RE-scarce', 'RE-rich')}, errors='ignore')
@@ -35,7 +35,7 @@ def loadData(inputs: dict):
     # load value chain definitions
     inputs['value_chains'] = loadYAMLDataFile('value_chains')
 
-def loadPOSTED(inputs: dict):
+def load_posted(inputs: dict):
     # create list of technologies to load
     vcs = inputs['value_chains']
     techs = {k: {} for comm in vcs for k in vcs[comm]['graph'].keys()}
@@ -95,7 +95,7 @@ def loadPOSTED(inputs: dict):
 
         inputs['vc_tables'][comm] = t
 
-def loadOther(inputs: dict):
+def load_other(inputs: dict):
     # add OCF and other prices (all except electricity) to tables
     for comm, table in inputs['vc_tables'].items():
         # other prices
