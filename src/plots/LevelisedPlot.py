@@ -47,8 +47,6 @@ class LevelisedPlot(BasePlot):
 
             ymax = self._add_bars(fig, c, comm_data)
 
-            _add_arrows(fig, c)
-
             # update layout of subplot
             self._update_axis_layout(
                 fig, c,
@@ -64,7 +62,8 @@ class LevelisedPlot(BasePlot):
             )
 
             # add cost differences from Base Case
-            if self._target == 'print':
+            if self._target != 'webapp':
+                _add_arrows(fig, c)
                 self._add_cost_diff(fig, c, comm_data, ymax)
 
         # update layout of all plots

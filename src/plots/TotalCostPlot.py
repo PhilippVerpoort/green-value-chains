@@ -71,13 +71,12 @@ class TotalCostPlot(BasePlot):
             # update bottom axes layout
             self._update_axis_layout(fig, c + 3, **axes)
 
+            # add arrows explaining the plot if not webapp
+            if self._target != 'webapp':
+                _add_arrows(fig, c)
+
         # add dummy data for legend
         self._add_dummy_legend(fig, cfg)
-
-        # add arrows explaining the plot if not webapp
-        if self._target != 'webapp':
-            for c in range(len(commodities)):
-                _add_arrows(fig, c)
 
         # update layout
         fig.update_layout(
