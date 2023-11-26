@@ -11,11 +11,11 @@ fig6:
   - 'advanced'
   size:
     print:
-      height: 140.0  # unit mm
       width: 180.0  # unit mm
+      height: 140.0  # unit mm
     webapp:
-      height: 1200.0  # unit px
       width: 100.0  # unit %
+      height: 1200.0  # unit px
   config:
     epdcase: medium
 

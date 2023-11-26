@@ -13,11 +13,11 @@ fig4:
   - 'advanced'
   size:
     print:
-      height: 100.0  # unit mm
       width: 180.0  # unit mm
+      height: 100.0  # unit mm
     webapp:
-      height: 900.0  # unit px
       width: 100.0  # unit %
+      height: 900.0  # unit px
   config:
     symbol: x-thin
     symbolCase1A: triangle-up
