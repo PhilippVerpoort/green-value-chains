@@ -23,7 +23,7 @@ class ScenarioPlot(BasePlot):
             y='value',
             color='commodity',
             facet_col='epdcase',
-            color_discrete_sequence=list(cfg['globPlot']['commodity_colours'].values()),
+            color_discrete_sequence=list(cfg['commodity_colours'].values()),
             text_auto=True,
         )
 

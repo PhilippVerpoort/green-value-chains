@@ -96,14 +96,14 @@ class LevelisedPlot(BasePlot):
         comm_data['impcase_display'] = comm_data['impcase'] \
             .map({
                 case_name: f"<b>{case_name + ('A/B' if case_name == 'Case 1' else '')}</b>:<br>{case_desc}"
-                for case_name, case_desc in self._glob_cfg['globPlot']['case_names'].items()
+                for case_name, case_desc in cfg['case_names'].items()
             })
 
         # prepare hover data
         if self._target == 'webapp':
             comm_data['hover_ptype'] = comm_data['ptype'].map({
                 ptype: display['label']
-                for ptype, display in self._glob_cfg['globPlot']['cost_types'].items()
+                for ptype, display in cfg['cost_types'].items()
             })
             comm_data['hover_flow'] = comm_data['type'].map({
                 f"dem_cost:{flow_id}": flowSpecs['name']
@@ -147,7 +147,7 @@ class LevelisedPlot(BasePlot):
         hovertemplate_transp = ''.join(hovercomp[c] for c in ['header_flow', 'impcase', 'cost', 'extra'])
 
         # add traces for all cost types
-        for ptype, display in self._glob_cfg['globPlot']['cost_types'].items():
+        for ptype, display in self._glob_cfg['cost_types'].items():
             this_data = main_data \
                 .query(f"ptype=='{ptype}'") \
                 .sort_index(level='impcase') \
@@ -182,7 +182,7 @@ class LevelisedPlot(BasePlot):
                 col=c + 1,
             )
 
-        display = self._glob_cfg['globPlot']['cost_types']['transport']
+        display = self._glob_cfg['cost_types']['transport']
         base_val = main_data.query(f"impcase=='Case 1'").value.sum()
 
         for s, subcase in enumerate(h2transp_data.impsubcase.unique()):
@@ -219,7 +219,7 @@ class LevelisedPlot(BasePlot):
         fig.add_hline(
             base_cost,
             line_color='black',
-            line_width=self._glob_cfg['globStyle'][self._target]['lw_thin'],
+            line_width=self._styles['lw_thin'],
             row=1,
             col=c + 1,
         )
@@ -248,7 +248,7 @@ class LevelisedPlot(BasePlot):
                 ay=base_cost + (correction * ymax if cost_diff < 0.0 else -correction * ymax),
                 ayref=f"y{c + 1 if c else ''}",
                 arrowcolor='black',
-                arrowwidth=self._glob_cfg['globStyle'][self._target]['lw_thin'],
+                arrowwidth=self._styles['lw_thin'],
                 arrowhead=2,
                 row=1,
                 col=c + 1,

@@ -92,8 +92,8 @@ class SensitivityPlot(BasePlot):
                 yref=f"y{2+3*row} domain",
                 yanchor='middle',
                 bordercolor='black',
-                borderwidth=self._glob_cfg['globStyle'][self._target]['lw_thin'],
-                borderpad=10*self._glob_cfg['globStyle'][self._target]['lw_thin'],
+                borderwidth=self._styles['lw_thin'],
+                borderpad=10*self._styles['lw_thin'],
                 bgcolor='white',
                 opacity=1.0,
             )
@@ -127,8 +127,8 @@ class SensitivityPlot(BasePlot):
                     marker=dict(
                         color='black',
                         symbol=symbol,
-                        size=cfg['globStyle'][self._target]['marker_sm'],
-                        line_width=cfg['globStyle'][self._target]['lw_thin'],
+                        size=self._styles['marker_sm'],
+                        line_width=self._styles['lw_thin'],
                         line_color='black',
                     ),
                     showlegend=True,
@@ -273,7 +273,7 @@ class SensitivityPlot(BasePlot):
                 impcase_x=lambda df: df['impcase'].astype('category').cat.codes,
                 impcase_display=lambda df: df['impcase'].map({
                     case_name: f"<b>{case_name + ('A/B' if case_name == 'Case 1' else '')}</b>:<br>{case_desc}"
-                    for case_name, case_desc in self._glob_cfg['globPlot']['case_names'].items()
+                    for case_name, case_desc in cfg['case_names'].items()
                 }),
             )
 
@@ -292,11 +292,11 @@ class SensitivityPlot(BasePlot):
                 name=comm,
                 mode='markers',
                 marker=dict(
-                    color=cfg['globPlot']['commodity_colours'][comm],
+                    color=cfg['commodity_colours'][comm],
                     symbol=cfg['symbol'],
-                    size=cfg['globStyle'][self._target]['marker_sm'],
-                    line_width=cfg['globStyle'][self._target]['lw_thin'],
-                    line_color=cfg['globPlot']['commodity_colours'][comm],
+                    size=self._styles['marker_sm'],
+                    line_width=self._styles['lw_thin'],
+                    line_color=cfg['commodity_colours'][comm],
                 ),
                 showlegend=False,
                 legendgroup=comm,
@@ -321,7 +321,7 @@ class SensitivityPlot(BasePlot):
                         mode='lines',
                         line=dict(
                             shape='spline',
-                            color=cfg['globPlot']['commodity_colours'][comm],
+                            color=cfg['commodity_colours'][comm],
                         ),
                         showlegend=False,
                         legendgroup=comm,
@@ -339,7 +339,7 @@ class SensitivityPlot(BasePlot):
                         mode='lines',
                         line=dict(
                             shape='spline',
-                            color=cfg['globPlot']['commodity_colours'][comm],
+                            color=cfg['commodity_colours'][comm],
                         ),
                         showlegend=False,
                         legendgroup=comm,
@@ -358,7 +358,7 @@ class SensitivityPlot(BasePlot):
                         mode='lines',
                         line=dict(
                             shape='spline',
-                            color=cfg['globPlot']['commodity_colours'][comm],
+                            color=cfg['commodity_colours'][comm],
                             dash='dash',
                         ),
                         showlegend=False,
@@ -380,11 +380,11 @@ class SensitivityPlot(BasePlot):
                         name=comm,
                         mode='markers+lines',
                         marker=dict(
-                            color=cfg['globPlot']['commodity_colours'][comm],
+                            color=cfg['commodity_colours'][comm],
                             symbol=cfg['symbolCase1A'] if impsubcase == 'Case 1A' else cfg['symbol'],
-                            size=cfg['globStyle'][self._target]['marker_sm'],
-                            line_width=cfg['globStyle'][self._target]['lw_thin'],
-                            line_color=cfg['globPlot']['commodity_colours'][comm],
+                            size=self._styles['marker_sm'],
+                            line_width=self._styles['lw_thin'],
+                            line_color=cfg['commodity_colours'][comm],
                         ),
                         showlegend=False,
                         legendgroup=comm,
@@ -413,8 +413,8 @@ class SensitivityPlot(BasePlot):
                 mode='markers+text',
                 textposition='middle right',
                 textfont_size=self.get_font_size('fs_tn'),
-                textfont_color=cfg['globPlot']['commodity_colours'][comm],
-                marker_size=cfg['globStyle'][self._target]['marker_sm'],
+                textfont_color=cfg['commodity_colours'][comm],
+                marker_size=self._styles['marker_sm'],
                 marker_color='rgba(0,0,0,0)',
                 showlegend=False,
                 legendgroup=comm,
@@ -438,8 +438,8 @@ class SensitivityPlot(BasePlot):
                         mode='markers+text',
                         textposition=pos,
                         textfont_size=self.get_font_size('fs_sm'),
-                        textfont_color=cfg['globPlot']['commodity_colours'][comm],
-                        marker_size=cfg['globStyle'][self._target]['marker_sm'],
+                        textfont_color=cfg['commodity_colours'][comm],
+                        marker_size=self._styles['marker_sm'],
                         marker_color='rgba(0,0,0,0)',
                         showlegend=False,
                         legendgroup=comm,

@@ -631,12 +631,13 @@ develop = false
 [package.dependencies]
 dash = "^2.14.0"
 dash-bootstrap-components = "^1.5.0"
+pyyaml = "^6.0.1"
 
 [package.source]
 type = "git"
 url = "https://github.com/PhilippVerpoort/piw.git"
-reference = "v0.2.1"
-resolved_reference = "6666cfa9f7659321679ae75e5d05a937fc720271"
+reference = "v0.2.2"
+resolved_reference = "93603540c7dbb9fa0c0ef48437905c1d478e691e"
 
 [[package]]
 name = "plotly"
@@ -966,4 +967,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "518570211a685c5d95b9bc1b86e015c2ae133b24518d271ecd6ef2cfc1a84f12"
+content-hash = "f46a448f9fd8a32cbbaf21da7e549ac0ddb5761f7f4acee781fd0334031cfa9c"
