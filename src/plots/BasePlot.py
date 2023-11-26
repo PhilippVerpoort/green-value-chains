@@ -36,7 +36,7 @@ class BasePlot(AbstractPlot, ABC):
         # subplot labels
         if self._add_subfig_name:
             if subfig_name[-1] in ascii_lowercase:
-                subfig_name_dict = {1: subfig_name[-1]}
+                subfig_name_dict = {0: subfig_name[-1]}
             else:
                 subfig_plot_nsubplots = _count_numb_subplots(subfig_plot)
 
