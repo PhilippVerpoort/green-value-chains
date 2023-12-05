@@ -63,8 +63,7 @@ class LevelisedPlot(BasePlot):
 
             # add cost differences from Base Case
             if self._target != 'webapp':
-                _add_arrows(fig, c)
-                self._add_cost_diff(fig, c, comm_data, ymax)
+                self._add_annotations(fig, c, comm_data, ymax)
 
         # update layout of all plots
         fig.update_layout(
@@ -208,14 +207,43 @@ class LevelisedPlot(BasePlot):
         return ymax
 
     # add arrows indicating difference between cases
-    def _add_cost_diff(self, fig, c, comm_data, ymax):
-        correction = 0.018
-        xshift = 2.5
-        yshift = 35.0
+    def _add_annotations(self, fig: go.Figure, c: int, comm_data: pd.DataFrame, ymax: float):
+        # select relevant x and y axes
+        xref = f"x{c + 1 if c else ''}"
+        yref = f"y{c + 1 if c else ''}"
 
         # select data for each subplot
         base_cost = comm_data.query("impcase=='Base Case'").value.sum()
 
+        # deeper relocation arrow
+        fig.add_annotation(
+            showarrow=True,
+            text=None,
+            ax=0.15,
+            ay=0.3,
+            axref=xref + ' domain',
+            ayref=yref + ' domain',
+            x=0.85,
+            y=0.3,
+            xref=xref + ' domain',
+            yref=yref + ' domain',
+            arrowhead=1,
+            arrowsize=0.8,
+            arrowwidth=4,
+            arrowcolor='#000000',
+            opacity=1.0,
+        )
+
+        fig.add_annotation(
+            showarrow=False,
+            text='Deeper relocation',
+            x=0.5,
+            y=0.26,
+            xref=xref + ' domain',
+            yref=yref + ' domain',
+        )
+
+        # relocation savings horizontal line
         fig.add_hline(
             base_cost,
             line_color='black',
@@ -224,6 +252,21 @@ class LevelisedPlot(BasePlot):
             col=c + 1,
         )
 
+        fig.add_annotation(
+            showarrow=False,
+            text='Relocation savings',
+            x=1.0,
+            y=base_cost,
+            xref=xref + ' domain',
+            yref=yref,
+            xanchor='right',
+            yanchor='bottom',
+        )
+
+        # savings arrows
+        correction = 0.018
+        xshift = 2.5
+        yshift = 28.0
         for i, impsubcase in enumerate(comm_data['impsubcase'].unique()[1:]):
             this_cost = comm_data.query(f"impsubcase=='{impsubcase}'").value.sum()
 
@@ -243,10 +286,10 @@ class LevelisedPlot(BasePlot):
             fig.add_annotation(
                 x=case_pos,
                 y=min(this_cost, ymax),
-                yref=f"y{c + 1 if c else ''}",
+                yref=yref,
                 ax=case_pos,
                 ay=base_cost + (correction * ymax if cost_diff < 0.0 else -correction * ymax),
-                ayref=f"y{c + 1 if c else ''}",
+                ayref=yref,
                 arrowcolor='black',
                 arrowwidth=self._styles['lw_thin'],
                 arrowhead=2,
@@ -263,42 +306,8 @@ class LevelisedPlot(BasePlot):
                 xshift=xshift,
                 y=base_cost,
                 yanchor='middle',
-                yref=f"y{c + 1 if c else ''}",
+                yref=yref,
                 yshift=-yshift if impsubcase != 'Case 1A' else +yshift,
                 row=1,
                 col=c + 1,
             )
-
-
-# add arrows explaining the plot
-def _add_arrows(fig: go.Figure, c: int):
-    # top
-    xref = f"x{c + 1 if c else ''} domain"
-    yref = f"y{c + 1 if c else ''} domain"
-
-    fig.add_annotation(
-        showarrow=True,
-        text=None,
-        ax=0.15,
-        ay=0.3,
-        axref=xref,
-        ayref=yref,
-        x=0.85,
-        y=0.3,
-        xref=xref,
-        yref=yref,
-        arrowhead=1,
-        arrowsize=0.8,
-        arrowwidth=4,
-        arrowcolor='#000000',
-        opacity=1.0,
-    )
-
-    fig.add_annotation(
-        showarrow=False,
-        text='Deeper relocation',
-        x=0.5,
-        y=0.26,
-        xref=xref,
-        yref=yref,
-    )
