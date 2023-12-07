@@ -676,8 +676,8 @@ sigfig = "^1.3.2"
 [package.source]
 type = "git"
 url = "https://github.com/PhilippVerpoort/posted.git"
-reference = "v0.2.0"
-resolved_reference = "0843cc26e3487bdd253ce83a01a05e2754797a3e"
+reference = "v0.2.1"
+resolved_reference = "f1d02cfb75e6427b16e45de9bccc94fc5a7055ba"
 
 [[package]]
 name = "pybtex"
@@ -967,4 +967,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "f46a448f9fd8a32cbbaf21da7e549ac0ddb5761f7f4acee781fd0334031cfa9c"
+content-hash = "ec49cd86b8de0a559c7bca7a3979ae8044e2e598a6d7f06b6700ff96e1465708"
