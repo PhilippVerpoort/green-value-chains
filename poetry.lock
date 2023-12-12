@@ -621,7 +621,7 @@ test = ["codecov", "coveralls", "nbval", "pyarrow", "pytest", "pytest-cov", "pyt
 
 [[package]]
 name = "piw"
-version = "0.2.1"
+version = "0.6.1"
 description = "PIK Interactive Webapp Library"
 optional = false
 python-versions = ">=3.10,<3.12"
@@ -636,8 +636,8 @@ pyyaml = "^6.0.1"
 [package.source]
 type = "git"
 url = "https://github.com/PhilippVerpoort/piw.git"
-reference = "v0.2.2"
-resolved_reference = "93603540c7dbb9fa0c0ef48437905c1d478e691e"
+reference = "v0.6.1"
+resolved_reference = "09961987970332c1ba9b2721c030fc873d25af4b"
 
 [[package]]
 name = "plotly"
@@ -967,4 +967,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "ec49cd86b8de0a559c7bca7a3979ae8044e2e598a6d7f06b6700ff96e1465708"
+content-hash = "6e3fc739e144ba67dadaaf590bc4baab8c7e23e123a8b3495bdad3ff30adfff3"

@@ -5,6 +5,7 @@ import pint
 from posted.units.units import ureg
 from piw import Webapp
 from dash.dependencies import Input, State
+from dash import html
 
 from src.ctrls import main_ctrl
 from src.plots.LevelisedPlot import LevelisedPlot
@@ -21,20 +22,75 @@ from src.proc import process_inputs
 pint.set_application_registry(ureg)
 
 
+# metadata
+metadata = {
+    'title': 'Interactive webapp for techno-economic analysis of the renewables pull in future global green value '
+             'chains',
+    'abstract': 'This interactive webapp can be used to reproduce figures from an accompanying article by the same '
+                'authors that studies the renewables pull and its impact on industrial relocation for future global '
+                'green value chains of energy-intensive basic materials. The presented figures compare levelised '
+                'production cost from techno-economic assessment for different depth of relocation for the green '
+                'value chains of steel, urea, and ethylene.',
+    'about': html.Div([
+        html.P('This interactive webapp can be used to reproduce figures from an accompanying article by the same '
+               'authors that studies the renewables pull and its impact on industrial relocation for future global '
+               'green value chains of energy-intensive basic materials. Some of the main assumptions, i.e. the '
+               'electricity prices and the transport cost can be changed here when generating the figures.'),
+        html.P('We employ techno-economic assessments to compute the levelised cost of production for the studied '
+               'green (i.e. low-carbon) value chains of steel, urea, and ethylene for cases of varying depth of '
+               'relocation.'),
+        html.P('The results show that substantial relocation savings for the levelised cost of production can be '
+               'anticipated for full relocation of the studied value chains. Moreover, by studying cases of varying '
+               'depth of relocation, we can demonstrate that a large share of the energy-cost savings is associated '
+               'with relocating electrolysis to more renewable-favourable locations, yet the high transportation '
+               'cost of shipping-based hydrogen imports result in only minor overall relocation savings.'),
+        html.P('For more advanced changes and detailed information on the input data and methodology, we encourage '
+               'users to inspect the article, its supplement, and the source code written in Python.'),
+    ]),
+    'authors': [
+        {
+            'first': 'Philipp C.',
+            'last': 'Verpoort',
+            'orcid': '0000-0003-1319-5006',
+            'affiliation': ['Potsdam Institute for Climate Impact Research, Potsdam, Germany'],
+        },
+        {
+            'first': 'Gast',
+            'last': 'Lukas',
+            'orcid': '0009-0003-1416-5199',
+            'affiliation': ['Potsdam Institute for Climate Impact Research, Potsdam, Germany'],
+        },
+        {
+            'first': 'Anke',
+            'last': 'Hofmann',
+            'orcid': '0009-0001-4837-3530',
+            'affiliation': ['Potsdam Institute for Climate Impact Research, Potsdam, Germany'],
+        },
+        {
+            'first': 'Falko',
+            'last': 'Ueckerdt',
+            'orcid': '0000-0001-5585-030X',
+            'affiliation': ['Potsdam Institute for Climate Impact Research, Potsdam, Germany'],
+        },
+    ],
+    'date': '2023-12-12',
+    'version': 'v3.1.0',
+    'doi': 'TBD',
+    'license': {'name': 'CC BY 4.0', 'link': 'https://creativecommons.org/licenses/by/4.0/'},
+    'citeas': 'Verpoort, Philipp C.; Gast, Lukas; Hofmann, Anke; Ueckerdt, Falko (2023): Interactive webapp for '
+              'techno-economic analysis of the renewables pull in future global green value chains. V. 3.1.0. '
+              'https://doi.org/TBD',
+}
+
+
 # define webapp
 webapp = Webapp(
     piw_id='green-value-chains',
-    title='Future global green value chains: estimating the renewables pull and understanding its impact on '
-          'industrial relocation',
+    metadata=metadata,
     pages={
         '': 'Simple',
         'advanced': 'Advanced',
     },
-    desc='This webapp reproduces results presented in an accompanying manuscript on estimations of the renewables pull '
-         'in future global green value chains. It determines energy-cost savings and other relocation penalties for '
-         'different import scenarios for the green value chains of steel, urea, and ethylene.',
-    authors=['Philipp C. Verpoort', 'Lukas Gast', 'Anke Hofmann', 'Falko Ueckerdt'],
-    date='25/03/2023',
     load=[load_data, load_posted, load_other],
     ctrls=[main_ctrl],
     generate_args=[

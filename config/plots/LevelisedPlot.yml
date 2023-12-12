@@ -1,0 +1,27 @@
+figures:
+  fig5:
+    name: Fig. 5
+    title: Levelised cost of production.
+    desc:
+      'Results are again shown for the four import cases illustrated in Fig. 3 and assume an electricity-price difference 
+      of 40 EUR/MWh (medium-pull case from Tab. 1). The levelised cost visualise how the relocation savings in the steel 
+      value chain are smaller in comparison to the other value chains due to the high feedstock cost. Moreover, 
+      annualised CAPEX assumes a higher WACC of 8% in the RE-rich region compared to 5% in the RE-scarce region over a 
+      lifetime of 18 years, resulting in higher levelised capital cost, yet this effect appears to be small compared to 
+      the renewables pull.'
+    display:
+    - ''
+    - 'advanced'
+    size:
+      print:
+        width: 180.0  # unit mm
+        height: 80.0  # unit mm
+      webapp:
+        width: 100.0  # unit %
+        height: 600.0  # unit px
+config:
+  yaxis_title: Levelised cost of production (EUR/t)
+
+  epdcase: medium
+  aggregate_by: subcomponent # all, process, component, subcomponent, or none
+  separate_iron: False # whether or not to separate iron feedstock components out and display in other colour

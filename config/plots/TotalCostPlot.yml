@@ -1,0 +1,59 @@
+figures:
+  fig4:
+    name: Figure 4
+    title: Relocation savings for the different import and electricity-price cases.
+    desc:
+      'Top row: Production cost relative to Base Case for the import cases from Fig. 3 (including subcases A/B for Case 
+      1) and electricity-price cases in Tab. 1. Bottom row: Comparison between the renewables pull, i.e. energy-cost 
+      savings, on the lower axis and transport and financing penalties on the upper axis, with the heatmap showing the 
+      resulting relocation savings relative to the Base Case. Case 1A is displayed separately from the other cases and 
+      not included in the corridor of values on the top row to highlight its saliency and contrast it with the otherwise 
+      monotonous decrease of production cost with increasing depth of relocation.'
+    display:
+    - ''
+    - 'advanced'
+    size:
+      print:
+        width: 180.0  # unit mm
+        height: 100.0  # unit mm
+      webapp:
+        width: 100.0  # unit %
+        height: 900.0  # unit px
+config:
+  symbol: x-thin
+  symbolCase1A: triangle-up
+  contourLines: False
+
+  top:
+    domain_boundary: 0.70
+    yaxislabel: Production cost relative to Base Case (%)
+    yaxis:
+      range:
+        - 0.0
+        - 125.0
+      tick0: -60.0
+      dtick: 20.0
+      showgrid: True
+      griddash: dash
+      gridcolor: '#CCCCCC'
+
+  bottom:
+    domain_boundary: 0.56
+    xaxislabel: Energy-cost savings (EUR/t)
+    yaxislabel: Penalties (EUR/t)
+    zaxislabel: Relocation savings relative<br>to production cost in the Base Case (%)
+    zrange:
+      - -100.0
+      - +100.0
+    zdelta: 20.0
+    zcolours:
+      - '#3745a3'
+      - '#ffffff'
+      - '#e6af2e'
+    zticks:
+      - 100
+      - 50
+      - 0
+      - -50
+      - -100
+    samples: 10

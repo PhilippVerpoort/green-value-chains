@@ -4,12 +4,12 @@ from plotly.subplots import make_subplots
 from posted.calc_routines.LCOX import LCOX
 from posted.config.config import flowTypes, techs
 
-from src.utils import load_yaml_config_file
+from src.utils import load_yaml_config_file, load_yaml_plot_config_file
 from src.plots.BasePlot import BasePlot
 
 
 class LevelisedPlot(BasePlot):
-    figs = load_yaml_config_file(f"figures/LevelisedPlot")
+    figs, cfg = load_yaml_plot_config_file('LevelisedPlot')
     _add_subfig_name = True
 
     def _decorate(self, inputs: dict, outputs: dict, subfigs: dict):
@@ -32,7 +32,6 @@ class LevelisedPlot(BasePlot):
     }
 
     def plot(self, inputs: dict, outputs: dict, subfig_names: list) -> dict:
-        cfg = self._fig_cfgs['fig5']
         commodities = list(inputs['value_chains'].keys())
 
         # create figure
@@ -43,7 +42,7 @@ class LevelisedPlot(BasePlot):
 
         # add bars for each subplot
         for c, comm in enumerate(commodities):
-            comm_data = self._prepare(outputs, comm, cfg)
+            comm_data = self._prepare(outputs, comm)
 
             ymax = self._add_bars(fig, c, comm_data)
 
@@ -68,13 +67,13 @@ class LevelisedPlot(BasePlot):
         # update layout of all plots
         fig.update_layout(
             barmode='stack',
-            yaxis_title=cfg['yaxis_title'],
+            yaxis_title=self.cfg['yaxis_title'],
             legend_title='',
         )
 
         return {'fig5': fig}
 
-    def _prepare(self, outputs: dict, comm: str, cfg: dict):
+    def _prepare(self, outputs: dict, comm: str):
         # produce LCOX DataTable by assuming final elec prices and applying calc routine
         lcox = outputs['tables'][comm] \
             .assume(outputs['cases'][comm]) \
@@ -85,7 +84,7 @@ class LevelisedPlot(BasePlot):
             .pint.dequantify().droplevel('unit', axis=1) \
             .stack(['process', 'type']).to_frame('value') \
             .reset_index() \
-            .query(f"epdcase=='{cfg['epdcase']}'") \
+            .query(f"epdcase=='{self.cfg['epdcase']}'") \
             .drop(columns=['epdcase'])
 
         # map types
@@ -95,14 +94,14 @@ class LevelisedPlot(BasePlot):
         comm_data['impcase_display'] = comm_data['impcase'] \
             .map({
                 case_name: f"<b>{case_name + ('A/B' if case_name == 'Case 1' else '')}</b>:<br>{case_desc}"
-                for case_name, case_desc in cfg['case_names'].items()
+                for case_name, case_desc in self._glob_cfg['case_names'].items()
             })
 
         # prepare hover data
         if self._target == 'webapp':
             comm_data['hover_ptype'] = comm_data['ptype'].map({
                 ptype: display['label']
-                for ptype, display in cfg['cost_types'].items()
+                for ptype, display in self._glob_cfg['cost_types'].items()
             })
             comm_data['hover_flow'] = comm_data['type'].map({
                 f"dem_cost:{flow_id}": flowSpecs['name']

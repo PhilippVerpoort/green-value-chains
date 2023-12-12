@@ -6,12 +6,12 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from posted.calc_routines.LCOX import LCOX
 
-from src.utils import load_yaml_config_file
+from src.utils import load_yaml_plot_config_file
 from src.plots.BasePlot import BasePlot
 
 
 class SensitivityPlot(BasePlot):
-    figs = load_yaml_config_file(f"figures/SensitivityPlot")
+    figs, cfg = load_yaml_plot_config_file('SensitivityPlot')
     _add_subfig_name = True
     _add_subfig_name_dict = {b: ascii_lowercase[a] for a, b in enumerate([0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13])}
 
@@ -26,7 +26,6 @@ class SensitivityPlot(BasePlot):
                 self._add_annotation_comm(subfig_plot, comm, c)
 
     def plot(self, inputs: dict, outputs: dict, subfig_names: list) -> dict:
-        cfg = self._fig_cfgs['fig6']
         commodities = list(inputs['value_chains'].keys())
 
         # create figure
@@ -39,16 +38,16 @@ class SensitivityPlot(BasePlot):
 
         # add bars for each subplot
         for c, comm in enumerate(commodities):
-            comm_data = self._prepare_data(inputs, outputs, comm, cfg)
+            comm_data = self._prepare_data(inputs, outputs, comm)
 
             # add rows
-            for row, senstype in enumerate(cfg['senstypes']):
+            for row, senstype in enumerate(self.cfg['senstypes']):
                 if (senstype == 'dachp' and comm == 'Steel') or \
                    (senstype == 'repurpose' and comm == 'Ethylene'):
                     continue
 
                 comm_data_row = comm_data.query(f"senstype=='{senstype}'")
-                self._add_row(fig, c, comm, row, comm_data_row, cfg, h2transp=(senstype == 'h2transp'))
+                self._add_row(fig, c, comm, row, comm_data_row, h2transp=(senstype == 'h2transp'))
 
                 # add zeroline top
                 fig.add_hline(100.0, row=row+1, col=c+1, line_color='black')
@@ -63,7 +62,7 @@ class SensitivityPlot(BasePlot):
                     ),
                     yaxis=dict(
                         showticklabels=not c,
-                        **cfg['yaxis'],
+                        **self.cfg['yaxis'],
                     ),
                 )
 
@@ -80,10 +79,10 @@ class SensitivityPlot(BasePlot):
             )
 
         # label
-        for row, senstype in enumerate(cfg['senstypes']):
+        for row, senstype in enumerate(self.cfg['senstypes']):
             fig.add_annotation(
                 showarrow=False,
-                text=cfg['senstypes'][senstype]['label'],
+                text=self.cfg['senstypes'][senstype]['label'],
                 textangle=-90,
                 x=1.015,
                 xref=f"paper",
@@ -99,7 +98,7 @@ class SensitivityPlot(BasePlot):
             )
 
         # add dummy data for legend
-        self._add_dummy_legend(fig, cfg)
+        self._add_dummy_legend(fig)
 
         # update layout
         fig.update_layout(
@@ -111,13 +110,13 @@ class SensitivityPlot(BasePlot):
                 y=0.0,
                 yanchor='top',
             ),
-            yaxis7_title=cfg['yaxis_title'],
+            yaxis7_title=self.cfg['yaxis_title'],
         )
 
         return {'fig6': fig}
 
-    def _add_dummy_legend(self, fig: go.Figure, cfg: dict):
-        for legend, symbol in [('Case 1A', cfg['symbolCase1A']), ('Other<br>cases', cfg['symbol'])]:
+    def _add_dummy_legend(self, fig: go.Figure):
+        for legend, symbol in [('Case 1A', self.cfg['symbolCase1A']), ('Other<br>cases', self.cfg['symbol'])]:
             fig.add_trace(
                 go.Scatter(
                     x=[-1000.0],
@@ -138,9 +137,9 @@ class SensitivityPlot(BasePlot):
                 col=1,
             )
 
-    def _prepare_data(self, inputs: dict, outputs: dict, comm: str, cfg: dict):
+    def _prepare_data(self, inputs: dict, outputs: dict, comm: str):
         # prepare base data
-        epd = outputs['cases'][comm].query(f"epdcase=='{cfg['epdcase']}'").droplevel('epdcase')
+        epd = outputs['cases'][comm].query(f"epdcase=='{self.cfg['epdcase']}'").droplevel('epdcase')
         table = outputs['tables'][comm] \
             .assume(epd)
 
@@ -273,14 +272,14 @@ class SensitivityPlot(BasePlot):
                 impcase_x=lambda df: df['impcase'].astype('category').cat.codes,
                 impcase_display=lambda df: df['impcase'].map({
                     case_name: f"<b>{case_name + ('A/B' if case_name == 'Case 1' else '')}</b>:<br>{case_desc}"
-                    for case_name, case_desc in cfg['case_names'].items()
+                    for case_name, case_desc in self._glob_cfg['case_names'].items()
                 }),
             )
 
         return comm_data_top
 
     # add stacked bars showing levelised cost components
-    def _add_row(self, fig: go.Figure, c: int, comm: str, row: int, comm_data: pd.DataFrame, cfg: dict, h2transp: bool):
+    def _add_row(self, fig: go.Figure, c: int, comm: str, row: int, comm_data: pd.DataFrame, h2transp: bool):
         # prepare hover info
         hover = self._target == 'webapp'
 
@@ -292,11 +291,11 @@ class SensitivityPlot(BasePlot):
                 name=comm,
                 mode='markers',
                 marker=dict(
-                    color=cfg['commodity_colours'][comm],
-                    symbol=cfg['symbol'],
+                    color=self._glob_cfg['commodity_colours'][comm],
+                    symbol=self.cfg['symbol'],
                     size=self._styles['marker_sm'],
                     line_width=self._styles['lw_thin'],
-                    line_color=cfg['commodity_colours'][comm],
+                    line_color=self._glob_cfg['commodity_colours'][comm],
                 ),
                 showlegend=False,
                 legendgroup=comm,
@@ -321,7 +320,7 @@ class SensitivityPlot(BasePlot):
                         mode='lines',
                         line=dict(
                             shape='spline',
-                            color=cfg['commodity_colours'][comm],
+                            color=self._glob_cfg['commodity_colours'][comm],
                         ),
                         showlegend=False,
                         legendgroup=comm,
@@ -339,7 +338,7 @@ class SensitivityPlot(BasePlot):
                         mode='lines',
                         line=dict(
                             shape='spline',
-                            color=cfg['commodity_colours'][comm],
+                            color=self._glob_cfg['commodity_colours'][comm],
                         ),
                         showlegend=False,
                         legendgroup=comm,
@@ -358,7 +357,7 @@ class SensitivityPlot(BasePlot):
                         mode='lines',
                         line=dict(
                             shape='spline',
-                            color=cfg['commodity_colours'][comm],
+                            color=self._glob_cfg['commodity_colours'][comm],
                             dash='dash',
                         ),
                         showlegend=False,
@@ -380,11 +379,11 @@ class SensitivityPlot(BasePlot):
                         name=comm,
                         mode='markers+lines',
                         marker=dict(
-                            color=cfg['commodity_colours'][comm],
-                            symbol=cfg['symbolCase1A'] if impsubcase == 'Case 1A' else cfg['symbol'],
+                            color=self._glob_cfg['commodity_colours'][comm],
+                            symbol=self.cfg['symbolCase1A'] if impsubcase == 'Case 1A' else self.cfg['symbol'],
                             size=self._styles['marker_sm'],
                             line_width=self._styles['lw_thin'],
-                            line_color=cfg['commodity_colours'][comm],
+                            line_color=self._glob_cfg['commodity_colours'][comm],
                         ),
                         showlegend=False,
                         legendgroup=comm,
@@ -413,7 +412,7 @@ class SensitivityPlot(BasePlot):
                 mode='markers+text',
                 textposition='middle right',
                 textfont_size=self.get_font_size('fs_tn'),
-                textfont_color=cfg['commodity_colours'][comm],
+                textfont_color=self._glob_cfg['commodity_colours'][comm],
                 marker_size=self._styles['marker_sm'],
                 marker_color='rgba(0,0,0,0)',
                 showlegend=False,
@@ -438,7 +437,7 @@ class SensitivityPlot(BasePlot):
                         mode='markers+text',
                         textposition=pos,
                         textfont_size=self.get_font_size('fs_sm'),
-                        textfont_color=cfg['commodity_colours'][comm],
+                        textfont_color=self._glob_cfg['commodity_colours'][comm],
                         marker_size=self._styles['marker_sm'],
                         marker_color='rgba(0,0,0,0)',
                         showlegend=False,

@@ -5,12 +5,12 @@ from plotly.colors import hex_to_rgb
 from plotly.subplots import make_subplots
 from posted.calc_routines.LCOX import LCOX
 
-from src.utils import load_yaml_config_file
+from src.utils import load_yaml_config_file, load_yaml_plot_config_file
 from src.plots.BasePlot import BasePlot
 
 
 class TotalCostPlot(BasePlot):
-    figs = load_yaml_config_file(f"figures/TotalCostPlot")
+    figs, cfg = load_yaml_plot_config_file('TotalCostPlot')
     _add_subfig_name = True
 
     def _decorate(self, inputs: dict, outputs: dict, subfigs: dict):
@@ -24,7 +24,6 @@ class TotalCostPlot(BasePlot):
                 self._add_annotation_comm(subfig_plot, comm, c)
 
     def plot(self, inputs: dict, outputs: dict, subfig_names: list) -> dict:
-        cfg = self._fig_cfgs['fig4']
         commodities = list(inputs['value_chains'].keys())
 
         # create figure
@@ -39,11 +38,11 @@ class TotalCostPlot(BasePlot):
 
         # add bars for each subplot
         for c, comm in enumerate(commodities):
-            comm_data_top, comm_data_bottom, heatmap, axes, table_data = self._prepare_data(outputs, comm, cfg)
+            comm_data_top, comm_data_bottom, heatmap, axes, table_data = self._prepare_data(outputs, comm)
             table_data_list.append(table_data)
 
             # add top plots
-            self._add_top(fig, c, comm, comm_data_top, cfg)
+            self._add_top(fig, c, comm, comm_data_top)
 
             # add zeroline top
             fig.add_hline(100.0, row=1, col=c+1, line_color='black')
@@ -59,14 +58,14 @@ class TotalCostPlot(BasePlot):
                     ticktext=[d for d in comm_data_top['impcase_display'].unique()]
                 ),
                 yaxis=dict(
-                    domain=[cfg['top']['domain_boundary'], 1.0],
+                    domain=[self.cfg['top']['domain_boundary'], 1.0],
                     showticklabels=False,
-                    **cfg['top']['yaxis'],
+                    **self.cfg['top']['yaxis'],
                 ),
             )
 
             # add bottom plots
-            self._add_bottom(fig, c, comm, comm_data_bottom, heatmap, cfg)
+            self._add_bottom(fig, c, comm, comm_data_bottom, heatmap)
 
             # update bottom axes layout
             self._update_axis_layout(fig, c + 3, **axes)
@@ -76,7 +75,7 @@ class TotalCostPlot(BasePlot):
                 _add_arrows(fig, c)
 
         # add dummy data for legend
-        self._add_dummy_legend(fig, cfg)
+        self._add_dummy_legend(fig)
 
         # update layout
         fig.update_layout(
@@ -85,13 +84,13 @@ class TotalCostPlot(BasePlot):
                 title='',
                 x=1.01,
                 xanchor='left',
-                y=cfg['bottom']['domain_boundary'],
+                y=self.cfg['bottom']['domain_boundary'],
                 yanchor='top',
             ),
-            yaxis_title=cfg['top']['yaxislabel'],
+            yaxis_title=self.cfg['top']['yaxislabel'],
             yaxis_showticklabels=True,
-            xaxis5_title=cfg['bottom']['xaxislabel'],
-            yaxis4_title=cfg['bottom']['yaxislabel'],
+            xaxis5_title=self.cfg['bottom']['xaxislabel'],
+            yaxis4_title=self.cfg['bottom']['yaxislabel'],
         )
 
         # print table
@@ -99,9 +98,9 @@ class TotalCostPlot(BasePlot):
 
         return {'fig4': fig}
 
-    def _add_dummy_legend(self, fig: go.Figure, cfg: dict):
-        for legend, symbol in [('Case 1A', cfg['symbolCase1A']),
-                               ('Other<br>cases', cfg['symbol']),]:
+    def _add_dummy_legend(self, fig: go.Figure):
+        for legend, symbol in [('Case 1A', self.cfg['symbolCase1A']),
+                               ('Other<br>cases', self.cfg['symbol']),]:
             fig.add_trace(
                 go.Scatter(
                     x=[-1000.0],
@@ -122,7 +121,7 @@ class TotalCostPlot(BasePlot):
                 col=1,
             )
 
-    def _prepare_data(self, outputs: dict, comm: str, cfg: dict):
+    def _prepare_data(self, outputs: dict, comm: str):
         # produce LCOX DataTable by assuming final elec prices from epdcases and drop units
         lcox = outputs['tables'][comm] \
             .assume(outputs['cases'][comm]) \
@@ -151,7 +150,7 @@ class TotalCostPlot(BasePlot):
                 impcase_x=lambda df: df['impcase'].astype('category').cat.codes,
                 impcase_display=lambda df: df['impcase'].map({
                     caseName: f"<b>{caseName + ('A/B' if caseName == 'Case 1' else '')}</b>:<br>{caseDesc}"
-                    for caseName, caseDesc in cfg['case_names'].items()
+                    for caseName, caseDesc in self._glob_cfg['case_names'].items()
                 }),
             ) \
             .merge(epd, on='epdcase')
@@ -185,8 +184,8 @@ class TotalCostPlot(BasePlot):
             1.05 * max(data_range['xmax'], data_range['ymax']),
         ]
 
-        x = np.linspace(*plot_range, cfg['bottom']['samples'])
-        y = np.linspace(*plot_range, cfg['bottom']['samples'])
+        x = np.linspace(*plot_range, self.cfg['bottom']['samples'])
+        y = np.linspace(*plot_range, self.cfg['bottom']['samples'])
         vx, vy = np.meshgrid(x, y)
         base_total = lcox \
             .reorder_levels(['impcase', 'impsubcase', 'epdcase', 'process', 'type']) \
@@ -202,13 +201,13 @@ class TotalCostPlot(BasePlot):
 
         axes = {
             'xaxis': dict(range=plot_range),
-            'yaxis': dict(range=plot_range, domain=[0.0, cfg['bottom']['domain_boundary']]),
+            'yaxis': dict(range=plot_range, domain=[0.0, self.cfg['bottom']['domain_boundary']]),
         }
 
         return comm_data_top, comm_data_bottom, heatmap, axes, table_data
 
     # add stacked bars showing levelised cost components
-    def _add_top(self, fig: go.Figure, c: int, comm: str, comm_data_top: pd.DataFrame, cfg: dict):
+    def _add_top(self, fig: go.Figure, c: int, comm: str, comm_data_top: pd.DataFrame):
         # prepare hover info
         hover = self._target == 'webapp'
 
@@ -227,7 +226,7 @@ class TotalCostPlot(BasePlot):
                 mode='lines',
                 line=dict(
                     shape='spline',
-                    color=cfg['commodity_colours'][comm],
+                    color=self._glob_cfg['commodity_colours'][comm],
                 ),
                 showlegend=False,
                 legendgroup=comm,
@@ -247,7 +246,7 @@ class TotalCostPlot(BasePlot):
                 mode='lines',
                 line=dict(
                     shape='spline',
-                    color=cfg['commodity_colours'][comm],
+                    color=self._glob_cfg['commodity_colours'][comm],
                     dash='dash',
                 ),
                 showlegend=False,
@@ -270,7 +269,7 @@ class TotalCostPlot(BasePlot):
                     shape='spline',
                     width=0.0,
                 ),
-                fillcolor=("rgba({}, {}, {}, {})".format(*hex_to_rgb(cfg['commodity_colours'][comm]), .3)),
+                fillcolor=("rgba({}, {}, {}, {})".format(*hex_to_rgb(self._glob_cfg['commodity_colours'][comm]), .3)),
                 fill='toself',
                 showlegend=False,
                 legendgroup=comm,
@@ -290,11 +289,11 @@ class TotalCostPlot(BasePlot):
                     name=comm,
                     mode='markers+lines',
                     marker=dict(
-                        color=cfg['commodity_colours'][comm],
-                        symbol=cfg['symbolCase1A'] if impsubcase == 'Case 1A' else cfg['symbol'],
+                        color=self._glob_cfg['commodity_colours'][comm],
+                        symbol=self.cfg['symbolCase1A'] if impsubcase == 'Case 1A' else self.cfg['symbol'],
                         size=self._styles['marker_sm'],
                         line_width=self._styles['lw_thin'],
-                        line_color=cfg['commodity_colours'][comm],
+                        line_color=self._glob_cfg['commodity_colours'][comm],
                     ),
                     showlegend=False,
                     legendgroup=comm,
@@ -321,7 +320,7 @@ class TotalCostPlot(BasePlot):
                 mode='markers+text',
                 textposition='middle right',
                 textfont_size=self.get_font_size('fs_tn'),
-                textfont_color=cfg['commodity_colours'][comm],
+                textfont_color=self._glob_cfg['commodity_colours'][comm],
                 marker_size=self._styles['marker_sm'],
                 marker_color='rgba(0,0,0,0)',
                 showlegend=False,
@@ -345,7 +344,7 @@ class TotalCostPlot(BasePlot):
                     mode='markers+text',
                     textposition=pos,
                     textfont_size=self.get_font_size('fs_sm'),
-                    textfont_color=cfg['commodity_colours'][comm],
+                    textfont_color=self._glob_cfg['commodity_colours'][comm],
                     marker_size=self._styles['marker_sm'],
                     marker_color='rgba(0,0,0,0)',
                     showlegend=False,
@@ -356,7 +355,7 @@ class TotalCostPlot(BasePlot):
                 col=c + 1,
             )
 
-    def _add_bottom(self, fig: go.Figure, c: int, comm: str, comm_data_bottom: pd.DataFrame, heatmap: dict, cfg: dict):
+    def _add_bottom(self, fig: go.Figure, c: int, comm: str, comm_data_bottom: pd.DataFrame, heatmap: dict):
         # prepare hover info
         hover = self._target == 'webapp'
 
@@ -374,11 +373,11 @@ class TotalCostPlot(BasePlot):
                     name=comm,
                     mode='markers+lines',
                     marker=dict(
-                        color=cfg['commodity_colours'][comm],
-                        symbol=cfg['symbolCase1A'] if impsubcase == 'Case 1A' else cfg['symbol'],
+                        color=self._glob_cfg['commodity_colours'][comm],
+                        symbol=self.cfg['symbolCase1A'] if impsubcase == 'Case 1A' else self.cfg['symbol'],
                         size=self._styles['marker_sm'],
                         line_width=self._styles['lw_thin'],
-                        line_color=cfg['commodity_colours'][comm],
+                        line_color=self._glob_cfg['commodity_colours'][comm],
                     ),
                     showlegend=False,
                     legendgroup=comm,
@@ -404,7 +403,7 @@ class TotalCostPlot(BasePlot):
                     mode='markers+text',
                     textposition='bottom center',
                     textfont_size=self.get_font_size('fs_tn'),
-                    textfont_color=cfg['commodity_colours'][comm],
+                    textfont_color=self._glob_cfg['commodity_colours'][comm],
                     marker_size=self._styles['marker_sm'],
                     marker_color='rgba(0,0,0,0)',
                     showlegend=False,
@@ -426,7 +425,7 @@ class TotalCostPlot(BasePlot):
                     mode='markers+text',
                     textposition='top center',
                     textfont_size=self.get_font_size('fs_sm'),
-                    textfont_color=cfg['commodity_colours'][comm],
+                    textfont_color=self._glob_cfg['commodity_colours'][comm],
                     marker_size=self._styles['marker_sm'],
                     marker_color='rgba(0,0,0,0)',
                     showlegend=False,
@@ -438,28 +437,28 @@ class TotalCostPlot(BasePlot):
             )
 
         # heatmap
-        colour_bar_length = 3/4 * cfg['bottom']['domain_boundary']
+        colour_bar_length = 3/4 * self.cfg['bottom']['domain_boundary']
         fig.add_trace(
             go.Heatmap(
                 x=heatmap['x'],
                 y=heatmap['y'],
                 z=heatmap['z'],
                 zsmooth='best',
-                zmin=cfg['bottom']['zrange'][0],
-                zmax=cfg['bottom']['zrange'][1],
+                zmin=self.cfg['bottom']['zrange'][0],
+                zmax=self.cfg['bottom']['zrange'][1],
                 colorscale=[
-                    [i/(len(cfg['bottom']['zcolours'])-1), colour]
-                    for i, colour in enumerate(cfg['bottom']['zcolours'])
+                    [i/(len(self.cfg['bottom']['zcolours'])-1), colour]
+                    for i, colour in enumerate(self.cfg['bottom']['zcolours'])
                 ],
                 colorbar=dict(
                     x=1.01,
                     y=colour_bar_length/2,
                     yanchor='middle',
                     len=colour_bar_length,
-                    title=cfg['bottom']['zaxislabel'],
+                    title=self.cfg['bottom']['zaxislabel'],
                     titleside='right',
-                    tickvals=[float(t) for t in cfg['bottom']['zticks']],
-                    ticktext=cfg['bottom']['zticks'],
+                    tickvals=[float(t) for t in self.cfg['bottom']['zticks']],
+                    ticktext=self.cfg['bottom']['zticks'],
                     titlefont_size=self.get_font_size('fs_sm'),
                 ),
                 showscale=not c,
@@ -470,7 +469,7 @@ class TotalCostPlot(BasePlot):
         )
 
         # contour
-        if cfg['contourLines']:
+        if self.cfg['contourLines']:
             fig.add_trace(
                 go.Contour(
                     x=heatmap['x'],
@@ -484,8 +483,8 @@ class TotalCostPlot(BasePlot):
                     line_width=self._styles['lw_ultrathin']/2,
                     contours=dict(
                         showlabels=False,
-                        start=cfg['bottom']['zrange'][0],
-                        end=cfg['bottom']['zrange'][1],
+                        start=self.cfg['bottom']['zrange'][0],
+                        end=self.cfg['bottom']['zrange'][1],
                         size=10.0,
                     ),
                     showscale=False,
