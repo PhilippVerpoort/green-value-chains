@@ -9,6 +9,9 @@ from posted.config.config import techs
 from src.load import load_data, load_posted
 
 
+DUMPDIR = Path(__file__).parent / 'dump'
+
+
 # load required data and dump into Excel spreadsheet
 def dump():
     # load POSTED data
@@ -16,10 +19,18 @@ def dump():
     load_data(inputs)
     load_posted(inputs)
 
+    # set file path for dumping
+    DUMPDIR.mkdir(parents=True, exist_ok=True)
+    file_path = Path(__file__).parent / 'dump' / 'posted.xlsx'
+
     # create a writer object for an Excel spreadsheet
-    with pd.ExcelWriter(Path(__file__).parent / 'dump' / 'posted.xlsx') as writer:
+    with pd.ExcelWriter(file_path) as writer:
         # loop over TIDs
-        tids = list(dict.fromkeys([k for comm in inputs['value_chains'] for k in reversed(inputs['value_chains'][comm]['graph'].keys())]))
+        tids = list(dict.fromkeys([
+            k
+            for comm in inputs['value_chains']
+            for k in reversed(inputs['value_chains'][comm]['graph'].keys())])
+        )
         for tid in tids:
             tedf = TEDataFile(tid)
             tedf.load()

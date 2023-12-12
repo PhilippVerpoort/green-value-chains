@@ -9,6 +9,9 @@ from src.load import load_data, load_posted, load_other
 from src.proc import process_inputs
 
 
+DUMPDIR = Path(__file__).parent / 'dump'
+
+
 # load required data and dump into Excel spreadsheet
 def dump():
     # load inputs and outputs
@@ -19,8 +22,12 @@ def dump():
     load_other(inputs)
     process_inputs(inputs, outputs)
 
+    # set file path for dumping
+    DUMPDIR.mkdir(parents=True, exist_ok=True)
+    file_path = Path(__file__).parent / 'dump' / 'results.xlsx'
+
     # create a writer object for an Excel spreadsheet
-    with pd.ExcelWriter(Path(__file__).parent / 'dump' / 'results.xlsx') as writer:
+    with pd.ExcelWriter(file_path) as writer:
         # loop over commodities
         commodities = list(inputs['value_chains'].keys())
         for c, comm in enumerate(commodities):
