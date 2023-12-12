@@ -3,17 +3,14 @@ from pathlib import Path
 
 import pandas as pd
 
-from posted.ted.TEDataFile import TEDataFile
 from posted.calc_routines.LCOX import LCOX
-from posted.config.config import techs
 
 from src.load import load_data, load_posted, load_other
-from src.plots.LevelisedPlot import LevelisedPlot
 from src.proc import process_inputs
 
 
 # load required data and dump into Excel spreadsheet
-def export():
+def dump():
     # load inputs and outputs
     inputs = {}
     outputs = {}
@@ -33,7 +30,7 @@ def export():
                 .calc(LCOX)
 
             # extract dataframe from LCOX DataTable and convert to plottable format
-            commData = lcox.data['LCOX'] \
+            comm_data = lcox.data['LCOX'] \
                 .pint.dequantify().droplevel('unit', axis=1) \
                 .stack(['process', 'type']).to_frame('value') \
                 .reset_index() \
@@ -41,12 +38,12 @@ def export():
                 .drop(columns=['epdcase', 'impcase'])
 
             # set index
-            commData = commData.set_index(['impsubcase', 'type', 'process']).unstack('type').sort_index()
+            comm_data = comm_data.set_index(['impsubcase', 'type', 'process']).unstack('type').sort_index()
 
             # dump to spreadsheet
-            commData.to_excel(writer, sheet_name=comm, index=True)
+            comm_data.to_excel(writer, sheet_name=comm, index=True)
 
 
-# call export function when running as script
+# call dump function when running as script
 if __name__ == '__main__':
-    export()
+    dump()

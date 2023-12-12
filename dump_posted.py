@@ -10,7 +10,7 @@ from src.load import load_data, load_posted
 
 
 # load required data and dump into Excel spreadsheet
-def export():
+def dump():
     # load POSTED data
     inputs = {}
     load_data(inputs)
@@ -34,6 +34,6 @@ def export():
             df2.to_excel(writer, sheet_name=f"{techs[tid]['name']} (processed)", index=(len(df2)>1))
 
 
-# call export function when running as script
+# call dump function when running as script
 if __name__ == '__main__':
-    export()
+    dump()
