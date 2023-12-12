@@ -17,7 +17,7 @@ def export():
     load_posted(inputs)
 
     # create a writer object for an Excel spreadsheet
-    with pd.ExcelWriter(Path(__file__).parent / 'output' / 'dump_posted.xlsx') as writer:
+    with pd.ExcelWriter(Path(__file__).parent / 'dump' / 'posted.xlsx') as writer:
         # loop over TIDs
         tids = list(dict.fromkeys([k for comm in inputs['value_chains'] for k in reversed(inputs['value_chains'][comm]['graph'].keys())]))
         for tid in tids:

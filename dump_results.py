@@ -23,7 +23,7 @@ def export():
     process_inputs(inputs, outputs)
 
     # create a writer object for an Excel spreadsheet
-    with pd.ExcelWriter(Path(__file__).parent / 'output' / 'dump_results.xlsx') as writer:
+    with pd.ExcelWriter(Path(__file__).parent / 'dump' / 'results.xlsx') as writer:
         # loop over commodities
         commodities = list(inputs['value_chains'].keys())
         for c, comm in enumerate(commodities):

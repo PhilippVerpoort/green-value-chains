@@ -46,7 +46,7 @@ webapp = Webapp(
     proc=[process_inputs],
     plots=[TotalCostPlot, LevelisedPlot, SensitivityPlot, ScenarioPlot],
     glob_cfg=load_yaml_config_file('global'),
-    output=Path(__file__).parent / 'output',
+    output=Path(__file__).parent / 'print',
     debug=False,
     input_caching=True,
 )

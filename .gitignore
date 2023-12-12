@@ -1,4 +1,5 @@
-/output/
+/print/
+/dump/
 *.pkl
 
 .idea/
