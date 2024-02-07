@@ -37,7 +37,7 @@ class LevelisedPlot(BasePlot):
         # create figure
         fig = make_subplots(
             cols=len(commodities),
-            horizontal_spacing=0.035,
+            horizontal_spacing=0.04,
         )
 
         # add bars for each subplot
