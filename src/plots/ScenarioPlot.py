@@ -1,3 +1,5 @@
+from string import ascii_lowercase
+
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -10,6 +12,8 @@ from src.plots.BasePlot import BasePlot
 
 class ScenarioPlot(BasePlot):
     figs, cfg = load_yaml_plot_config_file('ScenarioPlot')
+    _add_subfig_name = True
+    _add_subfig_name_dict = {i: ascii_lowercase[i] for i in range(4)}
 
     def plot(self, inputs: dict, outputs: dict, subfig_names: list) -> dict:
         plot_data = self._prepare(inputs, outputs)
