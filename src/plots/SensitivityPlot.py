@@ -113,7 +113,7 @@ class SensitivityPlot(BasePlot):
             yaxis7_title=self.cfg['yaxis_title'],
         )
 
-        return {'fig6': fig}
+        return {'figED1': fig}
 
     def _add_dummy_legend(self, fig: go.Figure):
         for legend, symbol in [('Case 1A', self.cfg['symbolCase1A']), ('Other<br>cases', self.cfg['symbol'])]:

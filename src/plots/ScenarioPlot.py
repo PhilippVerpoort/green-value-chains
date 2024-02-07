@@ -94,7 +94,7 @@ class ScenarioPlot(BasePlot):
         for s, scen in enumerate(self.cfg['epdcases'] + ['For comparison']):
             self._add_annotation(fig, scen.capitalize(), s)
 
-        return {'fig7': fig}
+        return {'fig6': fig}
 
 
     def _prepare(self, inputs: dict, outputs: dict):

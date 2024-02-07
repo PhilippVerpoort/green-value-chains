@@ -1,6 +1,6 @@
 figures:
-  fig6:
-    name: Figure 6
+  figED1:
+    name: Ext. Data Figure 1
     title: Sensitivity analysis.
     desc:
       'Shown are the main results from Fig. 4 with electricity-price difference of 40 EUR/MWh, while varying the WACC on 
