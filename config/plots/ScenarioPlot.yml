@@ -7,7 +7,7 @@ figures:
       in the previous section. The three columns correspond to the three cases for electricity-price differences (weak, 
       medium, and strong pull) in Tab. 1.'
     display:
-    - 'advanced'
+    - ''
     size:
       print:
         width: 180.0  # unit mm

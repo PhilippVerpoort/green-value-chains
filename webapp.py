@@ -88,8 +88,8 @@ webapp = Webapp(
     piw_id='green-value-chains',
     metadata=metadata,
     pages={
-        '': 'Simple',
-        'advanced': 'Advanced',
+        '': 'Main',
+        'ext-data': 'Ext. Data Figs.',
     },
     load=[load_data, load_posted, load_other],
     ctrls=[main_ctrl],

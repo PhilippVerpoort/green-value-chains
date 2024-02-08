@@ -11,7 +11,6 @@ figures:
       the renewables pull.'
     display:
     - ''
-    - 'advanced'
     size:
       print:
         width: 180.0  # unit mm

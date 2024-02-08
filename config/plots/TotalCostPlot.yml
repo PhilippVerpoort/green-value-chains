@@ -11,7 +11,6 @@ figures:
       monotonous decrease of production cost with increasing depth of relocation.'
     display:
     - ''
-    - 'advanced'
     size:
       print:
         width: 180.0  # unit mm

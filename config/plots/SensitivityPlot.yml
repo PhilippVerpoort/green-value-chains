@@ -9,7 +9,7 @@ figures:
       not (j--k), and whether existing grey plants (hot rolling in steel, Haber-Bosch, urea synth.) can be repurposed 
       (l--m).'
     display:
-    - 'advanced'
+    - 'ext-data'
     size:
       print:
         width: 180.0  # unit mm
