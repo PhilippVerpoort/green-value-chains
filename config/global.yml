@@ -6,7 +6,7 @@ commodity_colours:
 case_names:
   Base Case: Full domestic<br>production
   Case 1: Import of H<sub>2</sub>
-  Case 2: Import of<br>intermediates
+  Case 2: Import of<br>inter-<br>mediates
   Case 3: Import of<br>semi-finished<br>products
 
 cost_types:
@@ -20,7 +20,7 @@ cost_types:
     label: Raw materials
     colour: '#cccccc'
   energy:
-    label: Non-elec. energy
+    label: Non-elec.<br>energy
     colour: '#aaaaaa'
   elec:
     label: Electricity
