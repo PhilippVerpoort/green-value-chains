@@ -21,7 +21,7 @@ def dump():
 
     # set file path for dumping
     DUMPDIR.mkdir(parents=True, exist_ok=True)
-    file_path = Path(__file__).parent / 'dump' / 'posted.xlsx'
+    file_path = Path(__file__).parent / 'dump' / 'Techno-economic_Assumptions_from_POSTED.xlsx'
 
     # create a writer object for an Excel spreadsheet
     with pd.ExcelWriter(file_path) as writer:

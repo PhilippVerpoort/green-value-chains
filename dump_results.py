@@ -24,7 +24,7 @@ def dump():
 
     # set file path for dumping
     DUMPDIR.mkdir(parents=True, exist_ok=True)
-    file_path = Path(__file__).parent / 'dump' / 'results.xlsx'
+    file_path = Path(__file__).parent / 'dump' / 'Results_reported_in_Figs_4-6.xlsx'
 
     # create a writer object for an Excel spreadsheet
     with pd.ExcelWriter(file_path) as writer:
@@ -41,11 +41,15 @@ def dump():
                 .pint.dequantify().droplevel('unit', axis=1) \
                 .stack(['process', 'type']).to_frame('value') \
                 .reset_index() \
-                .query(f"epdcase=='medium'") \
-                .drop(columns=['epdcase', 'impcase'])
+                .drop(columns=['impcase'])
 
             # set index
-            comm_data = comm_data.set_index(['impsubcase', 'type', 'process']).unstack('type').sort_index()
+            comm_data = comm_data \
+                .set_index(['epdcase', 'impsubcase', 'type', 'process']) \
+                .unstack(['type', 'process']) \
+                .droplevel(level=0, axis=1) \
+                .sort_index(axis=0) \
+                .sort_index(axis=1)
 
             # dump to spreadsheet
             comm_data.to_excel(writer, sheet_name=comm, index=True)
