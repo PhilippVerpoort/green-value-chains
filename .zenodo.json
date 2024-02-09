@@ -1,0 +1,33 @@
+{
+  "title": "Research software used for techno-economic analysis of the impact of global heterogeneity of renewable-energy supply on heavy industrial production and green value chains",
+  "version": "4.0.0",
+  "creators": [
+    {
+      "name": "Verpoort, Philipp C.",
+      "affiliation": "Potsdam Institute for Climate Impact Research",
+      "orcid": "0000-0003-1319-5006"
+    },
+    {
+      "name": "Gast, Lukas",
+      "affiliation": "Potsdam Institute for Climate Impact Research",
+      "orcid": "0009-0003-1416-5199"
+    },
+    {
+      "name": "Hofmann, Anke",
+      "affiliation": "Potsdam Institute for Climate Impact Research",
+      "orcid": "0009-0001-4837-3530"
+    },
+    {
+      "name": "Ueckerdt, Falko",
+      "affiliation": "Potsdam Institute for Climate Impact Research",
+      "orcid": "0000-0001-5585-030X"
+    }
+  ],
+  "keywords": ["renewables pull", "green value chains", "green relocation", "green leakage", "hydrogen", "basic materials", "heavy industry", "energy-intensive industry", "steel", "chemicals", "climate change", "climate mitigation", "energy"],
+  "license": {
+    "id": "MIT",
+    "title": "MIT Licence",
+    "url": "http://www.opensource.org/licenses/MIT"
+  },
+  "publication_date": "2024-02-09"
+}

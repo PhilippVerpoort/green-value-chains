@@ -1,36 +1,60 @@
-# Python codes accompanying manuscript "Estimating the renewables pull in future global green value chains"
+# Research software used for techno-economic analysis of the impact of global heterogeneity of renewable-energy supply on heavy industrial production and green value chains
 
-These Python codes reproduce results presented in an accompanying manuscript on estimations of the renewables pull in future global green value chains. It determines energy-cost savings and other relocation penalties based for different import scenarios for the green value chains of steel, urea, and ethylene.
+## Summary
+This repository make source codes and input data publicly available that were used in the analysis of the impact of global heterogeneity of renewable-energy supply on heavy industrial production and green value chains in an accompanying research article and interactive webapp.
 
-The manuscript and this code are created and maintained by researchers at the [Potsdam Institute for Climate Impact Research (PIK)](https://www.pik-potsdam.de). The code is available open-source and redistributed via the [GNU-GPL3.0](https://www.gnu.org/licenses/gpl-3.0.html) license included in this repository.
+## How  to cite this work
+**This software:**
+Verpoort, Philipp C.; Gast, Lukas; Hofmann, A.; Ueckerdt, F.: Research software used for techno-economic analysis of the impact of global heterogeneity of renewable-energy supply on heavy industrial production and green value chains. v4.0.0 Zenodo. DOI: TBC
 
+**The accompanying interactive webapp:**
+Verpoort, Philipp C.; Gast, Lukas; Hofmann, A.; Ueckerdt, F.: Interactive webapp for techno-economic analysis of the impact of global heterogeneity of renewable-energy supply on heavy industrial production and green value chains. v4.0.0 Zenodo. DOI: TBC
 
-## Dependency management
+**The accompanying peer-reviewed article:**
+Verpoort, Philipp C.; Gast, Lukas; Hofmann, A.; Ueckerdt, F.: Impact of global heterogeneity of renewable-energy supply on heavy industrial production and green value chains. Nature Energy. TBC
 
-Python dependencies are managed via [poetry](https://python-poetry.org/). To install dependencies in a virtual environment, please type the following after cloning.
+## How to use this software
 
-```bash
+#### Run hosted service online:
+This source code can be installed and executed to reproduce all the results (mainly figures) presented in the accompanying article and to run the interactive webapp. Note that the webapp is also hosted as a public service here: TBC
+
+#### Install dependencies:
+If you would like to try to execute this software locally on your machine, then you will need to have its Python dependencies installed.
+
+The easiest way to accomplish this is via [poetry](https://python-poetry.org/):
+```commandline
 poetry install
 ```
 
-## Citation
+Alternatively, you can install the required packages using `pip` (potentially following the creation of a virtual environment):
 
-To cite this code, please use the manuscript as a reference:
-
-P.C. Verpoort, L. Gast, A. Hofmann, F. Ueckerdt (2023). Estimating the renewables pull in future global green value chains. Working paper.
-
-A BibTeX entry for LaTeX users is
-
- ```latex
-@ARTICLE{,
-  title = {Estimating the renewables pull in future global green value chains.},
-  author = {P.C. Verpoort, L. Gast, A. Hofmann, F. Ueckerdt},
-  year = {2023},
-  note = {Working paper},
-}
+```commandline
+pip install git+https://github.com/PhilippVerpoort/piw.git@v0.8.2
+pip install git+https://github.com/PhilippVerpoort/posted.git@v0.2.3
+pip install pandas openpyxl kaleido
 ```
 
+#### Export figures manually
+After activating the virtual environment (e.g. via `poetry shell`), please use:
+```commandline
+python export.py
+```
+This will export all figures. Alternatively, you may choose to export only Fig. 1 by using:
+```commandline
+python export.py fig1
+```
 
-## License
+#### Running the interactive webapp
+The interactive webapp, which is also hosted here (TBC), can be run via: 
+```commandline
+python webapp.py
+```
+and then navigating to the provided IP address and port provided in your terminal, which is usually http://127.0.0.1:8050/.
 
-See file `LICENSE` or navigate to https://www.gnu.org/licenses/gpl-3.0.html.
+## Licence
+The source code in this repository is available under an [MIT Licence](https://opensource.org/licenses/MIT), a copy of which is also provided as a separate file in this repository.
+
+## References
+Verpoort, P. C. (2024). Potsdam Interactive Webapp (PIW) framework library (0.8.2). Zenodo. https://doi.org/10.5281/zenodo.10640781
+
+Verpoort, P. C., Bachorz, C., Dürrwächter, J., Effing, P., Gast, L., Hofmann, A., & Ueckerdt, F. (2024). POSTED: Potsdam open-source techno-economic database (0.2.3). Zenodo. https://doi.org/10.5281/zenodo.10640888

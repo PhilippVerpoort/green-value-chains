@@ -1,17 +1,18 @@
 [tool.poetry]
 name = "green-value-chains"
-version = "3.1.0"
-description = ""
+version = "4.0.0"
+description = "Research software used for techno-economic analysis of the impact of global heterogeneity of renewable-energy supply on heavy industrial production and green value chains"
 authors = ["Philipp Verpoort <philipp.verpoort@pik-potsdam.de>"]
+license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
-piw = {git = "https://github.com/PhilippVerpoort/piw.git", rev="v0.6.1"}
-posted = {git = "https://github.com/PhilippVerpoort/posted.git", rev = "v0.2.1"}
+posted = {git = "https://github.com/PhilippVerpoort/posted.git", rev = "v0.2.3"}
 kaleido = "0.2.1"
 openpyxl = "^3.1.2"
 pandas = "<2.1.0"
+piw = {git = "https://github.com/PhilippVerpoort/piw.git", rev = "v0.8.2"}
 
 [build-system]
 requires = ["poetry-core"]

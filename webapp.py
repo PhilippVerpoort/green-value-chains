@@ -24,8 +24,7 @@ pint.set_application_registry(ureg)
 
 # metadata
 metadata = {
-    'title': 'Interactive webapp for techno-economic analysis of the renewables pull in future global green value '
-             'chains',
+    'title': 'Interactive webapp for techno-economic analysis of green value chains',
     'abstract': 'This interactive webapp can be used to reproduce figures from an accompanying article by the same '
                 'authors that studies the renewables pull and its impact on industrial relocation for future global '
                 'green value chains of energy-intensive basic materials. The presented figures compare levelised '
@@ -73,13 +72,12 @@ metadata = {
             'affiliation': ['Potsdam Institute for Climate Impact Research, Potsdam, Germany'],
         },
     ],
-    'date': '2023-12-12',
-    'version': 'v3.1.0',
+    'date': '2024-02-09',
+    'version': 'v4.0.0',
     'doi': 'TBD',
     'license': {'name': 'CC BY 4.0', 'link': 'https://creativecommons.org/licenses/by/4.0/'},
     'citeas': 'Verpoort, Philipp C.; Gast, Lukas; Hofmann, Anke; Ueckerdt, Falko (2023): Interactive webapp for '
-              'techno-economic analysis of the renewables pull in future global green value chains. V. 3.1.0. '
-              'https://doi.org/TBD',
+              'techno-economic analysis of green value chains. v4.0.0 https://doi.org/TBD',
 }
 
 
