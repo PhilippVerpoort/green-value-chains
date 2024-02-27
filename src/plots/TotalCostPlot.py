@@ -55,7 +55,7 @@ class TotalCostPlot(BasePlot):
                     range=[-0.1, +3.65],
                     tickmode='array',
                     tickvals=[i for i in range(comm_data_top['impcase'].nunique())],
-                    ticktext=[d for d in comm_data_top['impcase_display'].unique()]
+                    ticktext=[d.replace('Base Case', 'Basisfall').replace('Case', 'Fall') for d in comm_data_top['impcase_display'].unique()]
                 ),
                 yaxis=dict(
                     domain=[self.cfg['top']['domain_boundary'], 1.0],
@@ -100,7 +100,7 @@ class TotalCostPlot(BasePlot):
 
     def _add_dummy_legend(self, fig: go.Figure):
         for legend, symbol in [('Case 1A', self.cfg['symbolCase1A']),
-                               ('Other<br>cases', self.cfg['symbol']),]:
+                               ('Andere<br>Fälle', self.cfg['symbol']),]:
             fig.add_trace(
                 go.Scatter(
                     x=[-1000.0],
@@ -339,7 +339,7 @@ class TotalCostPlot(BasePlot):
                 go.Scatter(
                     x=[x],
                     y=case_label['LCOP_rel'],
-                    text=case_label['impsubcase'],
+                    text=case_label['impsubcase'].replace('Case', 'Fall', regex=True),
                     name=comm,
                     mode='markers+text',
                     textposition=pos,
@@ -420,7 +420,7 @@ class TotalCostPlot(BasePlot):
                 go.Scatter(
                     x=-case_label['elec'],
                     y=case_label['other'],
-                    text=case_label['impsubcase'],
+                    text=case_label['impsubcase'].replace('Case', 'Fall', regex=True),
                     name=comm,
                     mode='markers+text',
                     textposition='top center',
@@ -539,7 +539,7 @@ def _add_arrows(fig: go.Figure, c: int):
 
     fig.add_annotation(
         showarrow=False,
-        text='Deeper relocation',
+        text='Tiefere Verlagerung',
         x=0.5,
         y=0.08,
         xref=xref,
@@ -566,7 +566,7 @@ def _add_arrows(fig: go.Figure, c: int):
 
     fig.add_annotation(
         showarrow=False,
-        text='Increasing difference<br>of electricity prices',
+        text='Zunehmende<br>Strompreisdifferenz',
         x=0.95,
         y=0.5,
         xref=xref,
@@ -600,7 +600,7 @@ def _add_arrows(fig: go.Figure, c: int):
 
     fig.add_annotation(
         showarrow=False,
-        text='Energy-cost savings prevail<br><br>Relocation is incentivised',
+        text='Einsparungen überwiegen<br><br>Verlagerung wird begünstigt',
         x=0.8,
         y=0.45,
         xref=xref,
@@ -630,7 +630,7 @@ def _add_arrows(fig: go.Figure, c: int):
 
     fig.add_annotation(
         showarrow=False,
-        text='Penalties prevail<br><br>Relocation not incentivised',
+        text='Mehrkosten überwiegen<br><br>Verlagerung nicht begünstigt',
         x=0.45,
         y=0.8,
         xref=xref,

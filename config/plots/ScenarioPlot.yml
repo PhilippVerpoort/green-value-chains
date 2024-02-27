@@ -17,42 +17,42 @@ figures:
         height: 600.0  # unit px
 config:
   yaxis_title:
-    left: Potential annual green-relocation protection (bn EUR/a)
-    right: Planned federal fiscal spending (bn EUR/a)
+    left: Möglicher Green-Relocation-Schutz Mechanismus (Mrd. EUR/a)
+    right: Geplante Ausgaben auf Bundesebene (Mrd. EUR/a)
   yaxis_max: 26.0
 
   legendgroup_titles:
-    protection: Potential green-relocation<br>protection scheme
-    existing: Planned federal fiscal<br>spending
+    protection: Mögl. Green-Relocation-<br>Schutz Mechanismus
+    existing: Geplante Ausgaben<br>auf Bundesebene
 
   epdcases: ['weak', 'medium', 'strong']
 
   expenses_color:
-    Special budget: '#cccccc'
-    Regular budget: '#aaaaaa'
+    Klima- und Trans-<br>formationsfonds (KTF): '#E4EAEA'
+    Bundeshaushalt: '#a2b6b6'
 
   scenario_names:
-    Scen 1: <b>Scenario 1</b><br>Focus H<sub>2</sub>
-    Scen 2: <b>Scenario 2</b><br>Focus intermediates
+    Scen 1: <b>Scenario 1</b><br>Fokus auf Import<br>von H<sub>2</sub>
+    Scen 2: <b>Scenario 2</b><br>Fokus auf Import<br>von Zwischenprodukten
 
   planned_expenses:
     EEG:
-      label: Renewables<br>support
-      type: Special budget
+      label: EEG-Umlage
+      type: Klima- und Trans-<br>formationsfonds (KTF)
       value: 12.6
     Gebaeude:
-      label: Buildings<br>renovations
-      type: Special budget
+      label: Gebäude-<br>förderung
+      type: Klima- und Trans-<br>formationsfonds (KTF)
       value: 18.9
     BMWK:
-      label: Ministry of<br>Economic<br>Affairs
-      type: Regular budget
+      label: BMWK
+      type: Bundeshaushalt
       value: 15.0
     BMBF:
-      label: Ministry of<br>Research and<br>Education
-      type: Regular budget
+      label: BMBF
+      type: Bundeshaushalt
       value: 21.0
     BMG:
-      label: Ministry of<br>Health
-      type: Regular budget
+      label: BMG
+      type: Bundeshaushalt
       value: 24.0

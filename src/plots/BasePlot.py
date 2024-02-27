@@ -76,8 +76,13 @@ class BasePlot(AbstractPlot, ABC):
         )
 
     def _add_annotation_comm(self, fig: go.Figure, comm: str, c: int):
+        comm_names_german = {
+            'Steel': 'Stahl',
+            'Urea': 'Harnstoff',
+            'Ethylene': 'Ethylen',
+        }
         fig.add_annotation(
-            text=f"<b>{comm}</b>",
+            text=f"<b>{comm_names_german[comm]}</b>",
             x=0.5,
             xref='x domain',
             xanchor='center',

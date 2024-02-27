@@ -25,7 +25,7 @@ config:
 
   top:
     domain_boundary: 0.70
-    yaxislabel: Production cost relative to Base Case (%)
+    yaxislabel: Produktionskosten relativ zum Basisfall (%)
     yaxis:
       range:
         - 0.0
@@ -38,17 +38,17 @@ config:
 
   bottom:
     domain_boundary: 0.56
-    xaxislabel: Energy-cost savings (EUR/t)
-    yaxislabel: Penalties (EUR/t)
-    zaxislabel: Relocation savings relative<br>to production cost in the Base Case (%)
+    xaxislabel: Energiekostenreduktion (EUR/t)
+    yaxislabel: Zusatzkosten durch Transport und Finanzierung (EUR/t)
+    zaxislabel: Verlagerungseinsparungen relativ<br>zu Produktionskosten im Basisfall (%)
     zrange:
       - -100.0
       - +100.0
     zdelta: 20.0
     zcolours:
-      - '#3745a3'
+      - '#004276'
       - '#ffffff'
-      - '#e6af2e'
+      - '#ecc15d'
     zticks:
       - 100
       - 50

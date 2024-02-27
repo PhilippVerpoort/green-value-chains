@@ -1,33 +1,33 @@
 commodity_colours:
-  Steel: '#666666'
-  Urea: '#0e8088'
-  Ethylene: '#8a4c39'
+  Steel: '#57656c'
+  Urea: '#228f9c'
+  Ethylene: '#8f5635'
 
 case_names:
-  Base Case: Full domestic<br>production
-  Case 1: Import of H<sub>2</sub><br>via ship/<br>pipeline
-  Case 2: Import of<br>inter-<br>mediates
-  Case 3: Import of<br>(semi-)finished<br>products
+  Base Case: Heimische<br>Produktion
+  Case 1: Import v. H<sub>2</sub><br>per Schiff/<br>Pipeline
+  Case 2: Import v.<br>Zwischen-<br>produkten
+  Case 3: Import v.<br>(halb-)fertigen<br>Produkten
 
 cost_types:
   capital:
-    label: Annualised<br>CAPEX
-    colour: '#f36f21'
+    label: Annualisierte<br>Kapitalkosten
+    colour: '#8f3547'
   fonmco:
-    label: Operation and<br>maintenance
-    colour: '#00813e'
+    label: Betriebs- und<br>Wartungskosten
+    colour: '#3c7d2c'
   rawmat:
-    label: Raw materials
-    colour: '#cccccc'
+    label: Rohmaterial-<br>kosten
+    colour: '#cdd1d3'
   energy:
-    label: Non-elec.<br>energy
-    colour: '#aaaaaa'
+    label: Nicht-elek.<br>Energiekosten
+    colour: '#899297'
   elec:
-    label: Electricity
-    colour: '#e6af2e'
+    label: Stromkosten
+    colour: '#ecc15d'
   transport:
-    label: Transport
-    colour: '#7c1f8a'
+    label: Transportkosten
+    colour: '#5f4491'
 
 components:
   alloys: Alloys
