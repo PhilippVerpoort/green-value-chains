@@ -5,9 +5,9 @@ commodity_colours:
 
 case_names:
   Base Case: Full domestic<br>production
-  Case 1: Import of H<sub>2</sub>
+  Case 1: Import of H<sub>2</sub><br>via ship/<br>pipeline
   Case 2: Import of<br>inter-<br>mediates
-  Case 3: Import of<br>semi-finished<br>products
+  Case 3: Import of<br>(semi-)finished<br>products
 
 cost_types:
   capital:
