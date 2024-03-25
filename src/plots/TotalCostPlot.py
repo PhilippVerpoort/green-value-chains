@@ -459,6 +459,8 @@ class TotalCostPlot(BasePlot):
                     titleside='right',
                     tickvals=[float(t) for t in self.cfg['bottom']['zticks']],
                     ticktext=self.cfg['bottom']['zticks'],
+                    ticks="outside",
+                    tickcolor='black',
                     titlefont_size=self.get_font_size('fs_sm'),
                 ),
                 showscale=not c,
