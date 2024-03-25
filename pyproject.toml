@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "green-value-chains"
-version = "4.0.0"
-description = "Research software used for techno-economic analysis of the impact of global heterogeneity of renewable-energy supply on heavy industrial production and green value chains"
+version = "4.1.0"
+description = "Research software used for techno-economic analysis of the impact of global heterogeneity of renewable energy supply on heavy industrial production and green value chains"
 authors = ["Philipp Verpoort <philipp.verpoort@pik-potsdam.de>"]
 license = "MIT"
 readme = "README.md"
