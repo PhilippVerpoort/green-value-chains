@@ -96,6 +96,8 @@ webapp = Webapp(
         Input('simple-update', 'n_clicks'),
         State('simple-elec-prices', 'data'),
         State('simple-transp-cost', 'data'),
+        State('simple-scenarios', 'data'),
+        State('simple-volumes', 'data'),
     ],
     update=[update_inputs],
     proc=[process_inputs],

@@ -25,7 +25,7 @@ def main_ctrl(default_inputs: dict):
         children=[
             html.Div(
                 children='Please enter your own assumptions in the table below and press the GENERATE button to update '
-                         'the results. Electricity prices are assumed in EUR/MWh. For changing other assumptions, '
+                         'the results. For changing other assumptions, '
                          'please refer to the full source code on GitHub.',
                 className='card-element',
             ),
@@ -33,6 +33,7 @@ def main_ctrl(default_inputs: dict):
                 'Electricity-price cases',
                 html_for='simple-elec-prices',
             ),
+            'Unit for electricity prices is EUR/MWh.',
             html.Div(
                 [
                     dash_table.DataTable(
@@ -118,6 +119,44 @@ def main_ctrl(default_inputs: dict):
                                 'width': '30%',
                             },
                         ],
+                    ),
+                ],
+                className='card-element',
+            ),
+            dbc.Label(
+                'Share of production cases in scenarios for Fig. 6',
+                html_for='simple-scenarios',
+            ),
+            'Unit for shares is %.',
+            html.Div(
+                [
+                    dash_table.DataTable(
+                        id='simple-scenarios',
+                        columns=[
+                            {'id': col, 'name': col.capitalize(), 'editable': 'Case' in col}
+                            for col in default_inputs['scenarios'].reset_index()
+                        ],
+                        data=(default_inputs['scenarios'] * 100).reset_index().to_dict('records'),
+                        editable=True,
+                    ),
+                ],
+                className='card-element',
+            ),
+            dbc.Label(
+                'Production volumes for Fig. 6',
+                html_for='simple-volumes',
+            ),
+            'Unit for volumes is Mt.',
+            html.Div(
+                [
+                    dash_table.DataTable(
+                        id='simple-volumes',
+                        columns=[
+                            {'id': col, 'name': col.capitalize(), 'editable': col == 'volume'}
+                            for col in ['commodity', 'volume']
+                        ],
+                        data=default_inputs['volumes'].to_frame('volume').reset_index().to_dict('records'),
+                        editable=True,
                     ),
                 ],
                 className='card-element',

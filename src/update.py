@@ -15,3 +15,14 @@ def update_inputs(inputs_updated: dict, btn_pressed: str, args: list):
         .drop(columns=['tradedDisplay']) \
         .astype({'assump': 'float'}) \
         .fillna(np.nan)
+
+    scenarios = args[3]
+    inputs_updated['scenarios'] = pd.DataFrame.from_dict(scenarios) \
+        .set_index(['scenario', 'commodity']) \
+        .astype('float32') \
+        .apply(lambda x: x/100.0)
+
+    volumes = args[4]
+    inputs_updated['volumes'] = pd.DataFrame.from_dict(volumes) \
+        .set_index(['commodity'])['volume'] \
+        .astype('float32')
