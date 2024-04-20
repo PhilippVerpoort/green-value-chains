@@ -5,13 +5,13 @@ This repository make source codes and input data publicly available that were us
 
 ## How  to cite this work
 **This software:**
-Verpoort, Philipp C.; Gast, Lukas; Hofmann, A.; Ueckerdt, F. (2024): Research software used for techno-economic analysis of the impact of global heterogeneity of renewable energy supply on heavy industrial production and green value chains. V. 4.1.0. Zenodo. DOI: TBC
+Verpoort, Philipp C.; Gast, Lukas; Hofmann, A.; Ueckerdt, F. (2024): Research software used for techno-economic analysis of the impact of global heterogeneity of renewable energy supply on heavy industrial production and green value chains. V. 4.1.1. Zenodo. https://zenodo.org/doi/10.5281/zenodo.10869779
 
 **The accompanying interactive webapp:**
-Verpoort, Philipp C.; Gast, Lukas; Hofmann, Anke; Ueckerdt, Falko (2024): Interactive webapp for techno-economic analysis of green value chains. V. 4.1.0. GFZ Data Services. https://doi.org/10.5880/pik.2024.002
+Verpoort, Philipp C.; Gast, Lukas; Hofmann, Anke; Ueckerdt, Falko (2024): Interactive webapp for techno-economic analysis of green value chains. V. 4.1.1. GFZ Data Services. https://doi.org/10.5880/pik.2024.002
 
 **The accompanying peer-reviewed article:**
-Verpoort, Philipp C.; Gast, Lukas; Hofmann, A.; Ueckerdt, F. (2024): Impact of global heterogeneity of renewable-energy supply on heavy industrial production and green value chains. Nature Energy. DOI: TBC
+Verpoort, Philipp C.; Gast, Lukas; Hofmann, A.; Ueckerdt, F. (2024): Impact of global heterogeneity of renewable-energy supply on heavy industrial production and green value chains. Nature Energy. https://doi.org/10.1038/s41560-024-01492-z
 
 ## How to use this software
 

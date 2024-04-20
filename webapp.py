@@ -73,7 +73,7 @@ metadata = {
         },
     ],
     'date': '2024-02-09',
-    'version': 'v4.1.0',
+    'version': 'v4.1.1',
     'doi': '10.5880/pik.2024.002',
     'licence': {'name': 'CC BY 4.0', 'link': 'https://creativecommons.org/licenses/by/4.0/'},
     'citeas': 'Verpoort, Philipp C.; Gast, Lukas; Hofmann, Anke; Ueckerdt, Falko (2024): Interactive webapp for '
