@@ -8,6 +8,7 @@ def update_inputs(inputs_updated: dict, btn_pressed: str, args: list):
     elec_prices = args[1]
     inputs_updated['epdcases'] = pd.DataFrame.from_dict(elec_prices) \
         .drop(columns=['epdcaseDisplay', 'processDisplay']) \
+        .astype({c: 'float64' for c in ('RE-scarce', 'RE-rich')}) \
         .astype({c: 'pint[EUR/MWh]' for c in ('RE-scarce', 'RE-rich')})
 
     transp_cost = args[2]

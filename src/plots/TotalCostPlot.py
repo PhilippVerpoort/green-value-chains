@@ -134,7 +134,8 @@ class TotalCostPlot(BasePlot):
         epd = outputs['epd'] \
             .pint.dequantify().droplevel('unit', axis=1) \
             .filter(['epdcase', 'epd']) \
-            .drop_duplicates()
+            .groupby('epdcase') \
+            .agg({'epd': 'first'})
 
         # data for top row: calculate differences to Base Case, then rename import cases (1 to 1A/B and add subtitles),
         # and finally merge epd numbers for epdcases for display in plot
