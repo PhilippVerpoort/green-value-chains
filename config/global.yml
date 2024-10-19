@@ -4,29 +4,29 @@ commodity_colours:
   Ethylene: '#8f5635'
 
 case_names:
-  Base Case: Full domestic<br>production
-  Case 1: Import of H<sub>2</sub><br>via ship/<br>pipeline
-  Case 2: Import of<br>inter-<br>mediates
-  Case 3: Import of<br>(semi-)finished<br>products
+  Base Case: Heimische<br>Produktion
+  Case 1: Import v. H<sub>2</sub><br>per Schiff/<br>Pipeline
+  Case 2: Import v.<br>Vorprodukten
+  Case 3: Import v.<br>(halb-)fertigen<br>Produkten
 
 cost_types:
   capital:
-    label: Annualised<br>CAPEX
+    label: Annualisierte<br>Kapitalkosten
     colour: '#8f3547'
   fonmco:
-    label: Operation and<br>maintenance
+    label: Betriebs- und<br>Wartungskosten
     colour: '#3c7d2c'
   rawmat:
-    label: Raw materials
+    label: Rohmaterial-<br>kosten
     colour: '#cdd1d3'
   energy:
-    label: Non-elec.<br>energy
+    label: Nicht-elek.<br>Energiekosten
     colour: '#899297'
   elec:
-    label: Electricity
+    label: Stromkosten
     colour: '#ecc15d'
   transport:
-    label: Transport
+    label: Transportkosten
     colour: '#5f4491'
 
 components:

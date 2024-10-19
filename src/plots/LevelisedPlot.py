@@ -52,7 +52,7 @@ class LevelisedPlot(BasePlot):
                 xaxis=dict(
                     title='',
                     categoryorder='array',
-                    categoryarray=sorted(comm_data['impcase_display']),
+                    categoryarray=sorted(comm_data['impcase_display'].replace('Base Case', 'Basisfall', regex=True).replace('Case', 'Fall', regex=True)),
                 ),
                 yaxis=dict(
                     title='',
@@ -166,7 +166,7 @@ class LevelisedPlot(BasePlot):
 
             fig.add_trace(
                 go.Bar(
-                    x=this_data['impcase_display'],
+                    x=this_data['impcase_display'].replace('Base Case', 'Basisfall', regex=True).replace('Case', 'Fall', regex=True),
                     y=this_data['value'],
                     marker_color=display['colour'],
                     name=display['label'],
@@ -187,7 +187,7 @@ class LevelisedPlot(BasePlot):
             p = h2transp_data.query(f"impsubcase=='{subcase}'")
             fig.add_trace(
                 go.Bar(
-                    x=p['impcase_display'],
+                    x=p['impcase_display'].replace('Base Case', 'Basisfall', regex=True).replace('Case', 'Fall', regex=True),
                     y=p['value'],
                     base=base_val,
                     marker_color=display['colour'],
@@ -235,7 +235,7 @@ class LevelisedPlot(BasePlot):
 
         fig.add_annotation(
             showarrow=False,
-            text='Deeper relocation',
+            text='Tiefere Verlagerung',
             x=0.5,
             y=0.26,
             xref=xref + ' domain',
@@ -253,7 +253,7 @@ class LevelisedPlot(BasePlot):
 
         fig.add_annotation(
             showarrow=False,
-            text='Relocation savings',
+            text='Kosteneinsparungen',
             x=1.0,
             y=base_cost,
             xref=xref + ' domain',

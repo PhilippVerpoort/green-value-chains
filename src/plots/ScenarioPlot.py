@@ -19,6 +19,13 @@ class ScenarioPlot(BasePlot):
         plot_data = self._prepare(inputs, outputs)
         plot_data['scenario_name'] = plot_data['scenario'].map(self.cfg['scenario_names'])
 
+        # deutsche Übersetzung
+        plot_data['commodity'] = plot_data['commodity'].map({
+            'Steel': 'Stahl',
+            'Urea': 'Harnstoff',
+            'Ethylene': 'Ethylen',
+        })
+
         fig = px.bar(
             plot_data,
             x='scenario_name',
@@ -71,7 +78,7 @@ class ScenarioPlot(BasePlot):
 
         # update text template
         for trace in fig.data:
-            trace['texttemplate'] = '%{y:.1f} bn EUR/a'
+            trace['texttemplate'] = '%{y:.1f} Mrd. EUR p.a.'
             trace['hoverinfo'] = 'skip'
 
         # adjust legend and axes titles
@@ -81,7 +88,7 @@ class ScenarioPlot(BasePlot):
                 xanchor='left',
                 yanchor='top',
                 x=0.005,
-                y=0.99,
+                y=0.95,
             ),
             **{f"xaxis{i+1 if i else ''}_title": '' for i in range(n+1)},
             yaxis_title=self.cfg['yaxis_title']['left'],
@@ -95,8 +102,8 @@ class ScenarioPlot(BasePlot):
 
         # replace annotations
         fig.layout.annotations = []
-        for s, scen in enumerate(self.cfg['epdcases'] + ['For comparison']):
-            self._add_annotation(fig, scen.capitalize(), s)
+        for s, scen in enumerate(outputs['epd']['epd'].unique().tolist() + ['Zum Vergleich']):
+            self._add_annotation(fig, scen, s)
 
         return {'fig6': fig}
 
