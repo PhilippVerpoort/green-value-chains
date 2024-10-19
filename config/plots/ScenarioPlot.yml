@@ -28,8 +28,8 @@ config:
   epdcases: ['weak', 'medium', 'strong']
 
   expenses_color:
-    Special budget: '#cccccc'
-    Regular budget: '#aaaaaa'
+    Special budget: '#E4EAEA'
+    Regular budget: '#a2b6b6'
 
   scenario_names:
     Scen 1: <b>Scenario 1</b><br>Focus H<sub>2</sub>

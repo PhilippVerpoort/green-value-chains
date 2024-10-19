@@ -1,7 +1,7 @@
 commodity_colours:
-  Steel: '#666666'
-  Urea: '#0e8088'
-  Ethylene: '#8a4c39'
+  Steel: '#57656c'
+  Urea: '#228f9c'
+  Ethylene: '#8f5635'
 
 case_names:
   Base Case: Full domestic<br>production
@@ -12,22 +12,22 @@ case_names:
 cost_types:
   capital:
     label: Annualised<br>CAPEX
-    colour: '#f36f21'
+    colour: '#8f3547'
   fonmco:
     label: Operation and<br>maintenance
-    colour: '#00813e'
+    colour: '#3c7d2c'
   rawmat:
     label: Raw materials
-    colour: '#cccccc'
+    colour: '#cdd1d3'
   energy:
     label: Non-elec.<br>energy
-    colour: '#aaaaaa'
+    colour: '#899297'
   elec:
     label: Electricity
-    colour: '#e6af2e'
+    colour: '#ecc15d'
   transport:
     label: Transport
-    colour: '#7c1f8a'
+    colour: '#5f4491'
 
 components:
   alloys: Alloys

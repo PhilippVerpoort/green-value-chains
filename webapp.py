@@ -4,6 +4,7 @@ from pathlib import Path
 import pint
 from posted.units.units import ureg
 from piw import Webapp
+from piw.template import piw_template
 from dash.dependencies import Input, State
 from dash import html
 
@@ -84,6 +85,9 @@ metadata = {
     'reference_doi': '10.1038/s41560-024-01492-z',
 }
 
+piw_template.update(
+    layout_font_family='Gudea',
+)
 
 # define webapp
 webapp = Webapp(

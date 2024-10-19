@@ -46,9 +46,9 @@ config:
       - +100.0
     zdelta: 20.0
     zcolours:
-      - '#3745a3'
+      - '#004276'
       - '#ffffff'
-      - '#e6af2e'
+      - '#ecc15d'
     zticks:
       - 100
       - 50
